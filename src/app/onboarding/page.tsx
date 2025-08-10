@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import Link from "next/link";
 import DailyIULogo from "@/app/assets/illustrations/daily-iu-logo.svg";
 import OnboardingHome from "./components/OnboardingHome/OnboardingHome";
 
