@@ -9,7 +9,7 @@ import { QuestionProps } from '../QuestionSection/QuestionSection';
 // Mock data - TODO
 import { Question } from '@/app/types/question';
 
-// Mock data - TODO
+
 const mockQuestions: Question[] = [
   {
     id: 'birthdate',

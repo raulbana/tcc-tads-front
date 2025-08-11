@@ -82,7 +82,7 @@ const QuestionSection: React.FC<QuestionProps> = ({
               )}
                 
               {type === 'slider' && (
-                <div className="w-full max-w-md">
+                <div className="w-full max-w-md mx-auto">
                   <input
                     type="range"
                     min={min ?? 0}
