@@ -9,7 +9,7 @@ interface StepLabelProps {
 const StepLabel: React.FC<StepLabelProps> = ({ step, totalSteps }) => {
   return (
     <div className="flex items-center justify-center gap-2">
-      <CheckCircleIcon size={24} className="text-purple-400" />
+      <CheckCircleIcon size={24} color="var(--color-purple-04)" />
       <span className="text-sm text-gray-700">
         Etapa <span className="font-semibold">{step}</span>
         <span className="text-gray-500"> / {totalSteps}</span>

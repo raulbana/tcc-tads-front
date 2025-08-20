@@ -1,81 +1,82 @@
 "use client";
-import { useState, useCallback, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ICIQAnswers, iciqSchema } from './schema/questionnaire';
-import { QuestionProps } from '../QuestionSection/QuestionSection';
+import { useState, useCallback, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ICIQAnswers, iciqSchema } from "./schema/questionnaire";
+import { QuestionProps } from "../QuestionSection/QuestionSection";
 
-// Mock data - TODO
-import { Question } from '@/app/types/question';
-
+import { Question } from "@/app/types/question";
 
 const mockQuestions: Question[] = [
   {
-    id: 'birthdate',
-    text: 'Qual é a sua data de nascimento?',
-    type: 'date',
-    required: true
+    id: "birthdate",
+    text: "Qual é a sua data de nascimento?",
+    type: "date",
+    required: true,
   },
   {
-    id: 'gender',
-    text: 'Qual é o seu gênero?',
-    type: 'radio',
+    id: "gender",
+    text: "Qual é o seu gênero?",
+    type: "radio",
     required: true,
     options: [
-      { label: 'Masculino', value: 'male' },
-      { label: 'Feminino', value: 'female' },
-      { label: 'Outro', value: 'other' }
-    ]
+      { label: "Masculino", value: "male" },
+      { label: "Feminino", value: "female" },
+      { label: "Outro", value: "other" },
+    ],
   },
   {
-    id: 'q3_frequency',
-    text: 'Com que frequência você perde urina?',
-    type: 'slider',
+    id: "q3_frequency",
+    text: "Com que frequência você perde urina?",
+    type: "slider",
     required: true,
     min: 0,
     max: 5,
-    step: 1
+    step: 1,
   },
   {
-    id: 'q4_amount',
-    text: 'Qual a quantidade de urina que você perde?',
-    type: 'slider',
+    id: "q4_amount",
+    text: "Qual a quantidade de urina que você perde?",
+    type: "slider",
     required: true,
     min: 0,
     max: 6,
-    step: 1
+    step: 1,
   },
   {
-    id: 'q5_interference',
-    text: 'O quanto perder urina interfere na sua vida diária?',
-    type: 'slider',
+    id: "q5_interference",
+    text: "O quanto perder urina interfere na sua vida diária?",
+    type: "slider",
     required: true,
     min: 0,
     max: 10,
-    step: 1
+    step: 1,
   },
   {
-    id: 'q6_when',
-    text: 'Quando você perde urina?',
-    type: 'checkbox',
+    id: "q6_when",
+    text: "Quando você perde urina?",
+    type: "checkbox",
     required: true,
     options: [
-      { label: 'Nunca', value: 'never' },
-      { label: 'Antes de chegar ao banheiro', value: 'before_bathroom' },
-      { label: 'Quando tusso ou espirro', value: 'cough_sneeze' },
-      { label: 'Quando estou dormindo', value: 'sleeping' },
-      { label: 'Quando faço atividade física', value: 'exercise' },
-      { label: 'Quando termino de urinar e estou me vestindo', value: 'after_urinating' },
-      { label: 'Sem razão óbvia', value: 'no_reason' },
-      { label: 'O tempo todo', value: 'all_time' }
-    ]
-  }
+      { label: "Nunca", value: "never" },
+      { label: "Antes de chegar ao banheiro", value: "before_bathroom" },
+      { label: "Quando tusso ou espirro", value: "cough_sneeze" },
+      { label: "Quando estou dormindo", value: "sleeping" },
+      { label: "Quando faço atividade física", value: "exercise" },
+      {
+        label: "Quando termino de urinar e estou me vestindo",
+        value: "after_urinating",
+      },
+      { label: "Sem razão óbvia", value: "no_reason" },
+      { label: "O tempo todo", value: "all_time" },
+    ],
+  },
 ];
 
 const useOnboardingQuestionnaire = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
@@ -85,13 +86,14 @@ const useOnboardingQuestionnaire = () => {
     getFieldState,
     getValues,
     trigger,
+    setValue,
     formState: { errors, isValid },
   } = useForm<ICIQAnswers>({
     resolver: zodResolver(iciqSchema),
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
       birthdate: new Date().toISOString(),
-      gender: '',
+      gender: "",
       q3_frequency: 0,
       q4_amount: 0,
       q5_interference: 0,
@@ -99,12 +101,60 @@ const useOnboardingQuestionnaire = () => {
     },
   });
 
+  const getDefaultValueForQuestion = (question: Question) => {
+    switch (question.type) {
+      case "text":
+        return "";
+      case "date":
+        return new Date().toISOString();
+      case "slider":
+        return question.min || 0;
+      case "radio":
+        return "";
+      case "checkbox":
+        return [];
+      default:
+        return "";
+    }
+  };
+
   const onContinue = useCallback(
     async (field: keyof ICIQAnswers) => {
-      const isFieldValid = await trigger(field);
+      const currentValue = getValues(field);
+      const currentQuestion = mockQuestions[currentQuestionIndex];
 
-      if (isFieldValid) {
-        setCurrentQuestionIndex(prevIndex => {
+      let isValid = false;
+
+      switch (currentQuestion.type) {
+        case "text":
+          isValid =
+            typeof currentValue === "string" && currentValue.trim().length > 0;
+          break;
+        case "date":
+          isValid =
+            typeof currentValue === "string" &&
+            !isNaN(Date.parse(currentValue));
+          break;
+        case "slider":
+          isValid =
+            typeof currentValue === "number" &&
+            currentValue >= (currentQuestion.min || 0);
+          break;
+        case "radio":
+          isValid =
+            currentValue !== undefined &&
+            currentValue !== null &&
+            currentValue !== "";
+          break;
+        case "checkbox":
+          isValid = Array.isArray(currentValue) && currentValue.length > 0;
+          break;
+        default:
+          isValid = true;
+      }
+
+      if (isValid) {
+        setCurrentQuestionIndex((prevIndex) => {
           const nextIndex = prevIndex + 1;
           if (nextIndex < mockQuestions.length) {
             return nextIndex;
@@ -114,15 +164,14 @@ const useOnboardingQuestionnaire = () => {
           }
         });
       } else {
-        const { error } = getFieldState(field);
-        setErrorMessage(error?.message ?? 'Campo inválido');
+        setErrorMessage("Campo obrigatório");
       }
     },
-    [getValues, trigger, getFieldState],
+    [currentQuestionIndex, getValues]
   );
 
   const clearError = () => {
-    setErrorMessage('');
+    setErrorMessage("");
   };
 
   const onSubmitAnswer = useCallback(() => {
@@ -132,20 +181,19 @@ const useOnboardingQuestionnaire = () => {
         ...getValues(),
         isValid,
       });
-      // Navigate to success page or home
-      router.push('/');
+      router.push("/");
     })();
   }, [getValues, handleSubmit, isValid, router]);
 
   const navigateBack = () => {
     if (currentQuestionIndex === 0) {
-      router.push('/onboarding');
+      router.push("/onboarding");
     } else {
-      setCurrentQuestionIndex(prev => prev - 1);
+      setCurrentQuestionIndex((prev) => prev - 1);
     }
   };
 
-  const questionInputs: QuestionProps[] = mockQuestions.map(question => ({
+  const questionInputs: QuestionProps[] = mockQuestions.map((question) => ({
     question,
     control: control,
     onContinue: () => onContinue(question.id as keyof ICIQAnswers),
@@ -157,7 +205,7 @@ const useOnboardingQuestionnaire = () => {
     errorMessage,
     isLoading,
     navigateBack,
-    clearError
+    clearError,
   };
 };
 

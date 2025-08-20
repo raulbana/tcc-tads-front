@@ -15,7 +15,7 @@ const OnboardingQuestionnaire = () => {
     errorMessage,
     navigateBack,
     isLoading,
-    clearError
+    clearError,
   } = useOnboardingQuestionnaire();
 
   if (isLoading) {
@@ -46,12 +46,12 @@ const OnboardingQuestionnaire = () => {
             steps={questionInputs.length}
             currentStep={currentQuestionIndex + 1}
           />
-          
+
           <StepLabel
             step={currentQuestionIndex + 1}
             totalSteps={questionInputs.length}
           />
-          
+
           {questionInputs[currentQuestionIndex] && (
             <QuestionSection
               question={questionInputs[currentQuestionIndex].question}

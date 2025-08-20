@@ -15,7 +15,7 @@ const OnboardingHome = () => {
       <div className="text-center max-w-2xl">
         <h1 className="text-3xl font-semibold text-gray-800 mb-4">
           Seja bem-vindo(a) ao DailyIU! Seu app para acompanhamento de{" "}
-          <span className="font-bold text-purple-600">Incontinência Urinária!</span>
+          <span className="font-bold text-purple-04">Incontinência Urinária!</span>
         </h1>
         <h2 className="text-2xl font-semibold text-gray-800 mt-6">
           Vamos começar?
