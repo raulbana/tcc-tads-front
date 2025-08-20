@@ -120,54 +120,42 @@ const useOnboardingQuestionnaire = () => {
 
   const onContinue = useCallback(
     async (field: keyof ICIQAnswers) => {
-      const currentValue = getValues(field);
-      const currentQuestion = mockQuestions[currentQuestionIndex];
+      try {
+        // Usar trigger para validar o campo específico
+        const isFieldValid = await trigger(field);
 
-      let isValid = false;
+        if (isFieldValid) {
+          setCurrentQuestionIndex((prevIndex) => {
+            const nextIndex = prevIndex + 1;
+            if (nextIndex < mockQuestions.length) {
+              // Limpar o campo da próxima questão para evitar valores residuais
+              const nextQuestion = mockQuestions[nextIndex];
+              const nextField = nextQuestion.id as keyof ICIQAnswers;
+              const defaultValue = getDefaultValueForQuestion(nextQuestion);
+              setValue(nextField, defaultValue);
 
-      switch (currentQuestion.type) {
-        case "text":
-          isValid =
-            typeof currentValue === "string" && currentValue.trim().length > 0;
-          break;
-        case "date":
-          isValid =
-            typeof currentValue === "string" &&
-            !isNaN(Date.parse(currentValue));
-          break;
-        case "slider":
-          isValid =
-            typeof currentValue === "number" &&
-            currentValue >= (currentQuestion.min || 0);
-          break;
-        case "radio":
-          isValid =
-            currentValue !== undefined &&
-            currentValue !== null &&
-            currentValue !== "";
-          break;
-        case "checkbox":
-          isValid = Array.isArray(currentValue) && currentValue.length > 0;
-          break;
-        default:
-          isValid = true;
-      }
+              return nextIndex;
+            } else {
+              onSubmitAnswer();
+              return prevIndex;
+            }
+          });
 
-      if (isValid) {
-        setCurrentQuestionIndex((prevIndex) => {
-          const nextIndex = prevIndex + 1;
-          if (nextIndex < mockQuestions.length) {
-            return nextIndex;
-          } else {
-            onSubmitAnswer();
-            return prevIndex;
+          // Limpar mensagem de erro se existir
+          if (errorMessage) {
+            setErrorMessage("");
           }
-        });
-      } else {
-        setErrorMessage("Campo obrigatório");
+        } else {
+          // Obter o erro específico do campo
+          const { error } = getFieldState(field);
+          setErrorMessage(error?.message ?? "Campo obrigatório");
+        }
+      } catch (error) {
+        console.error("Erro na validação:", error);
+        setErrorMessage("Erro na validação do campo");
       }
     },
-    [currentQuestionIndex, getValues]
+    [trigger, getFieldState, setValue, errorMessage]
   );
 
   const clearError = () => {
@@ -175,14 +163,23 @@ const useOnboardingQuestionnaire = () => {
   };
 
   const onSubmitAnswer = useCallback(() => {
-    console.log(getValues());
-    handleSubmit(() => {
-      console.log({
-        ...getValues(),
-        isValid,
-      });
-      router.push("/");
-    })();
+    console.log("Respostas finais:", getValues());
+
+    handleSubmit(
+      (data) => {
+        console.log("Dados validados:", data);
+        console.log("Formulário válido:", isValid);
+
+        // Aqui você pode enviar os dados para a API
+        // await submitAnswers(data);
+
+        router.push("/");
+      },
+      (errors) => {
+        console.error("Erros de validação:", errors);
+        setErrorMessage("Existem erros no formulário");
+      }
+    )();
   }, [getValues, handleSubmit, isValid, router]);
 
   const navigateBack = () => {
@@ -197,6 +194,7 @@ const useOnboardingQuestionnaire = () => {
     question,
     control: control,
     onContinue: () => onContinue(question.id as keyof ICIQAnswers),
+    setValue: setValue,
   }));
 
   return {

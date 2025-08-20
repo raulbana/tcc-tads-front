@@ -29,16 +29,14 @@ const OnboardingQuestionnaire = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={navigateBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors cursor-pointer"
           >
-            <ArrowLeftIcon size={20} />
+            <ArrowLeftIcon size={24} />
             <span className="text-sm">Voltar</span>
           </button>
-          <span className="text-sm text-gray-600">Questionário</span>
         </div>
 
         <div className="space-y-8">
@@ -57,6 +55,7 @@ const OnboardingQuestionnaire = () => {
               question={questionInputs[currentQuestionIndex].question}
               control={questionInputs[currentQuestionIndex].control}
               onContinue={questionInputs[currentQuestionIndex].onContinue}
+              setValue={questionInputs[currentQuestionIndex].setValue}
             />
           )}
         </div>

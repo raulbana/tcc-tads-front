@@ -7,12 +7,14 @@ export interface UseQuestionSectionProps {
   question: Question;
   control: Control<ICIQAnswers>;
   onContinue: (id: keyof ICIQAnswers) => void;
+  setValue: (name: keyof ICIQAnswers, value: any) => void;
 }
 
 export const useQuestionSection = ({
   question,
   control,
   onContinue,
+  setValue,
 }: UseQuestionSectionProps) => {
   const { id, type, min } = question;
 
@@ -70,34 +72,45 @@ export const useQuestionSection = ({
   };
 
   const handleContinue = () => {
-    const form = control._formValues;
-    form[id as keyof ICIQAnswers] = localValue;
+    // Sincronizar com o formulário antes de continuar
+    setValue(id as keyof ICIQAnswers, localValue);
     onContinue(id as keyof ICIQAnswers);
   };
 
   const handleTextChange = (value: string) => {
     setLocalValue(value);
+    // Atualizar o formulário em tempo real
+    setValue(id as keyof ICIQAnswers, value);
   };
 
   const handleDateChange = (val: string) => {
-    setLocalValue(new Date(val).toISOString());
+    const dateValue = new Date(val).toISOString();
+    setLocalValue(dateValue);
+    setValue(id as keyof ICIQAnswers, dateValue);
   };
 
   const handleRadioChange = (value: string) => {
     setLocalValue(value);
+    setValue(id as keyof ICIQAnswers, value);
   };
 
   const handleSliderChange = (value: number) => {
     setLocalValue(value);
+    setValue(id as keyof ICIQAnswers, value);
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentValues = Array.isArray(localValue) ? localValue : [];
+    let newValues: string[];
+
     if (e.target.checked) {
-      setLocalValue([...currentValues, e.target.value]);
+      newValues = [...currentValues, e.target.value];
     } else {
-      setLocalValue(currentValues.filter((v) => v !== e.target.value));
+      newValues = currentValues.filter((v) => v !== e.target.value);
     }
+
+    setLocalValue(newValues);
+    setValue(id as keyof ICIQAnswers, newValues);
   };
 
   const isCheckboxChecked = (optionValue: string) => {

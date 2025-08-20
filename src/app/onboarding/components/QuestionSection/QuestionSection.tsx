@@ -1,24 +1,30 @@
 import React from "react";
-import { Control } from "react-hook-form";
+import { Control, useFormState, useForm } from "react-hook-form";
 import Button from "@/app/components/Button/Button";
 import Input from "@/app/components/Input/Input";
+import Slider from "@/app/components/Slider/Slider";
 import { ICIQAnswers } from "../OnboardingQuestionnaire/schema/questionnaire";
 import { Question } from "@/app/types/question";
 import { useQuestionSection } from "./useQuestionSection";
-import Slider from "@/app/components/Slider/Slider";
 
 export interface QuestionProps {
   question: Question;
   control: Control<ICIQAnswers>;
   onContinue: (id: keyof ICIQAnswers) => void;
+  setValue: (name: keyof ICIQAnswers, value: any) => void;
 }
 
 const QuestionSection: React.FC<QuestionProps> = ({
   question,
   control,
   onContinue,
+  setValue,
 }) => {
   const { text: questionText, type, options, min, max, step } = question;
+
+  // Obter erros do formulário
+  const { errors } = useFormState({ control });
+  const fieldError = errors[question.id as keyof ICIQAnswers];
 
   const {
     localValue,
@@ -30,7 +36,7 @@ const QuestionSection: React.FC<QuestionProps> = ({
     handleSliderChange,
     handleCheckboxChange,
     isCheckboxChecked,
-  } = useQuestionSection({ question, control, onContinue });
+  } = useQuestionSection({ question, control, onContinue, setValue });
 
   return (
     <div className="flex flex-col items-center justify-center gap-8 min-h-96">
@@ -44,6 +50,8 @@ const QuestionSection: React.FC<QuestionProps> = ({
             value={localValue as string}
             onChange={handleTextChange}
             placeholder="Digite sua resposta"
+            error={fieldError?.message}
+            required={question.required}
           />
         )}
 
@@ -52,6 +60,8 @@ const QuestionSection: React.FC<QuestionProps> = ({
             type="date"
             value={validDate(localValue)?.toISOString().split("T")[0] || ""}
             onChange={handleDateChange}
+            error={fieldError?.message}
+            required={question.required}
           />
         )}
 
@@ -75,19 +85,29 @@ const QuestionSection: React.FC<QuestionProps> = ({
                 <span className="text-gray-700">{option.label}</span>
               </label>
             ))}
+            {fieldError && (
+              <p className="text-red-500 text-sm mt-2">{fieldError.message}</p>
+            )}
           </div>
         )}
 
         {type === "slider" && (
-          <Slider
-            min={min}
-            max={max}
-            step={step}
-            value={localValue as number}
-            onChange={handleSliderChange}
-            leftLabel="Nada pertinente"
-            rightLabel="Muito pertinente"
-          />
+          <div className="w-full max-w-md mx-auto">
+            <Slider
+              min={min}
+              max={max}
+              step={step}
+              value={localValue as number}
+              onChange={handleSliderChange}
+              leftLabel="Nada pertinente"
+              rightLabel="Muito pertinente"
+            />
+            {fieldError && (
+              <p className="text-red-500 text-sm mt-2 text-center">
+                {fieldError.message}
+              </p>
+            )}
+          </div>
         )}
 
         {type === "checkbox" && (
@@ -110,6 +130,9 @@ const QuestionSection: React.FC<QuestionProps> = ({
                 <span className="text-gray-700">{option.label}</span>
               </label>
             ))}
+            {fieldError && (
+              <p className="text-red-500 text-sm mt-2">{fieldError.message}</p>
+            )}
           </div>
         )}
       </div>
