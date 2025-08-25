@@ -22,7 +22,6 @@ const QuestionSection: React.FC<QuestionProps> = ({
 }) => {
   const { text: questionText, type, options, min, max, step } = question;
 
-  // Obter erros do formulário
   const { errors } = useFormState({ control });
   const fieldError = errors[question.id as keyof ICIQAnswers];
 

@@ -12,7 +12,6 @@ export interface UseQuestionSectionProps {
 
 export const useQuestionSection = ({
   question,
-  control,
   onContinue,
   setValue,
 }: UseQuestionSectionProps) => {
@@ -72,14 +71,12 @@ export const useQuestionSection = ({
   };
 
   const handleContinue = () => {
-    // Sincronizar com o formulário antes de continuar
     setValue(id as keyof ICIQAnswers, localValue);
     onContinue(id as keyof ICIQAnswers);
   };
 
   const handleTextChange = (value: string) => {
     setLocalValue(value);
-    // Atualizar o formulário em tempo real
     setValue(id as keyof ICIQAnswers, value);
   };
 

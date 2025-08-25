@@ -121,14 +121,12 @@ const useOnboardingQuestionnaire = () => {
   const onContinue = useCallback(
     async (field: keyof ICIQAnswers) => {
       try {
-        // Usar trigger para validar o campo específico
         const isFieldValid = await trigger(field);
 
         if (isFieldValid) {
           setCurrentQuestionIndex((prevIndex) => {
             const nextIndex = prevIndex + 1;
             if (nextIndex < mockQuestions.length) {
-              // Limpar o campo da próxima questão para evitar valores residuais
               const nextQuestion = mockQuestions[nextIndex];
               const nextField = nextQuestion.id as keyof ICIQAnswers;
               const defaultValue = getDefaultValueForQuestion(nextQuestion);
@@ -141,12 +139,10 @@ const useOnboardingQuestionnaire = () => {
             }
           });
 
-          // Limpar mensagem de erro se existir
           if (errorMessage) {
             setErrorMessage("");
           }
         } else {
-          // Obter o erro específico do campo
           const { error } = getFieldState(field);
           setErrorMessage(error?.message ?? "Campo obrigatório");
         }
@@ -169,9 +165,6 @@ const useOnboardingQuestionnaire = () => {
       (data) => {
         console.log("Dados validados:", data);
         console.log("Formulário válido:", isValid);
-
-        // Aqui você pode enviar os dados para a API
-        // await submitAnswers(data);
 
         router.push("/");
       },
