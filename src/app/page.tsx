@@ -1,11 +1,10 @@
 "use client";
-import Input from "./components/Input/Input";
+import Navbar from "./components/Navbar/Navbar";
 
 export default function Home() {
   return (
-    <>
-      <Input value={""} label="Teste" onChange={() => {}} />
-      <Input value={""} onChange={() => {}} />
-    </>
+    <Navbar>
+
+    </Navbar>
   );
 }
