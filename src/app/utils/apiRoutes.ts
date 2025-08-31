@@ -1,4 +1,4 @@
-const apiRoutes = {
+export const apiRoutes = {
   authentication: {
     login: "/login",
     register: "/register",

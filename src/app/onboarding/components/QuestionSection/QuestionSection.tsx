@@ -1,5 +1,5 @@
 import React from "react";
-import { Control, useFormState } from "react-hook-form";
+import { Control } from "react-hook-form";
 import Button from "@/app/components/Button/Button";
 import Input from "@/app/components/Input/Input";
 import Slider from "@/app/components/Slider/Slider";
@@ -11,7 +11,10 @@ export interface QuestionProps {
   question: Question;
   control: Control<ICIQAnswers>;
   onContinue: (id: keyof ICIQAnswers) => void;
-  setValue: (name: keyof ICIQAnswers, value: any) => void;
+  setValue: <K extends keyof ICIQAnswers>(
+    name: K,
+    value: ICIQAnswers[K]
+  ) => void;
 }
 
 const QuestionSection: React.FC<QuestionProps> = ({
@@ -21,10 +24,6 @@ const QuestionSection: React.FC<QuestionProps> = ({
   setValue,
 }) => {
   const { text: questionText, type, options, min, max, step } = question;
-
-  // Obter erros do formulário
-  const { errors } = useFormState({ control });
-  const fieldError = errors[question.id as keyof ICIQAnswers];
 
   const {
     localValue,
@@ -36,6 +35,7 @@ const QuestionSection: React.FC<QuestionProps> = ({
     handleSliderChange,
     handleCheckboxChange,
     isCheckboxChecked,
+    fieldError,
   } = useQuestionSection({ question, control, onContinue, setValue });
 
   return (
@@ -69,14 +69,14 @@ const QuestionSection: React.FC<QuestionProps> = ({
           <div className="space-y-3">
             {options?.map((option) => (
               <label
-                key={option.value}
+                key={String(option.value)}
                 className="flex items-center gap-3 cursor-pointer"
               >
                 <input
                   type="radio"
-                  value={option.value}
+                  value={String(option.value)}
                   checked={localValue === option.value}
-                  onChange={() => handleRadioChange(option.value)}
+                  onChange={() => handleRadioChange(String(option.value))}
                   className="w-4 h-4 text-purple-04 border-gray-300 focus:ring-purple-04 focus:ring-2 focus:ring-offset-2"
                   style={{
                     accentColor: "#5F3C6F",
@@ -114,13 +114,13 @@ const QuestionSection: React.FC<QuestionProps> = ({
           <div className="space-y-3">
             {options?.map((option) => (
               <label
-                key={option.value}
+                key={String(option.value)}
                 className="flex items-center gap-3 cursor-pointer"
               >
                 <input
                   type="checkbox"
-                  value={option.value}
-                  checked={isCheckboxChecked(option.value)}
+                  value={String(option.value)}
+                  checked={isCheckboxChecked(String(option.value))}
                   onChange={handleCheckboxChange}
                   className="w-4 h-4 text-purple-04 border-gray-300 rounded focus:ring-purple-04 focus:ring-2 focus:ring-offset-2"
                   style={{

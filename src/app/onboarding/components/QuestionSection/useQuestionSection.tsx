@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Control } from "react-hook-form";
+import { Control, useFormState } from "react-hook-form";
 import { ICIQAnswers } from "../OnboardingQuestionnaire/schema/questionnaire";
 import { Question } from "@/app/types/question";
 
@@ -7,7 +7,10 @@ export interface UseQuestionSectionProps {
   question: Question;
   control: Control<ICIQAnswers>;
   onContinue: (id: keyof ICIQAnswers) => void;
-  setValue: (name: keyof ICIQAnswers, value: any) => void;
+  setValue: <K extends keyof ICIQAnswers>(
+    name: K,
+    value: ICIQAnswers[K]
+  ) => void;
 }
 
 export const useQuestionSection = ({
@@ -72,14 +75,12 @@ export const useQuestionSection = ({
   };
 
   const handleContinue = () => {
-    // Sincronizar com o formulário antes de continuar
     setValue(id as keyof ICIQAnswers, localValue);
     onContinue(id as keyof ICIQAnswers);
   };
 
   const handleTextChange = (value: string) => {
     setLocalValue(value);
-    // Atualizar o formulário em tempo real
     setValue(id as keyof ICIQAnswers, value);
   };
 
@@ -117,6 +118,9 @@ export const useQuestionSection = ({
     return Array.isArray(localValue) && localValue.includes(optionValue);
   };
 
+  const { errors } = useFormState({ control });
+  const fieldError = errors[question.id as keyof ICIQAnswers];
+
   return {
     localValue,
     validDate,
@@ -127,5 +131,6 @@ export const useQuestionSection = ({
     handleSliderChange,
     handleCheckboxChange,
     isCheckboxChecked,
+    fieldError,
   };
 };
