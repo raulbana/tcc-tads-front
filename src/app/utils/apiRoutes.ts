@@ -1,12 +1,11 @@
 const apiRoutes = {
-    authentication: {
-        login: '/login',
-        register: '/register'
+  authentication: {
+    login: "/login",
+    register: "/register",
+  },
+  onboarding: {
+    questions: {
+      onboarding: "/questions/onboard",
     },
-    onboarding: {
-        questions: {
-            onboarding: '/questions/onboard'
-        }
-    }
-
-}   
+  },
+};
