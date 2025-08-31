@@ -1,5 +1,5 @@
 import React from "react";
-import { Control, useFormState, useForm } from "react-hook-form";
+import { Control, useFormState } from "react-hook-form";
 import Button from "@/app/components/Button/Button";
 import Input from "@/app/components/Input/Input";
 import Slider from "@/app/components/Slider/Slider";
