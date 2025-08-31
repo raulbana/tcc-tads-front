@@ -1,7 +1,15 @@
+// input.tsx
 import React from "react";
 import useInput from "./useInput";
 
-export type InputType = "text" | "date" | "time" | "number" | "email" | "password";
+export type InputType =
+  | "text"
+  | "date"
+  | "time"
+  | "number"
+  | "email"
+  | "password"
+  | "textarea";
 
 interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
@@ -38,15 +46,31 @@ const Input: React.FC<InputProps> = ({
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={`${getInputStyle(!!error, disabled)} ${className}`}
-        {...rest}
-      />
+
+      {type === "textarea" ? (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          className={`${getInputStyle(
+            !!error,
+            disabled
+          )} h-32 resize-y overflow-y-auto ${className}`}
+          {...(rest as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+        />
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          className={`${getInputStyle(!!error, disabled)} ${className}`}
+          {...rest}
+        />
+      )}
+
       {error && <span className={getErrorStyle()}>{error}</span>}
     </div>
   );
