@@ -155,7 +155,7 @@ const useOnboardingQuestionnaire = () => {
         setErrorMessage("Erro na validação do campo");
       }
     },
-    [trigger, getFieldState, setValue, errorMessage]
+    [trigger, getFieldState, setValue]
   );
 
   const clearError = () => {
