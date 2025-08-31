@@ -1,21 +1,17 @@
 "use client";
 import React from "react";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
 import useOnboardingQuestionnaire from "./useOnboardingQuestionnaire";
 import ProgressBarStepped from "@/app/components/ProgressBarStepped/ProgressBarStepped";
 import StepLabel from "../StepLabel/StepLabel";
 import QuestionSection from "../QuestionSection/QuestionSection";
 
 const OnboardingQuestionnaire = () => {
-  const router = useRouter();
   const {
     questionInputs,
     currentQuestionIndex,
-    errorMessage,
-    navigateBack,
     isLoading,
-    clearError,
+    navigateBack,
   } = useOnboardingQuestionnaire();
 
   if (isLoading) {
