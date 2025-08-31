@@ -11,7 +11,7 @@ interface ClientNavbarWrapperProps {
 const ClientNavbarWrapper: React.FC<ClientNavbarWrapperProps> = ({ children }) => {
   const pathname = usePathname();
 
-  const shouldRenderNavbar = !pathname.includes("onboarding");
+  const shouldRenderNavbar = !pathname.includes("onboarding") && !pathname.includes("authentication");
 
   return shouldRenderNavbar ? <Navbar>{children}</Navbar> : <>{children}</>;
 };

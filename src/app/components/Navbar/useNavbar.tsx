@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useState, useMemo } from "react";
 
 interface NavItem {
   name: string;
@@ -7,36 +8,79 @@ interface NavItem {
   enabled: boolean;
 }
 
+interface AuthState {
+  isLogged: boolean;
+  username?: string;
+}
+
 const useNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLogged, setIsLogged] = useState(true);
-  
+  const [authState, setAuthState] = useState<AuthState>({
+    isLogged: true,
+    username: "Maria",
+  });
+
+  const router = useRouter();
+  const pathname = usePathname();
+
   const toggle = () => setIsOpen(!isOpen);
 
-  const navItems: NavItem[] = [
+  const authenticatedNavItems: NavItem[] = useMemo(() => [
     { name: "Início", link: "/", enabled: true },
     { name: "Diário", link: "/diary", enabled: true },
     { name: "Exercícios", link: "/exercises", enabled: true },
     { name: "Conteúdos", link: "/contents", enabled: true },
     { name: "Relatórios", link: "/reports", enabled: true },
     { name: "Perfil", link: "/profile", enabled: true },
-  ];
+    { name: "Sobre", link: "/about", enabled: true },
+    { name: "Contato", link: "/contact", enabled: true },
+  ], []);
 
-  const username = "Maria";
+  const publicNavItems: NavItem[] = useMemo(() => [
+    { name: "Sobre", link: "/about", enabled: true },
+    { name: "Contato", link: "/contact", enabled: true },
+  ], []);
+
+  const currentNavItems = useMemo(() => {
+    return authState.isLogged ? authenticatedNavItems : publicNavItems;
+  }, [authState.isLogged, authenticatedNavItems, publicNavItems]);
+
+  const isActiveItem = (link: string): boolean => pathname === link;
+
+  const login = (username?: string) => {
+    setAuthState({
+      isLogged: true,
+      username: username || "Usuário",
+    });
+  };
 
   const logout = () => {
-
-    console.log("Logout realizado");
+    setAuthState({
+      isLogged: false,
+      username: undefined,
+    });
+    setIsOpen(false);
   };
+
+  const closeSidebar = () => setIsOpen(false);
+
+  const goToLogin = () => router.push("/authentication/login");
+  const goToRegister = () => router.push("/authentication/register");
 
   return {
     isOpen,
+    authState,
+    currentNavItems,
+    pathname,
     toggle,
-    navItems,
-    isLogged,
-    username,
+    closeSidebar,
+    login,
     logout,
+    isActiveItem,
+    goToLogin,
+    goToRegister,
   };
 };
 
 export { useNavbar };
+export type { NavItem, AuthState };
