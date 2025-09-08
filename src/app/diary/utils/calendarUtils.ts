@@ -28,13 +28,13 @@ export function buildMonthMatrix(baseDate: Date | Moment): MonthCell[][] {
   const base = moment(baseDate);
   const startOfMonth = base.clone().startOf('month');
   const endOfMonth = base.clone().endOf('month');
-  
+
   const calendarStart = startOfMonth.clone().startOf('week');
   const calendarEnd = endOfMonth.clone().endOf('week');
-  
+
   const weeks: MonthCell[][] = [];
   let current = calendarStart.clone();
-  
+
   while (current.isSameOrBefore(calendarEnd)) {
     const week: MonthCell[] = [];
     for (let i = 0; i < 7; i++) {
@@ -47,6 +47,6 @@ export function buildMonthMatrix(baseDate: Date | Moment): MonthCell[][] {
     }
     weeks.push(week);
   }
-  
+
   return weeks;
 }

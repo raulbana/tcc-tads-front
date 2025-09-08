@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState, useCallback } from "react";
 import moment, { Moment } from "moment";
-import { DayItem, LeakageLevel, CalendarDayData } from "@/app/types/diary";
+import { CalendarDayData, LeakageLevel } from "@/app/types/diary";
 import {
   buildMonthMatrix,
   formatToFirstLetterUppercase,
@@ -22,7 +22,7 @@ export function useCalendar() {
     new Date(to)
   );
 
-  const daysFlat: DayItem[] = useMemo(() => {
+  const daysFlat: CalendarDayData[] = useMemo(() => {
     const backendMap: Record<string, CalendarDayData> = data ?? {};
 
     const selectedMonth = monthRef.month();
@@ -39,15 +39,18 @@ export function useCalendar() {
     return monthDays.map((cell) => {
       const key = cell.date.format("YYYY-MM-DD");
       const dayData = backendMap[key];
-      const level =
-        (dayData?.leakageLevel as LeakageLevel | undefined) ?? undefined;
 
       return {
+        date: cell.date.toDate(),
         dayTitle: formatToFirstLetterUppercase(cell.date.format("ddd")),
         dayNumber: Number(cell.date.format("D")),
-        date: cell.date.toDate(),
         isToday: cell.isToday,
-        level,
+        level: dayData?.leakageLevel,
+        leakageLevel: dayData?.leakageLevel,
+        eventsCount: dayData?.eventsCount,
+        completedExercises: dayData?.completedExercises,
+        notesPreview: dayData?.notesPreview,
+        urinationData: dayData?.urinationData,
       };
     });
   }, [matrix, data, monthRef]);

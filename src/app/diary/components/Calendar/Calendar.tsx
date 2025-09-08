@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import CalendarTile from "../CalendarTile/CalendarTile";
-import { DayItem } from "@/app/types/diary";
+import { CalendarDayData } from "@/app/types/diary";
 import { useCalendar } from "./useCalendar";
 
 const COLUMNS = 6;
@@ -11,7 +11,7 @@ const Calendar: React.FC = () => {
   const { monthLabel, daysFlat, goPrevMonth, goNextMonth, isLoading } = useCalendar();
 
   const rows = useMemo(() => {
-    const out: DayItem[][] = [];
+    const out: CalendarDayData[][] = [];
     for (let i = 0; i < daysFlat.length; i += COLUMNS) {
       out.push(daysFlat.slice(i, i + COLUMNS));
     }
@@ -28,7 +28,7 @@ const Calendar: React.FC = () => {
 
   return (
     <div className="w-full space-y-4">
-      
+
       <div className="flex items-center justify-between">
         <button
           onClick={goPrevMonth}
@@ -37,11 +37,11 @@ const Calendar: React.FC = () => {
         >
           <CaretLeftIcon className="w-5 h-5 text-gray-600" />
         </button>
-        
+
         <h2 className="text-lg font-semibold text-gray-800">
           {monthLabel}
         </h2>
-        
+
         <button
           onClick={goNextMonth}
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -50,7 +50,6 @@ const Calendar: React.FC = () => {
           <CaretRightIcon className="w-5 h-5 text-gray-600" />
         </button>
       </div>
-
 
       <div className="space-y-2">
         {rows.map((row, idx) => (

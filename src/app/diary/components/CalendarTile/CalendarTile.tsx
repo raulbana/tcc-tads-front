@@ -1,9 +1,9 @@
 import React from "react";
-import { DayItem } from "@/app/types/diary";
+import { CalendarDayData } from "@/app/types/diary";
 import { useCalendarTile } from "./useCalendarTile";
 
 export interface CalendarTileProps {
-  dayItem: DayItem;
+  dayItem: CalendarDayData;
   isSelected?: boolean;
   isDisabled?: boolean;
   onPress?: () => void;
@@ -17,7 +17,7 @@ const CalendarTile: React.FC<CalendarTileProps> = ({
   onPress,
   className = "",
 }) => {
-  const { dayTitle, dayNumber, isToday, level } = dayItem;
+  const { dayTitle, dayNumber, isToday, level, urinationData, eventsCount } = dayItem;
   const { getBadgeColor, getBackgroundColor } = useCalendarTile();
 
   return (
@@ -33,23 +33,21 @@ const CalendarTile: React.FC<CalendarTileProps> = ({
       `}
     >
       <span
-        className={`text-xs font-${
-          isToday || isSelected ? "semibold" : "normal"
-        } text-gray-800`}
+        className={`text-xs font-${isToday || isSelected ? "semibold" : "normal"
+          } text-gray-800`}
       >
         {dayTitle}
       </span>
       <span
-        className={`text-lg font-semibold ${
-          isSelected || isToday ? "text-gray-800" : "text-gray-600"
-        }`}
+        className={`text-lg font-semibold ${isSelected || isToday ? "text-gray-800" : "text-gray-600"
+          }`}
       >
         {dayNumber}
       </span>
+
       <div
-        className={`w-full h-1 rounded-full ${
-          isToday ? "bg-green-500" : getBadgeColor(level)
-        }`}
+        className={`w-full h-1 rounded-full ${isToday ? "bg-green-500" : getBadgeColor(level)
+          }`}
       />
     </button>
   );

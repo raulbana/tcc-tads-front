@@ -26,12 +26,12 @@ const ReportCard: React.FC<ReportCardProps> = ({ onGenerateReport }) => {
           Relatório Mensal
         </h3>
       </div>
-      
+
       <p className="text-sm text-gray-600">
-        Gere um Relatório Mensal para acompanhar o seu progresso e/ou poder 
+        Gere um Relatório Mensal para acompanhar o seu progresso e/ou poder
         apresentar a um profissional para avaliação e tratamento.
       </p>
-      
+
       <Button
         type="PRIMARY"
         text={isGenerating ? "Gerando..." : "Gerar Relatório"}

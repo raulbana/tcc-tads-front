@@ -15,11 +15,11 @@ const DiaryPage = () => {
               Acompanhe seus eventos e progresso diário
             </p>
           </div>
-          
+
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <Calendar />
           </div>
-          
+
           <ReportCard />
         </div>
       </div>
