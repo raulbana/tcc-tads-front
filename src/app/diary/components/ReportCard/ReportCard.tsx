@@ -8,15 +8,7 @@ export interface ReportCardProps {
 }
 
 const ReportCard: React.FC<ReportCardProps> = ({ onGenerateReport }) => {
-  const { isGenerating, generateReport } = useReportCard();
-
-  const handleGenerateReport = () => {
-    if (onGenerateReport) {
-      onGenerateReport();
-    } else {
-      generateReport();
-    }
-  };
+  const { isGenerating, handleGenerateReport } = useReportCard(onGenerateReport);
 
   return (
     <div className="w-full p-6 bg-gray-50 rounded-xl space-y-4">

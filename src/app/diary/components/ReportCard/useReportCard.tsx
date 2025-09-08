@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { diaryServices } from "../../services/diaryServices";
 
-export const useReportCard = () => {
+export const useReportCard = (onGenerateReport?: () => void) => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const generateReport = async () => {
@@ -30,8 +30,17 @@ export const useReportCard = () => {
     }
   };
 
+  const handleGenerateReport = () => {
+    if (onGenerateReport) {
+      onGenerateReport();
+    } else {
+      generateReport();
+    }
+  };
+
   return {
     isGenerating,
     generateReport,
+    handleGenerateReport,
   };
 };
