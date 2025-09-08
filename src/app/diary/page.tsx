@@ -4,7 +4,6 @@ import Calendar from "./components/Calendar/Calendar";
 import ReportCard from "./components/ReportCard/ReportCard";
 import DayDetails from "./components/DayDetails/DayDetails";
 import DayDataModal from "./components/DayDataModal/DayDataModal";
-import Navbar from "@/app/components/Navbar/Navbar";
 import { useDiaryPage } from "./components/DayDetails/useDayDetails";
 
 const DiaryPage = () => {
@@ -23,7 +22,6 @@ const DiaryPage = () => {
   } = useDiaryPage();
 
   return (
-    <Navbar>
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
           <div className="text-center">
@@ -59,7 +57,6 @@ const DiaryPage = () => {
           <ReportCard />
         </div>
 
-        {/* Modal para adicionar novo registro */}
         <DayDataModal
           isOpen={isAddModalOpen}
           onClose={handleCloseAddModal}
@@ -68,7 +65,6 @@ const DiaryPage = () => {
           baseDate={selectedDay?.date}
         />
 
-        {/* Modal para editar registro existente */}
         <DayDataModal
           isOpen={isEditModalOpen}
           onClose={handleCloseEditModal}
@@ -78,7 +74,6 @@ const DiaryPage = () => {
           baseDate={selectedDay?.date}
         />
       </div>
-    </Navbar>
   );
 };
 
