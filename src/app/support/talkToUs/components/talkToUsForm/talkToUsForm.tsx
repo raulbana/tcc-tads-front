@@ -20,6 +20,24 @@ const TalkToUsForm = () => {
           htmlFor="subject"
           className="mb-1 block text-sm font-medium text-gray-800"
         >
+          E-mail
+        </label>
+        <Input
+          type="email"
+          {...register("email")}
+          value={watch("email")}
+          onChange={(value: string) => setValue("email", value)}
+          placeholder="Email de contato"
+          required
+          name="subject"
+          error={errors.email?.message}
+        />
+      </div>
+      <div>
+        <label
+          htmlFor="subject"
+          className="mb-1 block text-sm font-medium text-gray-800"
+        >
           Assunto
         </label>
         <Input
