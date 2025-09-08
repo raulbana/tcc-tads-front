@@ -3,11 +3,24 @@ import React from "react";
 import Calendar from "./components/Calendar/Calendar";
 import ReportCard from "./components/ReportCard/ReportCard";
 import DayDetails from "./components/DayDetails/DayDetails";
+import DayDataModal from "./components/DayDataModal/DayDataModal";
 import Navbar from "@/app/components/Navbar/Navbar";
 import { useDiaryPage } from "./components/DayDetails/useDayDetails";
 
 const DiaryPage = () => {
-  const { selectedDay, handleDaySelect, handleAddRecord } = useDiaryPage();
+  const {
+    selectedDay,
+    handleDaySelect,
+    handleAddRecord,
+    handleEditRecord,
+    isAddModalOpen,
+    isEditModalOpen,
+    editingRecord,
+    handleCloseAddModal,
+    handleCloseEditModal,
+    handleSubmitNewRecord,
+    handleSubmitEditRecord,
+  } = useDiaryPage();
 
   return (
     <Navbar>
@@ -33,6 +46,7 @@ const DiaryPage = () => {
                 <DayDetails
                   selectedDay={selectedDay}
                   onAddRecord={handleAddRecord}
+                  onEditRecord={handleEditRecord}
                 />
               ) : (
                 <div className="flex items-center justify-center h-full">
@@ -44,6 +58,25 @@ const DiaryPage = () => {
 
           <ReportCard />
         </div>
+
+        {/* Modal para adicionar novo registro */}
+        <DayDataModal
+          isOpen={isAddModalOpen}
+          onClose={handleCloseAddModal}
+          onSubmit={handleSubmitNewRecord}
+          title="Novo Registro"
+          baseDate={selectedDay?.date}
+        />
+
+        {/* Modal para editar registro existente */}
+        <DayDataModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          onSubmit={handleSubmitEditRecord}
+          title="Editar Registro"
+          selectedValues={editingRecord?.record}
+          baseDate={selectedDay?.date}
+        />
       </div>
     </Navbar>
   );

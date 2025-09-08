@@ -1,13 +1,17 @@
 import React from "react";
 import { CalendarDayData, UrinationData } from "@/app/types/diary";
-import { ClockIcon, DropSimpleIcon, ExclamationMarkIcon } from "@phosphor-icons/react";
+import { ClockIcon, DropSimpleIcon, ExclamationMarkIcon, PencilIcon } from "@phosphor-icons/react";
 import { useDayDetailsContent } from "./useDayDetailsContent";
 
 interface DayDetailsContentProps {
   selectedDay: CalendarDayData;
+  onEditRecord?: (record: UrinationData, index: number) => void;
 }
 
-const DayDetailsContent: React.FC<DayDetailsContentProps> = ({ selectedDay }) => {
+const DayDetailsContent: React.FC<DayDetailsContentProps> = ({ 
+  selectedDay, 
+  onEditRecord 
+}) => {
   const {
     formatDate,
     getAmountLabel,
@@ -55,7 +59,18 @@ const DayDetailsContent: React.FC<DayDetailsContentProps> = ({ selectedDay }) =>
           
           <div className="space-y-3">
             {selectedDay.urinationData.map((record: UrinationData, index: number) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+              <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3 relative">
+                {/* Ícone de edição */}
+                {onEditRecord && (
+                  <button
+                    onClick={() => onEditRecord(record, index)}
+                    className="absolute top-2 right-2 p-1 hover:bg-gray-100 rounded transition-colors"
+                    title="Editar registro"
+                  >
+                    <PencilIcon className="w-4 h-4 text-gray-500 hover:text-purple-600" />
+                  </button>
+                )}
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <ClockIcon className="w-4 h-4 text-gray-500" />
