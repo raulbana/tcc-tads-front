@@ -1,6 +1,6 @@
 import React from "react";
 import { CalendarDayData, UrinationData } from "@/app/types/diary";
-import { ClockIcon, DropSimpleIcon, ExclamationMarkIcon, PencilIcon } from "@phosphor-icons/react";
+import { ClockIcon, DropHalfBottomIcon, DropSimpleIcon, ExclamationMarkIcon, PencilIcon } from "@phosphor-icons/react";
 import { useDayDetailsContent } from "./useDayDetailsContent";
 
 interface DayDetailsContentProps {
@@ -60,14 +60,14 @@ const DayDetailsContent: React.FC<DayDetailsContentProps> = ({
           <div className="space-y-3">
             {selectedDay.urinationData.map((record: UrinationData, index: number) => (
               <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3 relative">
-                {/* Ícone de edição */}
+
                 {onEditRecord && (
                   <button
                     onClick={() => onEditRecord(record, index)}
                     className="absolute top-2 right-2 p-1 hover:bg-gray-100 rounded transition-colors"
                     title="Editar registro"
                   >
-                    <PencilIcon className="w-4 h-4 text-gray-500 hover:text-purple-600" />
+                    <PencilIcon className="w-6 h-6 text-gray-500 hover:text-purple-600" />
                   </button>
                 )}
 
@@ -78,16 +78,18 @@ const DayDetailsContent: React.FC<DayDetailsContentProps> = ({
                       {record.time}
                     </span>
                   </div>
-                  
-                  <div className="text-sm text-gray-600">
-                    <span className="font-medium">Volume:</span> {getAmountLabel(record.amount)}
-                  </div>
                 </div>
 
                 <div className="flex gap-4">
+
+                  <div className="flex items-center gap-1">
+                    <DropHalfBottomIcon className="w-4 h-4" /> 
+                    <span className="text-sm">Volume: {getAmountLabel(record.amount)}</span>
+                  </div>
+
                   {record.leakage && (
                     <div className="flex items-center gap-1">
-                      <DropSimpleIcon className="w-4 h-4 text-orange-500 " />
+                      <DropSimpleIcon className="w-4 h-4 text-orange-500" />
                       <span className="text-sm text-orange-600">Vazamento</span>
                     </div>
                   )}
