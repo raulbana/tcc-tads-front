@@ -7,7 +7,12 @@ import { useCalendar } from "./useCalendar";
 
 const COLUMNS = 6;
 
-const Calendar: React.FC = () => {
+interface CalendarProps {
+  selectedDay?: CalendarDayData;
+  onDaySelect?: (day: CalendarDayData) => void;
+}
+
+const Calendar: React.FC<CalendarProps> = ({ selectedDay, onDaySelect }) => {
   const { monthLabel, daysFlat, goPrevMonth, goNextMonth, isLoading } = useCalendar();
 
   const rows = useMemo(() => {
@@ -28,7 +33,6 @@ const Calendar: React.FC = () => {
 
   return (
     <div className="w-full space-y-4">
-
       <div className="flex items-center justify-between">
         <button
           onClick={goPrevMonth}
@@ -59,7 +63,11 @@ const Calendar: React.FC = () => {
           >
             {row.map((item, j) => (
               <div key={`${item.date.toISOString()}-${j}`}>
-                <CalendarTile dayItem={item} />
+                <CalendarTile
+                  dayItem={item}
+                  isSelected={selectedDay?.date.toDateString() === item.date.toDateString()}
+                  onPress={() => onDaySelect?.(item)}
+                />
               </div>
             ))}
           </div>

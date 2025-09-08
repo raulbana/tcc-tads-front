@@ -1,4 +1,7 @@
 import moment, { Moment } from 'moment';
+import "moment/locale/pt-br";
+
+moment.locale('pt-br');
 
 export interface MonthCell {
   date: Moment;

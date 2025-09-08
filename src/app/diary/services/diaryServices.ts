@@ -6,11 +6,11 @@ export const diaryServices = {
       // Dia sem vazamento (NONE) - tile verde
       '2025-09-01': {
         date: new Date('2025-09-01'),
-        dayTitle: 'Dom',
+        dayTitle: 'Seg',
         dayNumber: 1,
         leakageLevel: 'NONE',
         level: 'NONE',
-        eventsCount: 4,
+        eventsCount: 3,
         completedExercises: 3,
         notesPreview: 'Excelente dia! Sem episódios',
         urinationData: [
@@ -35,11 +35,11 @@ export const diaryServices = {
         ],
         isToday: false,
       },
-      
+
       // Dia com vazamento baixo (LOW) - tile azul
       '2025-09-02': {
         date: new Date('2025-09-02'),
-        dayTitle: 'Seg',
+        dayTitle: 'Ter',
         dayNumber: 2,
         leakageLevel: 'LOW',
         level: 'LOW',
@@ -63,11 +63,11 @@ export const diaryServices = {
         ],
         isToday: false,
       },
-      
+
       // Dia com vazamento médio (MEDIUM) - tile amarelo
       '2025-09-03': {
         date: new Date('2025-09-03'),
-        dayTitle: 'Ter',
+        dayTitle: 'Qua',
         dayNumber: 3,
         leakageLevel: 'MEDIUM',
         level: 'MEDIUM',
@@ -99,15 +99,15 @@ export const diaryServices = {
         ],
         isToday: false,
       },
-      
+
       // Dia com vazamento alto (HIGH) - tile vermelho
       '2025-09-04': {
         date: new Date('2025-09-04'),
-        dayTitle: 'Qua',
+        dayTitle: 'Qui',
         dayNumber: 4,
         leakageLevel: 'HIGH',
         level: 'HIGH',
-        eventsCount: 8,
+        eventsCount: 4,
         completedExercises: 0,
         notesPreview: 'Dia muito difícil, múltiplos episódios',
         urinationData: [
@@ -143,11 +143,11 @@ export const diaryServices = {
         ],
         isToday: false,
       },
-      
+
       // Dia sem dados (sem level) - tile cinza
       '2025-09-05': {
         date: new Date('2025-09-05'),
-        dayTitle: 'Qui',
+        dayTitle: 'Sex',
         dayNumber: 5,
         eventsCount: 0,
         completedExercises: 0,
@@ -155,16 +155,28 @@ export const diaryServices = {
         urinationData: [],
         isToday: false,
       },
-      
-      // Dia com apenas exercícios, sem micções registradas
+
       '2025-09-06': {
         date: new Date('2025-09-06'),
-        dayTitle: 'Sex',
+        dayTitle: 'Sab',
         dayNumber: 6,
         leakageLevel: 'NONE',
         level: 'NONE',
-        eventsCount: 1,
-        completedExercises: 5,
+        eventsCount: 0,
+        completedExercises: 0,
+        notesPreview: 'Foco nos exercícios',
+        urinationData: [],
+        isToday: false,
+      },
+
+      '2025-09-08': {
+        date: new Date('2025-09-08'),
+        dayTitle: 'Seg',
+        dayNumber: 8,
+        leakageLevel: 'NONE',
+        level: 'NONE',
+        eventsCount: 0,
+        completedExercises: 0,
         notesPreview: 'Foco nos exercícios',
         urinationData: [],
         isToday: false,
