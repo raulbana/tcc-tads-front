@@ -36,7 +36,9 @@ export function buildMonthMatrix(baseDate: Date | Moment): MonthCell[][] {
   const calendarEnd = endOfMonth.clone().endOf('week');
 
   const weeks: MonthCell[][] = [];
-  let current = calendarStart.clone();
+
+  // let current = calendarStart.clone(); <-- pra quando atualizar o dia criando um novo registro
+  const current = calendarStart.clone();
 
   while (current.isSameOrBefore(calendarEnd)) {
     const week: MonthCell[] = [];

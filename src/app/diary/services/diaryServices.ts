@@ -189,9 +189,10 @@ export const diaryServices = {
   },
 
   async generateMonthlyReport(year: number, month: number): Promise<Blob> {
+    
     return new Promise((resolve) => {
       const mockPdfContent = new Blob(['Mock PDF content'], { type: 'application/pdf' });
-      setTimeout(() => resolve(mockPdfContent), 1000);
+      setTimeout(() => resolve(mockPdfContent), 1000 + year + month);
     });
   },
 };

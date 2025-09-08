@@ -1,13 +1,15 @@
 "use client";
 import { useMemo, useState, useCallback } from "react";
 import moment, { Moment } from "moment";
-import { CalendarDayData, LeakageLevel } from "@/app/types/diary";
+import { CalendarDayData } from "@/app/types/diary";
 import {
   buildMonthMatrix,
   formatToFirstLetterUppercase,
   getMonthIsoRange,
 } from "../../utils/calendarUtils";
 import useDiaryQueries from "../../services/diaryQueryFactory";
+
+const COLUMNS = 6;
 
 export function useCalendar() {
   const [monthRef, setMonthRef] = useState<Moment>(moment());
@@ -17,7 +19,7 @@ export function useCalendar() {
   const { from, to } = useMemo(() => getMonthIsoRange(monthRef), [monthRef]);
 
   const diaryQueries = useDiaryQueries(["calendar-range", from, to]);
-  const { data, isLoading, refetch } = diaryQueries.getByRange(
+  const { data, isLoading, refetch } = diaryQueries.useGetByRange(
     new Date(from),
     new Date(to)
   );
@@ -55,6 +57,18 @@ export function useCalendar() {
     });
   }, [matrix, data, monthRef]);
 
+  const formatCalendarRows = (daysFlat: CalendarDayData[]) => {
+    const rows: CalendarDayData[][] = [];
+    for (let i = 0; i < daysFlat.length; i += COLUMNS) {
+      rows.push(daysFlat.slice(i, i + COLUMNS));
+    }
+    return rows;
+  };
+
+  const rows = useMemo(() => {
+    return formatCalendarRows(daysFlat);
+  }, [daysFlat]);
+
   const goPrevMonth = useCallback(
     () => setMonthRef((m) => m.clone().subtract(1, "month")),
     []
@@ -74,10 +88,12 @@ export function useCalendar() {
     monthLabel: formatToFirstLetterUppercase(monthRef.format("MMMM [de] YYYY")),
     matrix,
     daysFlat,
+    rows,
     isLoading,
     refetch,
     goPrevMonth,
     goNextMonth,
     setMonth,
+    formatCalendarRows,
   };
 }

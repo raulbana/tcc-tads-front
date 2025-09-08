@@ -17,7 +17,7 @@ const CalendarTile: React.FC<CalendarTileProps> = ({
   onPress,
   className = "",
 }) => {
-  const { dayTitle, dayNumber, isToday, level, urinationData, eventsCount } = dayItem;
+  const { dayTitle, dayNumber, isToday, level } = dayItem;
   const { getBadgeColor, getBackgroundColor } = useCalendarTile();
 
   return (

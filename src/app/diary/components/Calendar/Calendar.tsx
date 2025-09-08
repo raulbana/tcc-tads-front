@@ -1,31 +1,21 @@
 "use client";
-import React, { useMemo } from "react";
+import React from "react";
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import CalendarTile from "../CalendarTile/CalendarTile";
 import { CalendarDayData } from "@/app/types/diary";
 import { useCalendar } from "./useCalendar";
 
-const COLUMNS = 6;
-
 interface CalendarProps {
   selectedDay?: CalendarDayData;
-  onDaySelect?: (day: CalendarDayData) => void;
+  onDaySelect: (day: CalendarDayData) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({ selectedDay, onDaySelect }) => {
-  const { monthLabel, daysFlat, goPrevMonth, goNextMonth, isLoading } = useCalendar();
-
-  const rows = useMemo(() => {
-    const out: CalendarDayData[][] = [];
-    for (let i = 0; i < daysFlat.length; i += COLUMNS) {
-      out.push(daysFlat.slice(i, i + COLUMNS));
-    }
-    return out;
-  }, [daysFlat]);
+  const { monthLabel, rows, goPrevMonth, goNextMonth, isLoading } = useCalendar();
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="flex items-center justify-center p-8 h-full">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
       </div>
     );
@@ -56,19 +46,15 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDay, onDaySelect }) => {
       </div>
 
       <div className="space-y-2">
-        {rows.map((row, idx) => (
-          <div
-            key={`row-${idx}`}
-            className="grid grid-cols-6 gap-2"
-          >
-            {row.map((item, j) => (
-              <div key={`${item.date.toISOString()}-${j}`}>
-                <CalendarTile
-                  dayItem={item}
-                  isSelected={selectedDay?.date.toDateString() === item.date.toDateString()}
-                  onPress={() => onDaySelect?.(item)}
-                />
-              </div>
+        {rows.map((row, rowIndex) => (
+          <div key={rowIndex} className="grid grid-cols-6 gap-2">
+            {row.map((dayItem) => (
+              <CalendarTile
+                key={dayItem.date.getTime()}
+                dayItem={dayItem}
+                isSelected={selectedDay?.date.getTime() === dayItem.date.getTime()}
+                onPress={() => onDaySelect(dayItem)}
+              />
             ))}
           </div>
         ))}

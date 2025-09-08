@@ -3,7 +3,7 @@ import { diaryServices } from "./diaryServices";
 import { CalendarRangeResponse } from "@/app/types/diary";
 
 const useDiaryQueries = (queryKey: string[]) => {
-  const getByRange = (
+  const useGetByRange = (
     fromDate: Date,
     toDate: Date
   ): UseQueryResult<CalendarRangeResponse, Error> => {
@@ -16,7 +16,7 @@ const useDiaryQueries = (queryKey: string[]) => {
   };
 
   return {
-    getByRange,
+    useGetByRange,
   };
 };
 
