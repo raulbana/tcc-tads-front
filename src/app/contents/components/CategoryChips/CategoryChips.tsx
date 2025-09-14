@@ -31,11 +31,11 @@ const CategoryChips: React.FC<CategoryChipsProps> = ({
             key={category.id}
             onClick={() => handleChipClick(category.id)}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
+              flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors
               ${
                 selectedCategory === category.id
                   ? "bg-purple-04 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-purple-01 text-purple-04 hover:bg-purple-02"
               }
             `}
           >
