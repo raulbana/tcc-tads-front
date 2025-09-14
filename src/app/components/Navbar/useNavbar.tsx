@@ -30,15 +30,13 @@ const useNavbar = () => {
     { name: "Diário", link: "/diary", enabled: true },
     { name: "Exercícios", link: "/exercises", enabled: true },
     { name: "Conteúdos", link: "/contents", enabled: true },
-    { name: "Relatórios", link: "/reports", enabled: true },
-    { name: "Perfil", link: "/profile", enabled: true },
     { name: "Sobre", link: "/about", enabled: true },
-    { name: "Contato", link: "/contact", enabled: true },
+    { name: "Contato", link: "/support/talkToUs", enabled: true },
   ], []);
 
   const publicNavItems: NavItem[] = useMemo(() => [
     { name: "Sobre", link: "/about", enabled: true },
-    { name: "Contato", link: "/contact", enabled: true },
+    { name: "Contato", link: "/support/talkToUs", enabled: true },
   ], []);
 
   const currentNavItems = useMemo(() => {
