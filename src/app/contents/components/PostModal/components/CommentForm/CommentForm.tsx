@@ -20,7 +20,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, placeholder }) => {
   } = useCommentForm({ onSubmit, placeholder });
 
   return (
-    <div className="flex gap-2 p-2 bg-gray-50 rounded-lg">
+    <div className="flex gap-2 p-2 bg-gray-01 rounded-lg">
       <Input
         type="text"
         value={comment}
@@ -36,6 +36,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, placeholder }) => {
         onClick={handleSubmit}
         disabled={isSubmitDisabled}
         size="SMALL"
+        className="flex-0"
       />
     </div>
   );

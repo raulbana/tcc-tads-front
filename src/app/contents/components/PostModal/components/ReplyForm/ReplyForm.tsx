@@ -22,7 +22,7 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ onSubmit, onCancel, placeholder }
 
   return (
     <div className="mt-2 p-3 bg-gray-01 rounded-lg border border-gray-04">
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <Input
           type="text"
           value={reply}
@@ -39,7 +39,7 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ onSubmit, onCancel, placeholder }
             text="Cancelar"
             onClick={onCancel}
             size="SMALL"
-            className="px-3"
+            className="px-3 flex-1"
           />
           <Button
             type="PRIMARY"
@@ -47,7 +47,7 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ onSubmit, onCancel, placeholder }
             onClick={handleSubmit}
             disabled={isSubmitDisabled}
             size="SMALL"
-            className="px-3"
+            className="px-3 flex-1"
           />
         </div>
       </div>

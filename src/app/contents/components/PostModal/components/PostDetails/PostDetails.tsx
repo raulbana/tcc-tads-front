@@ -20,7 +20,6 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
     mediaItems,
     formattedDate,
     hasMedia,
-    hasImages,
     hasTags
   } = usePostDetails(content);
 
@@ -68,24 +67,6 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
 
               {hasTags && (
                 <CategoryBadges tags={content.tags!} />
-              )}
-
-              {hasImages && (
-                <div className="mt-6">
-                  <h3 className="text-sm font-medium text-gray-800 mb-2">Imagens do post</h3>
-                  <div className="flex gap-2 overflow-x-auto pb-2">
-                    {content.images.map((image, index) => (
-                      <div key={index} className="relative w-16 h-16 flex-shrink-0">
-                        <Image
-                          src={image}
-                          alt={`Imagem ${index + 1}`}
-                          fill
-                          className="object-cover rounded-lg"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
               )}
 
               <div className="mt-6 border-t border-gray-200 pt-4">

@@ -2,7 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { Comment } from "@/app/types/content";
-import { HeartIcon, ChatCircleIcon, CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
+import { HeartIcon, ChatCircleIcon } from "@phosphor-icons/react";
 import Button from "@/app/components/Button/Button";
 import ReplyForm from "../ReplyForm/ReplyForm";
 import { useCommentItem } from "./useCommentItem";
@@ -78,11 +78,6 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
               <button {...toggleRepliesButtonProps}>
                 {comment.repliesCount}
                 <ChatCircleIcon className="w-4 h-4" />
-                {isExpanded ? (
-                  <CaretUpIcon className="w-3 h-3" />
-                ) : (
-                  <CaretDownIcon className="w-3 h-3" />
-                )}
               </button>
             )}
 
