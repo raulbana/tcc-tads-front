@@ -10,7 +10,16 @@ interface CommentsSectionProps {
 }
 
 const CommentsSection: React.FC<CommentsSectionProps> = ({ content }) => {
-  const { comments, handleAddComment } = useCommentsSection(content);
+  const { 
+    comments, 
+    expandedReplies,
+    repliesVisibleCount,
+    handleAddComment,
+    handleAddReply,
+    handleToggleLike,
+    handleToggleReplies,
+    handleShowMoreReplies
+  } = useCommentsSection(content);
 
   return (
     <div className="space-y-4">
@@ -20,14 +29,23 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ content }) => {
 
       <CommentForm onSubmit={handleAddComment} />
 
-      <div className="space-y-4 max-h-96 overflow-y-auto">
+      <div className="space-y-4  overflow-y-auto">
         {comments.length === 0 ? (
           <p className="text-gray-500 text-center py-4">
             Nenhum comentário ainda. Seja o primeiro a comentar!
           </p>
         ) : (
           comments.map((comment) => (
-            <CommentItem key={comment.id} comment={comment} />
+            <CommentItem 
+              key={comment.id} 
+              comment={comment}
+              onToggleLike={handleToggleLike}
+              onAddReply={handleAddReply}
+              onToggleReplies={handleToggleReplies}
+              onShowMoreReplies={handleShowMoreReplies}
+              isExpanded={expandedReplies.has(comment.id)}
+              visibleRepliesCount={repliesVisibleCount[comment.id] || 5}
+            />
           ))
         )}
       </div>

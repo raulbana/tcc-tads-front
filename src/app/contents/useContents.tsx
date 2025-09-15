@@ -44,8 +44,54 @@ const mockContents: Content[] = [
         updatedAt: new Date(Date.now() - 1000 * 60 * 30),
         likesCount: 3,
         isLikedByCurrentUser: false,
-        repliesCount: 0,
-        replies: []
+        repliesCount: 3,
+        replies: [
+          {
+            id: "1-1",
+            contentId: "1",
+            userId: "user3",
+            text: "Concordo totalmente! Muito útil mesmo.",
+            authorId: "user3",
+            authorName: "João Santos",
+            authorImage: "https://ui-avatars.com/api/?name=JS&background=AC85BE&color=F5E5FD",
+            createdAt: new Date(Date.now() - 1000 * 60 * 25),
+            updatedAt: new Date(Date.now() - 1000 * 60 * 25),
+            likesCount: 1,
+            isLikedByCurrentUser: true,
+            repliesCount: 0,
+            replies: []
+          },
+          {
+            id: "1-2",
+            contentId: "1",
+            userId: "user4",
+            text: "Estava precisando exatamente dessas informações!",
+            authorId: "user4",
+            authorName: "Ana Costa",
+            authorImage: "https://ui-avatars.com/api/?name=AC&background=AC85BE&color=F5E5FD",
+            createdAt: new Date(Date.now() - 1000 * 60 * 20),
+            updatedAt: new Date(Date.now() - 1000 * 60 * 20),
+            likesCount: 2,
+            isLikedByCurrentUser: false,
+            repliesCount: 0,
+            replies: []
+          },
+          {
+            id: "1-3",
+            contentId: "1",
+            userId: "user5",
+            text: "Vou compartilhar com meus amigos também!",
+            authorId: "user5",
+            authorName: "Pedro Lima",
+            authorImage: "https://ui-avatars.com/api/?name=PL&background=5F3C6F&color=F5E5FD",
+            createdAt: new Date(Date.now() - 1000 * 60 * 10),
+            updatedAt: new Date(Date.now() - 1000 * 60 * 10),
+            likesCount: 0,
+            isLikedByCurrentUser: false,
+            repliesCount: 0,
+            replies: []
+          }
+        ]
       },
       {
         id: "2",

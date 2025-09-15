@@ -1,67 +1,172 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Comment } from "@/app/types/content";
 import moment from "moment";
-import { HeartIcon, ChatCircleIcon } from "@phosphor-icons/react";
+import { HeartIcon, ChatCircleIcon, CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
+import Button from "@/app/components/Button/Button";
+import ReplyForm from "../ReplyForm/ReplyForm";
 
 interface CommentItemProps {
   comment: Comment;
+  onToggleLike: (commentId: string, isReply?: boolean, parentId?: string) => void;
+  onAddReply: (parentCommentId: string, text: string) => void;
+  onToggleReplies: (commentId: string) => void;
+  onShowMoreReplies: (commentId: string) => void;
+  isExpanded: boolean;
+  visibleRepliesCount: number;
+  isReply?: boolean;
+  parentId?: string;
 }
 
-const CommentItem: React.FC<CommentItemProps> = ({ comment }) => {
+const CommentItem: React.FC<CommentItemProps> = ({ 
+  comment,
+  onToggleLike,
+  onAddReply,
+  onToggleReplies,
+  onShowMoreReplies,
+  isExpanded,
+  visibleRepliesCount,
+  isReply = false,
+  parentId
+}) => {
+  const [showReplyForm, setShowReplyForm] = useState(false);
+
   const formatDate = (date: Date) => {
     return moment(date).fromNow();
   };
 
+  const handleLike = () => {
+    onToggleLike(comment.id, isReply, parentId);
+  };
+
+  const handleReply = () => {
+    setShowReplyForm(true);
+  };
+
+  const handleSubmitReply = (text: string) => {
+    onAddReply(isReply ? parentId! : comment.id, text);
+    setShowReplyForm(false);
+  };
+
+  const handleCancelReply = () => {
+    setShowReplyForm(false);
+  };
+
+  const visibleReplies = comment.replies?.slice(0, visibleRepliesCount) || [];
+  const hasMoreReplies = (comment.replies?.length || 0) > visibleRepliesCount;
+
   return (
-    <div className="flex gap-3 p-3 bg-gray-03 rounded-lg">
-      <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-        <Image
-          src={comment.authorImage}
-          alt={comment.authorName}
-          fill
-          className="object-cover"
-          sizes="32px"
-        />
-      </div>
+    <div className={`${isReply ? 'ml-6 border-l-2 border-gray-03 pl-4' : ''}`}>
+      <div className="flex gap-3 p-3 bg-gray-03 rounded-lg">
+        <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+          <Image
+            src={comment.authorImage}
+            alt={comment.authorName}
+            fill
+            className="object-cover"
+            sizes="32px"
+          />
+        </div>
 
-      <div className="flex-1 space-y-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex-1 space-y-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-gray-08 text-sm">
+                {comment.authorName}
+              </span>
+              <span className="text-xs text-gray-07">
+                {formatDate(comment.createdAt)}
+              </span>
+            </div>
 
-            <span className="font-medium text-gray-08 text-sm">
-              {comment.authorName}
-            </span>
-            <span className="text-xs text-gray-07">
-              {formatDate(comment.createdAt)}
-            </span>
-
+            <button 
+              onClick={handleLike}
+              className={`flex items-center gap-1 text-xs transition-colors ${
+                comment.isLikedByCurrentUser 
+                  ? 'text-purple-04 hover:text-purple-03' 
+                  : 'text-gray-07 hover:text-purple-03'
+              }`}
+              aria-label={`${comment.isLikedByCurrentUser ? 'Descurtir' : 'Curtir'} comentário`}
+            >
+              {comment.likesCount || 0}
+              <HeartIcon
+                className="w-4 h-4"
+                weight={comment.isLikedByCurrentUser ? "fill" : "regular"}
+              />
+            </button>
           </div>
 
-          <button className={`flex items-center gap-1 text-xs transition-colors ${comment.isLikedByCurrentUser ? 'text-purple-04 hover:text-purple-03' : 'text-gray-07 hover:text-purple-03'}`}>
-            {comment.likesCount}
-            <HeartIcon
-              className="w-4 h-4"
-              weight={comment.isLikedByCurrentUser ? "fill" : "regular"}
+          <p className="text-gray-08 text-sm leading-relaxed">
+            {comment.text}
+          </p>
+
+          <div className="flex items-center gap-4 pt-1">
+            {!isReply && comment.repliesCount! > 0 && (
+              <button 
+                onClick={() => onToggleReplies(comment.id)}
+                className='flex items-center gap-1 text-xs transition-colors text-gray-07 hover:text-purple-03'
+                aria-label={isExpanded ? 'Ocultar respostas' : 'Ver respostas'}
+              >
+                {comment.repliesCount}
+                <ChatCircleIcon className="w-4 h-4" />
+                {isExpanded ? (
+                  <CaretUpIcon className="w-3 h-3" />
+                ) : (
+                  <CaretDownIcon className="w-3 h-3" />
+                )}
+              </button>
+            )}
+
+            <button 
+              onClick={handleReply}
+              className='flex items-center gap-1 text-xs transition-colors text-gray-07 hover:text-purple-03'
+              aria-label="Responder comentário"
+            >
+              Responder
+            </button>
+          </div>
+
+          {showReplyForm && (
+            <ReplyForm
+              onSubmit={handleSubmitReply}
+              onCancel={handleCancelReply}
+              placeholder={`Respondendo a ${comment.authorName}...`}
             />
-          </button>
+          )}
         </div>
-
-        <p className="text-gray-08 text-sm leading-relaxed">
-          {comment.text}
-        </p>
-
-        <div className="gap-4 pt-1">
-          <button className='flex items-center gap-1 text-xs transition-colors text-gray-07 hover:text-purple-03'>
-            {comment.repliesCount}
-            <ChatCircleIcon
-              className="w-4 h-4"
-              />
-          </button>
-        </div>
-
       </div>
+
+      {!isReply && isExpanded && comment.replies && comment.replies.length > 0 && (
+        <div className="mt-3 space-y-3">
+          {visibleReplies.map((reply) => (
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              onToggleLike={onToggleLike}
+              onAddReply={onAddReply}
+              onToggleReplies={onToggleReplies}
+              onShowMoreReplies={onShowMoreReplies}
+              isExpanded={false}
+              visibleRepliesCount={0}
+              isReply={true}
+              parentId={comment.id}
+            />
+          ))}
+
+          {hasMoreReplies && (
+            <div className="ml-6 pl-4">
+              <Button
+                type="SECONDARY"
+                text={`Ver mais ${Math.min(5, (comment.replies?.length || 0) - visibleRepliesCount)} respostas`}
+                onClick={() => onShowMoreReplies(comment.id)}
+                size="SMALL"
+                className="text-xs"
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
