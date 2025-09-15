@@ -37,8 +37,8 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
   } = useCommentItem(props);
 
   return (
-    <div className={`${isReply ? 'ml-6 border-l-2 border-gray-03 pl-4' : ''}`}>
-      <div className="flex gap-3 p-3 bg-gray-03 rounded-lg">
+    <div className={`${isReply ? 'ml-6 border-l-1 border-gray-05 bg-gray-03 pe-3' : 'bg-gray-03'}`}>
+      <div className="flex gap-3 p-3">
         <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
           <Image
             src={comment.authorImage}
@@ -114,7 +114,7 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
           ))}
 
           {hasMoreReplies && (
-            <div className="ml-6 pl-4">
+            <div className="px-4 pb-4">
               <Button
                 type="SECONDARY"
                 text={`Ver mais ${remainingRepliesCount} respostas`}
