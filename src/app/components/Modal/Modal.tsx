@@ -10,9 +10,16 @@ export interface ModalProps {
   onClose: () => void;
   title?: string;
   children: ReactNode;
+  size?: "small" | "medium" | "large" | "full";
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  size = "medium",
+}) => {
   const {
     getContainerStyle,
     getModalStyle,
@@ -26,7 +33,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 
   return createPortal(
     <div className={getContainerStyle()}>
-      <div className={getModalStyle()}>
+      <div className={getModalStyle(size)}>
         <div className={getHeaderStyle()}>
           {title && <h2 className={getTitleStyle()}>{title}</h2>}
           <button onClick={onClose} className={getCloseButtonStyle()}>

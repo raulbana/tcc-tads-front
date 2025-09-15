@@ -2,6 +2,7 @@
 import React from "react";
 import CategoryChips from "./components/CategoryChips/CategoryChips";
 import ContentCarousel from "./components/ContentCarousel/ContentCarousel";
+import PostModal from "./components/PostModal/PostModal";
 import useContents from "./useContents";
 
 
@@ -10,8 +11,11 @@ const ContentsPage = () => {
     categories,
     selectedCategory,
     contentSections,
+    selectedContent,
+    isModalOpen,
     handleCategorySelect,
     handleContentClick,
+    handleCloseModal,
   } = useContents();
 
   return (
@@ -46,6 +50,12 @@ const ContentsPage = () => {
           </div>
         )}
       </div>
+
+      <PostModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        content={selectedContent}
+      />
     </div>
   );
 };
