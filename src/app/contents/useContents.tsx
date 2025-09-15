@@ -15,16 +15,54 @@ const mockContents: Content[] = [
     id: "1",
     title: "Título legal",
     subtitle: "Lorem ipsum dolor sit amet consectetur. Ac nunc lacus",
-    description: "Descrição do conteúdo",
+    description: "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    subcontent: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
     createdAt: new Date(),
     updatedAt: new Date(),
     coverUrl: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=300&fit=crop",
-    images: [],
-    videos: [],
+    images: [
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop"
+    ],
+    videos: [
+      "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
+    ],
     category: "1",
     isFavorite: false,
     authorId: "author1",
-    tags: ["Comunidade"],
+    tags: ["Comunidade", "Saúde", "Bem-estar"],
+    comments: [
+      {
+        id: "1",
+        contentId: "1",
+        userId: "user1",
+        text: "Muito interessante este conteúdo! Obrigada por compartilhar.",
+        authorId: "user1",
+        authorName: "Maria Silva",
+        authorImage: "https://ui-avatars.com/api/?name=Maria+Silva&background=5F3C6F&color=fff",
+        createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 min atrás
+        updatedAt: new Date(Date.now() - 1000 * 60 * 30),
+        likesCount: 3,
+        isLikedByCurrentUser: false,
+        repliesCount: 0,
+        replies: []
+      },
+      {
+        id: "2",
+        contentId: "1",
+        userId: "user2",
+        text: "Concordo completamente! Esse tipo de informação é muito valiosa.",
+        authorId: "user2",
+        authorName: "Ana Costa",
+        authorImage: "https://ui-avatars.com/api/?name=Ana+Costa&background=8B5CF6&color=fff",
+        createdAt: new Date(Date.now() - 1000 * 60 * 15), // 15 min atrás
+        updatedAt: new Date(Date.now() - 1000 * 60 * 15),
+        likesCount: 1,
+        isLikedByCurrentUser: true,
+        repliesCount: 0,
+        replies: []
+      }
+    ]
   },
   {
     id: "2",
@@ -71,7 +109,6 @@ const mockContents: Content[] = [
     authorId: "author1",
     tags: ["Lorem"],
   },
-  // Add more mock contents for different sections
   {
     id: "5",
     title: "Título legal",
@@ -106,6 +143,8 @@ const mockContents: Content[] = [
 
 const useContents = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedContent, setSelectedContent] = useState<Content | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredContents = useMemo(() => {
     if (!selectedCategory) return mockContents;
@@ -128,16 +167,24 @@ const useContents = () => {
   };
 
   const handleContentClick = (content: Content) => {
-    console.log("Content clicked:", content);
-    // TODO: Navigate to content detail page
+    setSelectedContent(content);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedContent(null);
   };
 
   return {
     categories: mockCategories,
     selectedCategory,
     contentSections,
+    selectedContent,
+    isModalOpen,
     handleCategorySelect,
     handleContentClick,
+    handleCloseModal,
   };
 };
 
