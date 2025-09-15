@@ -1,3 +1,4 @@
+import { useMemo, useCallback } from "react";
 import moment from "moment";
 import { Content } from "@/app/types/content";
 
@@ -7,12 +8,12 @@ export interface MediaItem {
   alt?: string;
 }
 
-export const usePostDetails = () => {
-  const formatDate = (date: Date) => {
+export const usePostDetails = (content: Content) => {
+  const formatDate = useCallback((date: Date) => {
     return moment(date).format("DD [de] MMMM [de] YYYY");
-  };
+  }, []);
 
-  const getAllMedia = (content: Content): MediaItem[] => {
+  const getAllMedia = useCallback((content: Content): MediaItem[] => {
     const media: MediaItem[] = [];
     
     if (content.coverUrl) {
@@ -40,10 +41,21 @@ export const usePostDetails = () => {
     });
 
     return media;
-  };
+  }, []);
+
+  const mediaItems = useMemo(() => getAllMedia(content), [content, getAllMedia]);
+  const formattedDate = useMemo(() => formatDate(content.createdAt), [content.createdAt, formatDate]);
+  const hasMedia = useMemo(() => mediaItems.length > 0, [mediaItems]);
+  const hasImages = useMemo(() => content.images.length > 0, [content.images]);
+  const hasTags = useMemo(() => content.tags && content.tags.length > 0, [content.tags]);
 
   return {
     formatDate,
-    getAllMedia
+    getAllMedia,
+    mediaItems,
+    formattedDate,
+    hasMedia,
+    hasImages,
+    hasTags
   };
 };

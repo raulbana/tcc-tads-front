@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Button from "@/app/components/Button/Button";
 import Input from "@/app/components/Input/Input";
+import { useReplyForm } from "./useReplyForm";
 
 interface ReplyFormProps {
   onSubmit: (text: string) => void;
@@ -9,29 +10,15 @@ interface ReplyFormProps {
   placeholder?: string;
 }
 
-const ReplyForm: React.FC<ReplyFormProps> = ({ 
-  onSubmit, 
-  onCancel, 
-  placeholder = "Escreva uma resposta..." 
-}) => {
-  const [reply, setReply] = useState("");
-
-  const handleSubmit = () => {
-    if (reply.trim()) {
-      onSubmit(reply.trim());
-      setReply("");
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-    if (e.key === 'Escape') {
-      onCancel();
-    }
-  };
+const ReplyForm: React.FC<ReplyFormProps> = ({ onSubmit, onCancel, placeholder }) => {
+  const {
+    reply,
+    setReply,
+    handleSubmit,
+    handleKeyPress,
+    isSubmitDisabled,
+    placeholder: formPlaceholder
+  } = useReplyForm({ onSubmit, onCancel, placeholder });
 
   return (
     <div className="mt-2 p-3 bg-gray-01 rounded-lg border border-gray-04">
@@ -40,7 +27,7 @@ const ReplyForm: React.FC<ReplyFormProps> = ({
           type="text"
           value={reply}
           onChange={setReply}
-          placeholder={placeholder}
+          placeholder={formPlaceholder}
           className="flex-1"
           onKeyDown={handleKeyPress}
           autoFocus
@@ -58,7 +45,7 @@ const ReplyForm: React.FC<ReplyFormProps> = ({
             type="PRIMARY"
             text="Responder"
             onClick={handleSubmit}
-            disabled={!reply.trim()}
+            disabled={isSubmitDisabled}
             size="SMALL"
             className="px-3"
           />

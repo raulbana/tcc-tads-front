@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { Comment } from "@/app/types/content";
-import moment from "moment";
 import { HeartIcon, ChatCircleIcon, CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
 import Button from "@/app/components/Button/Button";
 import ReplyForm from "../ReplyForm/ReplyForm";
+import { useCommentItem } from "./useCommentItem";
 
 interface CommentItemProps {
   comment: Comment;
@@ -19,42 +19,22 @@ interface CommentItemProps {
   parentId?: string;
 }
 
-const CommentItem: React.FC<CommentItemProps> = ({ 
-  comment,
-  onToggleLike,
-  onAddReply,
-  onToggleReplies,
-  onShowMoreReplies,
-  isExpanded,
-  visibleRepliesCount,
-  isReply = false,
-  parentId
-}) => {
-  const [showReplyForm, setShowReplyForm] = useState(false);
-
-  const formatDate = (date: Date) => {
-    return moment(date).fromNow();
-  };
-
-  const handleLike = () => {
-    onToggleLike(comment.id, isReply, parentId);
-  };
-
-  const handleReply = () => {
-    setShowReplyForm(true);
-  };
-
-  const handleSubmitReply = (text: string) => {
-    onAddReply(isReply ? parentId! : comment.id, text);
-    setShowReplyForm(false);
-  };
-
-  const handleCancelReply = () => {
-    setShowReplyForm(false);
-  };
-
-  const visibleReplies = comment.replies?.slice(0, visibleRepliesCount) || [];
-  const hasMoreReplies = (comment.replies?.length || 0) > visibleRepliesCount;
+const CommentItem: React.FC<CommentItemProps> = (props) => {
+  const { comment, isReply = false, isExpanded } = props;
+  
+  const {
+    showReplyForm,
+    formattedDate,
+    visibleReplies,
+    hasMoreReplies,
+    remainingRepliesCount,
+    likeButtonProps,
+    replyButtonProps,
+    toggleRepliesButtonProps,
+    handleSubmitReply,
+    handleCancelReply,
+    handleShowMoreRepliesClick
+  } = useCommentItem(props);
 
   return (
     <div className={`${isReply ? 'ml-6 border-l-2 border-gray-03 pl-4' : ''}`}>
@@ -76,19 +56,11 @@ const CommentItem: React.FC<CommentItemProps> = ({
                 {comment.authorName}
               </span>
               <span className="text-xs text-gray-07">
-                {formatDate(comment.createdAt)}
+                {formattedDate}
               </span>
             </div>
 
-            <button 
-              onClick={handleLike}
-              className={`flex items-center gap-1 text-xs transition-colors ${
-                comment.isLikedByCurrentUser 
-                  ? 'text-purple-04 hover:text-purple-03' 
-                  : 'text-gray-07 hover:text-purple-03'
-              }`}
-              aria-label={`${comment.isLikedByCurrentUser ? 'Descurtir' : 'Curtir'} comentário`}
-            >
+            <button {...likeButtonProps}>
               {comment.likesCount || 0}
               <HeartIcon
                 className="w-4 h-4"
@@ -103,11 +75,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
           <div className="flex items-center gap-4 pt-1">
             {!isReply && comment.repliesCount! > 0 && (
-              <button 
-                onClick={() => onToggleReplies(comment.id)}
-                className='flex items-center gap-1 text-xs transition-colors text-gray-07 hover:text-purple-03'
-                aria-label={isExpanded ? 'Ocultar respostas' : 'Ver respostas'}
-              >
+              <button {...toggleRepliesButtonProps}>
                 {comment.repliesCount}
                 <ChatCircleIcon className="w-4 h-4" />
                 {isExpanded ? (
@@ -118,11 +86,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
               </button>
             )}
 
-            <button 
-              onClick={handleReply}
-              className='flex items-center gap-1 text-xs transition-colors text-gray-07 hover:text-purple-03'
-              aria-label="Responder comentário"
-            >
+            <button {...replyButtonProps}>
               Responder
             </button>
           </div>
@@ -143,10 +107,10 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <CommentItem
               key={reply.id}
               comment={reply}
-              onToggleLike={onToggleLike}
-              onAddReply={onAddReply}
-              onToggleReplies={onToggleReplies}
-              onShowMoreReplies={onShowMoreReplies}
+              onToggleLike={props.onToggleLike}
+              onAddReply={props.onAddReply}
+              onToggleReplies={props.onToggleReplies}
+              onShowMoreReplies={props.onShowMoreReplies}
               isExpanded={false}
               visibleRepliesCount={0}
               isReply={true}
@@ -158,8 +122,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <div className="ml-6 pl-4">
               <Button
                 type="SECONDARY"
-                text={`Ver mais ${Math.min(5, (comment.replies?.length || 0) - visibleRepliesCount)} respostas`}
-                onClick={() => onShowMoreReplies(comment.id)}
+                text={`Ver mais ${remainingRepliesCount} respostas`}
+                onClick={handleShowMoreRepliesClick}
                 size="SMALL"
                 className="text-xs"
               />

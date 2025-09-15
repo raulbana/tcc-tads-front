@@ -16,14 +16,20 @@ interface PostDetailsProps {
 }
 
 const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
-  const { formatDate, getAllMedia } = usePostDetails();
+  const {
+    mediaItems,
+    formattedDate,
+    hasMedia,
+    hasImages,
+    hasTags
+  } = usePostDetails(content);
 
   return (
     <div className="w-full h-full">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
         <div className="relative h-full overflow-hidden">
-          {getAllMedia(content).length > 0 ? (
-            <MediaCarousel media={getAllMedia(content)} />
+          {hasMedia ? (
+            <MediaCarousel media={mediaItems} />
           ) : (
             <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
               <Image
@@ -40,7 +46,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
           <div className="flex-1 overflow-y-auto">
             <PostAuthor
               authorId={content.authorId}
-              createdAt={formatDate(content.createdAt)}
+              createdAt={formattedDate}
             />
 
             <div className="space-y-4 mt-4">
@@ -60,11 +66,11 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
                 </div>
               )}
 
-              {content.tags && content.tags.length > 0 && (
-                <CategoryBadges tags={content.tags} />
+              {hasTags && (
+                <CategoryBadges tags={content.tags!} />
               )}
 
-              {content.images.length > 0 && (
+              {hasImages && (
                 <div className="mt-6">
                   <h3 className="text-sm font-medium text-gray-800 mb-2">Imagens do post</h3>
                   <div className="flex gap-2 overflow-x-auto pb-2">

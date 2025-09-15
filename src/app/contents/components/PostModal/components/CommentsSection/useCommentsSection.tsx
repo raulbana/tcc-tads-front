@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Content, Comment } from "@/app/types/content";
 
 export const useCommentsSection = (content: Content) => {
@@ -6,7 +6,7 @@ export const useCommentsSection = (content: Content) => {
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
   const [repliesVisibleCount, setRepliesVisibleCount] = useState<Record<string, number>>({});
 
-  const handleAddComment = (text: string) => {
+  const handleAddComment = useCallback((text: string) => {
     const newComment: Comment = {
       id: Date.now().toString(),
       contentId: content.id,
@@ -24,9 +24,9 @@ export const useCommentsSection = (content: Content) => {
     };
 
     setComments(prev => [newComment, ...prev]);
-  };
+  }, [content.id]);
 
-  const handleAddReply = (parentCommentId: string, text: string) => {
+  const handleAddReply = useCallback((parentCommentId: string, text: string) => {
     const newReply: Comment = {
       id: Date.now().toString(),
       contentId: content.id,
@@ -57,11 +57,10 @@ export const useCommentsSection = (content: Content) => {
       return comment;
     }));
 
-    // Expand replies when a new one is added
     setExpandedReplies(prev => new Set([...prev, parentCommentId]));
-  };
+  }, [content.id]);
 
-  const handleToggleLike = (commentId: string, isReply = false, parentId?: string) => {
+  const handleToggleLike = useCallback((commentId: string, isReply = false, parentId?: string) => {
     if (isReply && parentId) {
       setComments(prev => prev.map(comment => {
         if (comment.id === parentId) {
@@ -93,33 +92,35 @@ export const useCommentsSection = (content: Content) => {
         return comment;
       }));
     }
-  };
+  }, []);
 
-  const handleToggleReplies = (commentId: string) => {
+  const handleToggleReplies = useCallback((commentId: string) => {
     setExpandedReplies(prev => {
       const newSet = new Set(prev);
       if (newSet.has(commentId)) {
         newSet.delete(commentId);
       } else {
         newSet.add(commentId);
-        // Initialize visible count
         if (!repliesVisibleCount[commentId]) {
           setRepliesVisibleCount(prev => ({ ...prev, [commentId]: 5 }));
         }
       }
       return newSet;
     });
-  };
+  }, [repliesVisibleCount]);
 
-  const handleShowMoreReplies = (commentId: string) => {
+  const handleShowMoreReplies = useCallback((commentId: string) => {
     setRepliesVisibleCount(prev => ({
       ...prev,
       [commentId]: (prev[commentId] || 5) + 5
     }));
-  };
+  }, []);
+
+  const commentsCount = useMemo(() => comments.length, [comments]);
 
   return {
     comments,
+    commentsCount,
     expandedReplies,
     repliesVisibleCount,
     handleAddComment,

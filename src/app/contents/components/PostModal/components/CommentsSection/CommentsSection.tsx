@@ -12,6 +12,7 @@ interface CommentsSectionProps {
 const CommentsSection: React.FC<CommentsSectionProps> = ({ content }) => {
   const { 
     comments, 
+    commentsCount,
     expandedReplies,
     repliesVisibleCount,
     handleAddComment,
@@ -24,13 +25,13 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ content }) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-gray-800">
-        Comentários ({comments.length})
+        Comentários ({commentsCount})
       </h3>
 
       <CommentForm onSubmit={handleAddComment} />
 
-      <div className="space-y-4  overflow-y-auto">
-        {comments.length === 0 ? (
+      <div className="space-y-4 overflow-y-auto">
+        {commentsCount === 0 ? (
           <p className="text-gray-500 text-center py-4">
             Nenhum comentário ainda. Seja o primeiro a comentar!
           </p>

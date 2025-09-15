@@ -1,27 +1,23 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Button from "@/app/components/Button/Button";
 import Input from "@/app/components/Input/Input";
+import { useCommentForm } from "./useCommentForm";
 
 interface CommentFormProps {
   onSubmit: (text: string) => void;
+  placeholder?: string;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ onSubmit }) => {
-  const [comment, setComment] = useState("");
-
-  const handleSubmit = () => {
-    if (comment.trim()) {
-      onSubmit(comment.trim());
-      setComment("");
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSubmit();
-    }
-  };
+const CommentForm: React.FC<CommentFormProps> = ({ onSubmit, placeholder }) => {
+  const {
+    comment,
+    setComment,
+    handleSubmit,
+    handleKeyPress,
+    isSubmitDisabled,
+    placeholder: formPlaceholder
+  } = useCommentForm({ onSubmit, placeholder });
 
   return (
     <div className="flex gap-2 p-2 bg-gray-50 rounded-lg">
@@ -29,7 +25,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit }) => {
         type="text"
         value={comment}
         onChange={setComment}
-        placeholder="Escreva um comentário..."
+        placeholder={formPlaceholder}
         className="flex-1"
         onKeyDown={handleKeyPress}
       />
@@ -38,8 +34,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit }) => {
         type="PRIMARY"
         text="Comentar"
         onClick={handleSubmit}
-        disabled={!comment.trim()}
-        className="px-3 w-min"
+        disabled={isSubmitDisabled}
         size="SMALL"
       />
     </div>

@@ -1,50 +1,34 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { CommentFormData, commentSchema } from "./schema/commentSchema";
+import { useState, useCallback } from "react";
 
 interface UseCommentFormProps {
-  onSubmit: (comment: string) => void;
+  onSubmit: (text: string) => void;
+  placeholder?: string;
 }
 
-const useCommentForm = ({ onSubmit }: UseCommentFormProps) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { isValid, errors },
-    setValue,
-    watch,
-    reset,
-  } = useForm<CommentFormData>({
-    resolver: zodResolver(commentSchema),
-    defaultValues: {
-      comment: "",
-    },
-    mode: "onChange",
-  });
+export const useCommentForm = ({ onSubmit, placeholder = "Escreva um comentário..." }: UseCommentFormProps) => {
+  const [comment, setComment] = useState("");
 
-  const comment = watch("comment");
-
-  const handleFormSubmit = (data: CommentFormData) => {
-    onSubmit(data.comment);
-    reset();
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      handleSubmit(handleFormSubmit)();
+  const handleSubmit = useCallback(() => {
+    if (comment.trim()) {
+      onSubmit(comment.trim());
+      setComment("");
     }
-  };
+  }, [comment, onSubmit]);
+
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  }, [handleSubmit]);
+
+  const isSubmitDisabled = !comment.trim();
 
   return {
-    register,
-    handleSubmit: handleSubmit(handleFormSubmit),
-    errors,
-    setValue,
     comment,
-    isValid: isValid && comment.trim().length > 0,
-    handleKeyDown,
+    setComment,
+    handleSubmit,
+    handleKeyPress,
+    isSubmitDisabled,
+    placeholder
   };
 };
-
-export default useCommentForm;

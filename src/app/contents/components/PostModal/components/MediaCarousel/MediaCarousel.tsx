@@ -1,31 +1,26 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { MediaItem } from "../PostDetails/usePostDetails";
+import { useMediaCarousel } from "./useMediaCarousel";
 
 interface MediaCarouselProps {
   media: MediaItem[];
 }
 
 const MediaCarousel: React.FC<MediaCarouselProps> = ({ media }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const {
+    currentIndex,
+    currentMedia,
+    hasMultipleItems,
+    isEmpty,
+    goToIndex,
+    previousButtonProps,
+    nextButtonProps
+  } = useMediaCarousel({ media });
 
-  const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? media.length - 1 : prevIndex - 1
-    );
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === media.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
-  if (media.length === 0) return null;
-
-  const currentMedia = media[currentIndex];
+  if (isEmpty) return null;
 
   return (
     <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
@@ -45,21 +40,13 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ media }) => {
         />
       )}
 
-      {media.length > 1 && (
+      {hasMultipleItems && (
         <>
-          <button
-            onClick={goToPrevious}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
-            aria-label="Mídia anterior"
-          >
+          <button {...previousButtonProps}>
             <CaretLeftIcon className="w-5 h-5" />
           </button>
 
-          <button
-            onClick={goToNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
-            aria-label="Próxima mídia"
-          >
+          <button {...nextButtonProps}>
             <CaretRightIcon className="w-5 h-5" />
           </button>
 
@@ -67,7 +54,7 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ media }) => {
             {media.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentIndex(index)}
+                onClick={() => goToIndex(index)}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   index === currentIndex ? 'bg-white' : 'bg-white/50'
                 }`}
@@ -78,7 +65,7 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ media }) => {
         </>
       )}
 
-      {media.length > 1 && (
+      {hasMultipleItems && (
         <div className="absolute top-4 right-4 bg-black/50 text-white px-2 py-1 rounded text-sm">
           {currentIndex + 1} / {media.length}
         </div>
