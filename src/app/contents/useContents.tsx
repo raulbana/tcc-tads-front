@@ -25,7 +25,7 @@ const mockContents: Content[] = [
       "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop"
     ],
     videos: [
-      "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
+      "https://file-examples.com/storage/fe5d50900268c77939263c8/2017/04/file_example_MP4_480_1_5MG.mp4"
     ],
     category: "1",
     isFavorite: false,
@@ -39,7 +39,7 @@ const mockContents: Content[] = [
         text: "Muito interessante este conteúdo! Obrigada por compartilhar.",
         authorId: "user1",
         authorName: "Maria Silva",
-        authorImage: "https://ui-avatars.com/api/?name=Maria+Silva&background=5F3C6F&color=fff",
+        authorImage: "https://ui-avatars.com/api/?name=MS&background=5F3C6F&color=F5E5FD",
         createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 min atrás
         updatedAt: new Date(Date.now() - 1000 * 60 * 30),
         likesCount: 3,
@@ -54,7 +54,7 @@ const mockContents: Content[] = [
         text: "Concordo completamente! Esse tipo de informação é muito valiosa.",
         authorId: "user2",
         authorName: "Ana Costa",
-        authorImage: "https://ui-avatars.com/api/?name=Ana+Costa&background=8B5CF6&color=fff",
+        authorImage: "https://ui-avatars.com/api/?name=Ana+Costa&background=AC85BE&color=F5E5FD",
         createdAt: new Date(Date.now() - 1000 * 60 * 15), // 15 min atrás
         updatedAt: new Date(Date.now() - 1000 * 60 * 15),
         likesCount: 1,

@@ -12,7 +12,7 @@ export const useCommentsSection = (content: Content) => {
       text,
       authorId: "current-user",
       authorName: "Usuário Atual",
-      authorImage: "https://ui-avatars.com/api/?name=Usuario+Atual&background=5F3C6F&color=fff",
+      authorImage: "https://ui-avatars.com/api/?name=UA&background=F5E5FD&color=5F3C6F",
       createdAt: new Date(),
       updatedAt: new Date(),
       likesCount: 0,

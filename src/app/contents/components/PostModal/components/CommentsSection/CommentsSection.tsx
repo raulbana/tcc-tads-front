@@ -18,10 +18,8 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ content }) => {
         Comentários ({comments.length})
       </h3>
 
-      {/* Formulário para novo comentário */}
       <CommentForm onSubmit={handleAddComment} />
 
-      {/* Lista de comentários */}
       <div className="space-y-4 max-h-96 overflow-y-auto">
         {comments.length === 0 ? (
           <p className="text-gray-500 text-center py-4">

@@ -24,7 +24,9 @@ const PostModal: React.FC<PostModalProps> = ({
       title=""
       size="large"
     >
-      <PostDetails content={content} />
+      <div className="h-[calc(90vh-120px)] overflow-hidden">
+        <PostDetails content={content} />
+      </div>
     </Modal>
   );
 };

@@ -18,31 +18,30 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit }) => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    if (e.key === 'Enter') {
       handleSubmit();
     }
   };
 
   return (
-    <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+    <div className="flex gap-2 p-2 bg-gray-50 rounded-lg">
       <Input
         type="text"
         value={comment}
         onChange={setComment}
-        placeholder="Escreva um comentário... (Ctrl + Enter para enviar)"
-        className="min-h-20 resize-none"
+        placeholder="Escreva um comentário..."
+        className="flex-1"
         onKeyDown={handleKeyPress}
       />
       
-      <div className="flex justify-end">
-        <Button
-          type="PRIMARY"
-          text="Comentar"
-          onClick={handleSubmit}
-          disabled={!comment.trim()}
-          className="px-6"
-        />
-      </div>
+      <Button
+        type="PRIMARY"
+        text="Comentar"
+        onClick={handleSubmit}
+        disabled={!comment.trim()}
+        className="px-3 w-min"
+        size="SMALL"
+      />
     </div>
   );
 };
