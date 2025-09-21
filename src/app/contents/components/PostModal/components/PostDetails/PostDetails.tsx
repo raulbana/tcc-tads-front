@@ -31,16 +31,16 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
 
               <div className="space-y-4">
 
-                <div className="flex flex-row justify-between items-center mb-2">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-3">
 
-                  <h1 className="text-2xl font-bold text-gray-800">{content.title}</h1>
-                  
-                  <div className="flex-shrink-0 mb-4 me-1">
+                  <div className="flex-shrink-0 order-first sm:order-last">
                     <PostAuthor
                       authorId={content.authorId}
                       createdAt={formattedDate}
                     />
                   </div>
+
+                  <h1 className="text-2xl font-bold text-gray-800 order-last sm:order-first">{content.title}</h1>
 
                 </div>
 

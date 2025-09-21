@@ -55,9 +55,7 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
               <span className="font-medium text-gray-08 text-sm">
                 {comment.authorName}
               </span>
-
               ·
-
               <span className="text-xs text-gray-07">
                 {formattedDate}
               </span>

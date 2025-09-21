@@ -13,8 +13,8 @@ const mockCategories: ContentCategory[] = [
 const mockContents: Content[] = [
   {
     id: "1",
-    title: "Título legal",
-    subtitle: "Lorem ipsum dolor sit amet consectetur. Ac nunc lacus",
+    title: "Título legal do conteudo que é bem cumprido e interessante com um titulo bem grande e mucho longo",
+    subtitle: "Lorem ipsum fdgorj rgogijr groigjrgo grtoigj groigjtr grtigjorg gojirt dolor sit amet consectetur. Ac nunc lacus",
     description: "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
     subcontent: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
     createdAt: new Date(),
@@ -29,7 +29,7 @@ const mockContents: Content[] = [
     ],
     category: "1",
     isFavorite: false,
-    authorId: "author1",
+    authorId: "",
     tags: ["Comunidade", "Saúde", "Bem-estar"],
     comments: [
       {
