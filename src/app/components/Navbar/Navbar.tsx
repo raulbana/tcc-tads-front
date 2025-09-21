@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useNavbar } from "./useNavbar";
 import Button from "@/app/components/Button/Button";
@@ -27,9 +27,9 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
     isActiveItem,
     goToLogin,
     goToRegister,
+    isAccessibilityOpen,
+    setAccessibilityOpen,
   } = useNavbar();
-
-  const [isAccessibilityOpen, setAccessibilityOpen] = useState(false);
 
   const renderDesktopNavItems = () => (
     <div className="hidden md:flex h-full items-center flex-1 justify-center">
