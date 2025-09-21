@@ -13,33 +13,38 @@ interface AuthState {
   username?: string;
 }
 
-const useNavbar = () => {
+export const useNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [authState, setAuthState] = useState<AuthState>({
     isLogged: true,
     username: "Maria",
   });
+  const [isAccessibilityOpen, setAccessibilityOpen] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
 
   const toggle = () => setIsOpen(!isOpen);
 
-  const authenticatedNavItems: NavItem[] = useMemo(() => [
-    { name: "Início", link: "/", enabled: true },
-    { name: "Diário", link: "/diary", enabled: true },
-    { name: "Exercícios", link: "/exercises", enabled: true },
-    { name: "Conteúdos", link: "/contents", enabled: true },
-    { name: "Relatórios", link: "/reports", enabled: true },
-    { name: "Perfil", link: "/profile", enabled: true },
-    { name: "Sobre", link: "/about", enabled: true },
-    { name: "Contato", link: "/contact", enabled: true },
-  ], []);
+  const authenticatedNavItems: NavItem[] = useMemo(
+    () => [
+      { name: "Início", link: "/", enabled: true },
+      { name: "Diário", link: "/diary", enabled: true },
+      { name: "Exercícios", link: "/exercises", enabled: true },
+      { name: "Conteúdos", link: "/contents", enabled: true },
+      { name: "Sobre", link: "/about", enabled: true },
+      { name: "Contato", link: "/support/talkToUs", enabled: true },
+    ],
+    []
+  );
 
-  const publicNavItems: NavItem[] = useMemo(() => [
-    { name: "Sobre", link: "/about", enabled: true },
-    { name: "Contato", link: "/contact", enabled: true },
-  ], []);
+  const publicNavItems: NavItem[] = useMemo(
+    () => [
+      { name: "Sobre", link: "/about", enabled: true },
+      { name: "Contato", link: "/support/talkToUs", enabled: true },
+    ],
+    []
+  );
 
   const currentNavItems = useMemo(() => {
     return authState.isLogged ? authenticatedNavItems : publicNavItems;
@@ -79,8 +84,9 @@ const useNavbar = () => {
     isActiveItem,
     goToLogin,
     goToRegister,
+    isAccessibilityOpen,
+    setAccessibilityOpen,
   };
 };
 
-export { useNavbar };
 export type { NavItem, AuthState };

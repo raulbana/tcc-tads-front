@@ -4,8 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { useNavbar } from "./useNavbar";
 import Button from "@/app/components/Button/Button";
+import AccessibilityModal from "@/app/support/accessibility/components/accessibilityModal/accessibilityModal";
 import NavItem from "./components/NavItem";
 import SidebarToggler from "./components/SidebarToggler";
+import { PersonArmsSpreadIcon } from "@phosphor-icons/react";
+
 import DailyIULogo from "@/app/assets/illustrations/daily-iu-logo.svg";
 
 interface NavbarProps {
@@ -13,6 +16,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ children }) => {
+
   const {
     isOpen,
     authState,
@@ -23,6 +27,8 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
     isActiveItem,
     goToLogin,
     goToRegister,
+    isAccessibilityOpen,
+    setAccessibilityOpen,
   } = useNavbar();
 
   const renderDesktopNavItems = () => (
@@ -160,13 +166,26 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
           </Link>
         </div>
 
+        <div className="flex items-center gap-4">
         {!isOpen && renderDesktopNavItems()}
+
+          <Button
+            className="w-8 h-8"
+            onClick={() => setAccessibilityOpen(true)}
+            size="SMALL"
+            aria-label="Abrir configurações de acessibilidade"
+            icon={<PersonArmsSpreadIcon weight="fill" className="text-white" />}
+            iconPosition="CENTER"
+          />
+        </div>
 
         {!isOpen &&
           (authState.isLogged
             ? renderAuthenticatedUserInfo()
             : renderPublicAuthButtons())}
       </nav>
+
+      <AccessibilityModal isOpen={isAccessibilityOpen} onClose={() => setAccessibilityOpen(false)} />
 
       <div className="relative flex flex-1 overflow-hidden">
         <div
