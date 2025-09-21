@@ -32,14 +32,15 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
             
             <div className="space-y-4">
               <div className="flex flex-col gap-3">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-800 leading-tight">
-                  {content.title}
-                </h1>
-                
                 <PostAuthor
                   authorId={content.authorId}
                   createdAt={formattedDate}
                 />
+                
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800 leading-tight">
+                  {content.title}
+                </h1>
+                
               </div>
 
               <div className="text-gray-700 leading-relaxed text-sm sm:text-base">
@@ -47,7 +48,6 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
               </div>
             </div>
 
-            {/* Mídia */}
             <div className="space-y-4">
               {hasMedia ? (
                 <MediaCarousel media={mediaItems} />

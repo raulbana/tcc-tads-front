@@ -10,7 +10,6 @@ interface PostAuthorProps {
 const PostAuthor: React.FC<PostAuthorProps> = ({ authorId, createdAt }) => {
   // Mock data
   const authorName = `Autor fe ee gefeferferferfefer fefe f  ${authorId}`;
-  const truncatedAuthorName = authorName.length > 20 ? `${authorName.substring(0, 17)}...` : authorName;
   const authorAvatar = `https://ui-avatars.com/api/?name=UA&background=A97EAA&color=FFFFFF`;
 
   return (
@@ -26,7 +25,7 @@ const PostAuthor: React.FC<PostAuthorProps> = ({ authorId, createdAt }) => {
       </div>
 
       <div className="flex flex-col">
-        <span className="font-semibold text-gray-08">{truncatedAuthorName}</span>
+        <span className="font-semibold text-gray-08">{authorName}</span>
         <span className="text-sm text-gray-07">{createdAt}</span>
       </div>
     </div>
