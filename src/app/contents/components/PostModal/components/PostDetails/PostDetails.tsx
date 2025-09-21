@@ -24,65 +24,66 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
   } = usePostDetails(content);
 
   return (
-    <div className="w-full h-full">
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full">
-        <div className="lg:col-span-3 flex flex-col h-full overflow-hidden">
-          <div className="flex-1 overflow-y-auto">
+    <div className="w-full h-full flex flex-col lg:block">
+      <div className="flex flex-col lg:grid lg:grid-cols-5 gap-6 h-full overflow-y-scroll ">
+        
+        <div className="flex-1 lg:col-span-3 lg:overflow-hidden">
+          <div className="h-full lg:overflow-y-auto space-y-6 pb-4 lg:pb-0">
+            
+            <div className="space-y-4">
+              <div className="flex flex-col gap-3">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800 leading-tight">
+                  {content.title}
+                </h1>
+                
+                <PostAuthor
+                  authorId={content.authorId}
+                  createdAt={formattedDate}
+                />
+              </div>
 
-              <div className="space-y-4">
+              <div className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                {content.description}
+              </div>
+            </div>
 
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-3">
-
-                  <div className="flex-shrink-0 order-first sm:order-last">
-                    <PostAuthor
-                      authorId={content.authorId}
-                      createdAt={formattedDate}
-                    />
-                  </div>
-
-                  <h1 className="text-2xl font-bold text-gray-800 order-last sm:order-first">{content.title}</h1>
-
-                </div>
-
-                <div className="text-gray-700 leading-relaxed">
-                  {content.description}
-                </div>
-
+            {/* Mídia */}
             <div className="space-y-4">
               {hasMedia ? (
                 <MediaCarousel media={mediaItems} />
               ) : (
-                <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center relative">
+                <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden relative">
                   <Image
                     src={content.coverUrl}
                     alt={content.title}
                     fill
-                    className="object-cover rounded-lg"
+                    className="object-cover"
                   />
                 </div>
               )}
 
-                {content.subtitle && (
-                  <p className="text-lg text-gray-600">{content.subtitle}</p>
-                )}
+              {content.subtitle && (
+                <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
+                  {content.subtitle}
+                </p>
+              )}
 
-                {content.subcontent && (
-                  <div className="text-gray-700 leading-relaxed">
-                    {content.subcontent}
-                  </div>
-                )}
+              {content.subcontent && (
+                <div className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                  {content.subcontent}
+                </div>
+              )}
 
-                {hasTags && (
-                  <CategoryBadges tags={content.tags!} />
-                )}
-              </div>
+              {hasTags && (
+                <CategoryBadges tags={content.tags!} />
+              )}
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-2 flex flex-col h-full overflow-hidden">
-          <div className="flex-1 overflow-y-auto">
-            <div className="border-gray-200 pt-4">
+        <div className="flex-1 lg:col-span-2 lg:overflow-hidden min-h-0">
+          <div className="h-full lg:overflow-y-auto">
+            <div className="pt-4 lg:pt-0 border-t lg:border-t-0 border-gray-200">
               <CommentsSection content={content} />
             </div>
           </div>
