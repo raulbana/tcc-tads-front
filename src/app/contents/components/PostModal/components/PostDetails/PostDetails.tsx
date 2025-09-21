@@ -25,53 +25,65 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
 
   return (
     <div className="w-full h-full">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-        <div className="relative h-full overflow-hidden">
-          {hasMedia ? (
-            <MediaCarousel media={mediaItems} />
-          ) : (
-            <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
-              <Image
-                src={content.coverUrl}
-                alt={content.title}
-                fill
-                className="object-cover rounded-lg"
-              />
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col h-full overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full">
+        <div className="lg:col-span-3 flex flex-col h-full overflow-hidden">
           <div className="flex-1 overflow-y-auto">
-            <PostAuthor
-              authorId={content.authorId}
-              createdAt={formattedDate}
-            />
 
-            <div className="space-y-4 mt-4">
-              <h1 className="text-2xl font-bold text-gray-800">{content.title}</h1>
-              
-              {content.subtitle && (
-                <p className="text-lg text-gray-600">{content.subtitle}</p>
-              )}
+              <div className="space-y-4">
 
-              <div className="text-gray-700 leading-relaxed">
-                {content.description}
-              </div>
+                <div className="flex flex-row justify-between items-center mb-2">
 
-              {content.subcontent && (
-                <div className="text-gray-700 leading-relaxed mt-4">
-                  {content.subcontent}
+                  <h1 className="text-2xl font-bold text-gray-800">{content.title}</h1>
+                  
+                  <div className="flex-shrink-0 mb-4 me-1">
+                    <PostAuthor
+                      authorId={content.authorId}
+                      createdAt={formattedDate}
+                    />
+                  </div>
+
+                </div>
+
+                <div className="text-gray-700 leading-relaxed">
+                  {content.description}
+                </div>
+
+            <div className="space-y-4">
+              {hasMedia ? (
+                <MediaCarousel media={mediaItems} />
+              ) : (
+                <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center relative">
+                  <Image
+                    src={content.coverUrl}
+                    alt={content.title}
+                    fill
+                    className="object-cover rounded-lg"
+                  />
                 </div>
               )}
 
-              {hasTags && (
-                <CategoryBadges tags={content.tags!} />
-              )}
+                {content.subtitle && (
+                  <p className="text-lg text-gray-600">{content.subtitle}</p>
+                )}
 
-              <div className="mt-6 border-t border-gray-200 pt-4">
-                <CommentsSection content={content} />
+                {content.subcontent && (
+                  <div className="text-gray-700 leading-relaxed">
+                    {content.subcontent}
+                  </div>
+                )}
+
+                {hasTags && (
+                  <CategoryBadges tags={content.tags!} />
+                )}
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-2 flex flex-col h-full overflow-hidden">
+          <div className="flex-1 overflow-y-auto">
+            <div className="border-gray-200 pt-4">
+              <CommentsSection content={content} />
             </div>
           </div>
         </div>

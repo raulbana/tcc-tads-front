@@ -27,12 +27,13 @@ const Modal: React.FC<ModalProps> = ({
     getTitleStyle,
     getCloseButtonStyle,
     getBodyStyle,
-  } = useModal();
+    handleBackdropClick,
+  } = useModal(onClose);
 
   if (!isOpen) return null;
 
   return createPortal(
-    <div className={getContainerStyle()}>
+    <div className={getContainerStyle()} onClick={handleBackdropClick}>
       <div className={getModalStyle(size)}>
         <div className={getHeaderStyle()}>
           {title && <h2 className={getTitleStyle()}>{title}</h2>}

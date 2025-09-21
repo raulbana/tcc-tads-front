@@ -1,4 +1,6 @@
-const useModal = () => {
+import React from "react";
+
+const useModal = (onClose?: () => void) => {
   const getContainerStyle = () =>
     "fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4";
 
@@ -27,6 +29,12 @@ const useModal = () => {
 
   const getBodyStyle = () => "mt-4 text-sm text-gray-08 overflow-y-auto max-h-[calc(90vh-120px)]";
 
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
   return {
     getContainerStyle,
     getModalStyle,
@@ -34,6 +42,7 @@ const useModal = () => {
     getTitleStyle,
     getCloseButtonStyle,
     getBodyStyle,
+    handleBackdropClick,
   };
 };
 

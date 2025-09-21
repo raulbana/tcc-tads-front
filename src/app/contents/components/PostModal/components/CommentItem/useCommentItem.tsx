@@ -56,33 +56,32 @@ export const useCommentItem = ({
     onShowMoreReplies(comment.id);
   }, [comment.id, onShowMoreReplies]);
 
-  const visibleReplies = useMemo(() => 
-    comment.replies?.slice(0, visibleRepliesCount) || [], 
+  const visibleReplies = useMemo(() =>
+    comment.replies?.slice(0, visibleRepliesCount) || [],
     [comment.replies, visibleRepliesCount]
   );
 
-  const hasMoreReplies = useMemo(() => 
-    (comment.replies?.length || 0) > visibleRepliesCount, 
+  const hasMoreReplies = useMemo(() =>
+    (comment.replies?.length || 0) > visibleRepliesCount,
     [comment.replies, visibleRepliesCount]
   );
 
-  const formattedDate = useMemo(() => 
-    formatDate(comment.createdAt), 
+  const formattedDate = useMemo(() =>
+    formatDate(comment.createdAt),
     [comment.createdAt, formatDate]
   );
 
-  const remainingRepliesCount = useMemo(() => 
+  const remainingRepliesCount = useMemo(() =>
     Math.min(5, (comment.replies?.length || 0) - visibleRepliesCount),
     [comment.replies, visibleRepliesCount]
   );
 
   const likeButtonProps = useMemo(() => ({
     onClick: handleLike,
-    className: `flex items-center gap-1 text-xs transition-colors ${
-      comment.isLikedByCurrentUser 
-        ? 'text-purple-04 hover:text-purple-03' 
+    className: `flex items-center gap-1 text-xs transition-colors ${comment.isLikedByCurrentUser
+        ? 'text-purple-04 hover:text-purple-03'
         : 'text-gray-07 hover:text-purple-03'
-    }`,
+      }`,
     'aria-label': `${comment.isLikedByCurrentUser ? 'Descurtir' : 'Curtir'} comentário`
   }), [comment.isLikedByCurrentUser, handleLike]);
 

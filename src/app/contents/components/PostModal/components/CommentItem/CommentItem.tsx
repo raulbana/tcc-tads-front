@@ -21,7 +21,7 @@ interface CommentItemProps {
 
 const CommentItem: React.FC<CommentItemProps> = (props) => {
   const { comment, isReply = false, isExpanded } = props;
-  
+
   const {
     showReplyForm,
     formattedDate,
@@ -89,15 +89,19 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
             </button>
           </div>
 
-          {showReplyForm && (
-            <ReplyForm
-              onSubmit={handleSubmitReply}
-              onCancel={handleCancelReply}
-              placeholder={`Respondendo a ${comment.authorName}...`}
-            />
-          )}
         </div>
+
       </div>
+
+      {showReplyForm && (
+        <div className="px-2">
+          <ReplyForm
+            onSubmit={handleSubmitReply}
+            onCancel={handleCancelReply}
+            placeholder={`Respondendo a ${comment.authorName}...`}
+          />
+        </div>
+      )}
 
       {!isReply && isExpanded && comment.replies && comment.replies.length > 0 && (
         <div className="mt-3 space-y-3">
