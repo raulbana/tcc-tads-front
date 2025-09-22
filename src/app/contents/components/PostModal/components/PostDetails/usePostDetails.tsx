@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import moment from "moment";
 import { Content } from "@/app/types/content";
 
@@ -9,6 +9,8 @@ export interface MediaItem {
 }
 
 export const usePostDetails = (content: Content) => {
+  const [localContent, setLocalContent] = useState(content);
+
   const formatDate = useCallback((date: Date) => {
     return moment(date).format("DD [de] MMMM [de] YYYY");
   }, []);
@@ -43,11 +45,37 @@ export const usePostDetails = (content: Content) => {
     return media;
   }, []);
 
-  const mediaItems = useMemo(() => getAllMedia(content), [content, getAllMedia]);
-  const formattedDate = useMemo(() => formatDate(content.createdAt), [content.createdAt, formatDate]);
+  const handleToggleLike = useCallback((contentId: string) => {
+    setLocalContent(prev => {
+      const isCurrentlyLiked = prev.isLiked || false;
+      const currentLikesCount = prev.likesCount || 0;
+      
+      return {
+        ...prev,
+        isLiked: !isCurrentlyLiked,
+        likesCount: isCurrentlyLiked ? currentLikesCount - 1 : currentLikesCount + 1
+      };
+    });
+  }, []);
+
+  const handleToggleRepost = useCallback((contentId: string) => {
+    setLocalContent(prev => {
+      const isCurrentlyReposted = prev.isReposted || false;
+      const currentRepostsCount = prev.repostsCount || 0;
+
+      return {
+        ...prev,
+        isReposted: !isCurrentlyReposted,
+        repostsCount: isCurrentlyReposted ? currentRepostsCount - 1 : currentRepostsCount + 1
+      };
+    });
+  }, []);
+
+  const mediaItems = useMemo(() => getAllMedia(localContent), [localContent, getAllMedia]);
+  const formattedDate = useMemo(() => formatDate(localContent.createdAt), [localContent.createdAt, formatDate]);
   const hasMedia = useMemo(() => mediaItems.length > 0, [mediaItems]);
-  const hasImages = useMemo(() => content.images.length > 0, [content.images]);
-  const hasTags = useMemo(() => content.tags && content.tags.length > 0, [content.tags]);
+  const hasImages = useMemo(() => localContent.images.length > 0, [localContent.images]);
+  const hasTags = useMemo(() => localContent.tags && localContent.tags.length > 0, [localContent.tags]);
 
   return {
     formatDate,
@@ -56,6 +84,9 @@ export const usePostDetails = (content: Content) => {
     formattedDate,
     hasMedia,
     hasImages,
-    hasTags
+    hasTags,
+    handleToggleLike,
+    handleToggleRepost,
+    localContent
   };
 };
