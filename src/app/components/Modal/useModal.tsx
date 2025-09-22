@@ -22,7 +22,7 @@ const useModal = (onClose?: () => void) => {
   const getHeaderStyle = () =>
     "flex justify-between items-center border-b border-gray-03 pb-3";
 
-  const getTitleStyle = () => "text-lg font-semibold";
+  const getTitleStyle = () => "text-lg text-gray-08 font-semibold";
 
   const getCloseButtonStyle = () =>
     "text-gray-08 hover:text-purple-04 text-2xl cursor-pointer transition";

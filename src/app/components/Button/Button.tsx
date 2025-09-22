@@ -12,7 +12,7 @@ export interface ButtonProps {
   disabled?: boolean;
   text?: string | React.ReactNode;
   icon?: React.ReactNode;
-  iconPosition?: "LEFT" | "RIGHT";
+  iconPosition?: "LEFT" | "RIGHT" | "CENTER";
   className?: string;
 }
 
@@ -25,7 +25,6 @@ const Button: React.FC<ButtonProps> = ({
   icon,
   iconPosition,
   className = "",
-  buttonType = "button",
 }) => {
   const { getButtonColor, getButtonSize } = useButton();
 
@@ -42,7 +41,11 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
     >
       {icon && iconPosition === "LEFT" && <span className="mr-2">{icon}</span>}
-      {text}
+      {iconPosition === "CENTER" && icon ? (
+        <span className="flex justify-center">{icon}</span>
+      ) : (
+        text
+      )}
       {icon && iconPosition === "RIGHT" && <span className="ml-2">{icon}</span>}
     </button>
   );
