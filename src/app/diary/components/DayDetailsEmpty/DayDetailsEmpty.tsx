@@ -1,6 +1,6 @@
 import React from "react";
 import { CalendarDayData } from "@/app/types/diary";
-import OnboardingIllustration from "@/app/assets/illustrations/onboarding_illustration.svg";
+import RegisterSheets from "@/app/assets/illustrations/register_sheets.svg";
 import moment from "moment";
 
 interface DayDetailsEmptyProps {
@@ -14,7 +14,7 @@ const DayDetailsEmpty: React.FC<DayDetailsEmptyProps> = ({ selectedDay }) => {
 
   return (
     <div className="flex flex-col items-center justify-center h-full space-y-6 text-center py-8">
-      <OnboardingIllustration />
+      <RegisterSheets />
 
       <div className="space-y-2">
         <h2 className="text-xl font-semibold text-gray-800">
