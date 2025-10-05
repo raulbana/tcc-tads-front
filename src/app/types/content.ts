@@ -20,7 +20,7 @@ export interface Comment {
   text: string;
   authorId: string;
   authorName: string;
-  authorImage:string;
+  authorImage: string;
   createdAt: Date;
   updatedAt: Date;
   likesCount?: number;
