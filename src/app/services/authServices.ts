@@ -1,5 +1,5 @@
 import { loginRequest, loginResponse, registerRequest, registerResponse } from '@/app/types/auth';
-import { apiRoutes } from '@/app/utils/apiRoutes';
+import apiRoutes from "@/app/utils/apiRoutes"
 import apiFactory from './apiFactory';
 import { API_BASE_URL } from '@/app/config/env';
 

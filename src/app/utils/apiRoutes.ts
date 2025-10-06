@@ -16,5 +16,4 @@ const apiRoutes = {
     byId: (contentId: string) => `/contents/${contentId}`,
   },
 };
-
 export default apiRoutes;
