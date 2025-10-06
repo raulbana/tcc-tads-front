@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "./providers/ReactQueryProvider/ReactQueryProvider";
 import ClientNavbarWrapper from "./components/Navbar/components/ClientNavbarWrapper";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,11 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryProvider>
-      <html lang="en">
-        <body className={`${inter.variable} antialiased`}>
-          <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
-        </body>
-      </html>
+      <AuthProvider>
+        <html lang="en">
+          <body className={`${inter.variable} antialiased`}>
+            <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
+          </body>
+        </html>
+      </AuthProvider>
     </ReactQueryProvider>
   );
 }
