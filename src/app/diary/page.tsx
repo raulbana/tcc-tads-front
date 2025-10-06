@@ -37,6 +37,7 @@ const DiaryPage = () => {
                 selectedDay={selectedDay || undefined}
                 onDaySelect={handleDaySelect}
               />
+              <ReportCard />
             </div>
 
             <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -53,8 +54,6 @@ const DiaryPage = () => {
               )}
             </div>
           </div>
-
-          <ReportCard />
         </div>
 
         <DayDataModal
