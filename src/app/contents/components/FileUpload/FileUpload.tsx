@@ -61,7 +61,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
   const removeFile = useCallback((fileName: string) => {
     const isVideo = video?.name === fileName;
-    
+
     if (isVideo) {
       onFilesChange(images, undefined);
       if (previews[fileName] && previews[fileName].startsWith('blob:')) {
@@ -85,13 +85,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
     <div className="space-y-4">
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-          isDragActive
-            ? 'border-purple-04 bg-purple-01'
-            : error
+        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive
+          ? 'border-purple-04 bg-purple-01'
+          : error
             ? 'border-red-500 bg-red-50'
             : 'border-gray-300 bg-gray-50 hover:border-purple-04'
-        }`}
+          }`}
       >
         <input {...getInputProps()} />
         <CloudArrowUpIcon className="w-12 h-12 mx-auto mb-4 text-purple-04" />
@@ -110,31 +109,31 @@ const FileUpload: React.FC<FileUploadProps> = ({
       )}
 
       {hasFiles && (
-        <div className="space-y-3">
+        <div className="space-y-3 flex flex-col">
           {images.map((file) => (
             <div key={file.name} className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg">
-                <Image
-                  src={previews[file.name]}
-                  alt={file.name}
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 object-cover rounded"
-                  style={{ objectFit: 'cover', borderRadius: '0.5rem' }}
-                />
+              <Image
+                src={previews[file.name]}
+                alt={file.name}
+                width={48}
+                height={48}
+                className="w-12 h-12 object-cover rounded"
+                style={{ objectFit: 'cover', borderRadius: '0.5rem' }}
+              />
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
                 <p className="text-xs text-gray-500">
                   {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
-              <Button
-                type="SECONDARY"
-                size="SMALL"
-                onClick={() => removeFile(file.name)}
-                className="p-2"
-              >
-                <TrashIcon className="w-4 h-4" />
-              </Button>
+              <div>
+                <Button
+                  onClick={() => removeFile(file.name)}
+                  icon={<TrashIcon className="w-4 h-4" />}
+                  iconPosition="CENTER"
+                  aria-label="Remover arquivo"
+                />
+              </div>
             </div>
           ))}
 
@@ -152,14 +151,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
                   {(video.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
-              <Button
-                type="SECONDARY"
-                size="SMALL"
-                onClick={() => removeFile(video.name)}
-                className="p-2"
-              >
-                <TrashIcon className="w-4 h-4" />
-              </Button>
+              <div>
+                <Button
+                  onClick={() => removeFile(video.name)}
+                  icon={<TrashIcon className="w-4 h-4" />}
+                  iconPosition="CENTER"
+                  aria-label="Remover arquivo"
+                />
+              </div>
             </div>
           )}
 
