@@ -28,7 +28,6 @@ const ContentForm: React.FC<ContentFormProps> = ({
   const {
     control,
     errors,
-    isValid,
     isSubmitting,
     watchedImages,
     watchedVideo,
@@ -90,7 +89,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
               onChange={field.onChange}
               error={errors.description?.message}
               required
-              rows={4}
+
             />
           )}
         />
@@ -110,8 +109,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
             : (mode === 'create' ? 'Publicar Post' : 'Salvar Alterações')
           }
           onClick={handleSubmit}
-          disabled={!isValid || isSubmitting}
-          loading={isSubmitting}
+          disabled={isSubmitting}
           className="flex-1"
         />
         

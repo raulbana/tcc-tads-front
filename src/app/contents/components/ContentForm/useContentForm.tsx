@@ -27,7 +27,7 @@ export const useContentForm = ({
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     setValue,
     watch,
     reset
@@ -38,7 +38,7 @@ export const useContentForm = ({
       description: initialData?.description || '',
       images: [],
       video: undefined,
-      categories: initialData?.category ? [initialData.category] : [],
+      categories: initialData?.category ? [typeof initialData.category === 'string' ? initialData.category : initialData.category.id] : [],
     },
     mode: 'onSubmit',
   });
@@ -82,7 +82,6 @@ export const useContentForm = ({
   return {
     control,
     errors,
-    isValid,
     isSubmitting,
     watchedImages,
     watchedVideo,
