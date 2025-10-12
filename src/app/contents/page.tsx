@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
+import { PlusIcon } from "@phosphor-icons/react";
 import CategoryChips from "./components/CategoryChips/CategoryChips";
 import ContentCarousel from "./components/ContentCarousel/ContentCarousel";
 import PostModal from "./components/PostModal/PostModal";
+import ContentModal from "./components/ContentModal/ContentModal";
+import Button from "../components/Button/Button";
 import useContents from "./useContents";
-
 
 const ContentsPage = () => {
   const {
@@ -16,13 +18,33 @@ const ContentsPage = () => {
     handleCategorySelect,
     handleContentClick,
     handleCloseModal,
+    refreshContents,
   } = useContents();
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const handleCreateSuccess = (contentId: string) => {
+    console.log('Conteúdo criado com sucesso:', contentId);
+    refreshContents?.();
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Conteúdos</h1>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Conteúdos</h1>
+          </div>
+          
+          <Button
+            type="PRIMARY"
+            text="Novo Post"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Novo Post
+          </Button>
         </div>
 
         <CategoryChips
@@ -42,20 +64,19 @@ const ContentsPage = () => {
           ))}
         </div>
 
-        {contentSections.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">
-              Nenhum conteúdo encontrado para esta categoria.
-            </p>
-          </div>
-        )}
-      </div>
+        <PostModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          content={selectedContent}
+        />
 
-      <PostModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        content={selectedContent}
-      />
+        <ContentModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={handleCreateSuccess}
+          mode="create"
+        />
+      </div>
     </div>
   );
 };
