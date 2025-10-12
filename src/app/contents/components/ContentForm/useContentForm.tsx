@@ -36,6 +36,8 @@ export const useContentForm = ({
     defaultValues: {
       title: initialData?.title || '',
       description: initialData?.description || '',
+      subtitle: initialData?.subtitle || '',
+      subcontent: initialData?.subcontent || '',
       images: [],
       video: undefined,
       categories: initialData?.category ? [typeof initialData.category === 'string' ? initialData.category : initialData.category.id] : [],

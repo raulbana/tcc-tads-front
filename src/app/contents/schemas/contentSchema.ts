@@ -7,6 +7,8 @@ const ACCEPTED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/ogg"];
 export const contentSchema = z.object({
   title: z.string().min(1, 'Título é obrigatório'),
   description: z.string().min(1, 'Descrição é obrigatória'),
+  subtitle: z.string().optional(),
+  subcontent: z.string().optional(),
   images: z
     .array(z.instanceof(File))
     .min(1, 'No mínimo 1 imagem é obrigatória')

@@ -1,26 +1,25 @@
 "use client";
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { ContentFormData } from '../contents/schemas/contentSchema';
-import contentServices, { CreateContentRequest, UpdateContentRequest } from '../contents/services/contentServices';
+import contentServices, { CreateContentRequest, UpdateContentRequest } from '@/app/contents/services/contentServices';
+import { ContentFormData } from '@/app/contents/schemas/contentSchema';
 
-interface UploadProgress {
+export interface UploadProgress {
   id: string;
-  type: 'create' | 'update';
+  type: 'create' | 'edit';
   progress: number;
-  status: 'pending' | 'uploading' | 'completed' | 'error';
+  status: 'pending' | 'uploading' | 'success' | 'error';
   error?: string;
-  data?: ContentFormData;
+  data?: Partial<ContentFormData>;
 }
 
 interface UploadContextType {
   uploads: UploadProgress[];
   createContent: (data: ContentFormData) => Promise<string>;
-  updateContent: (id: string, data: Partial<ContentFormData>) => Promise<string>;
-  removeUpload: (uploadId: string) => void;
-  getUploadProgress: (uploadId: string) => UploadProgress | undefined;
+  updateContent: (contentId: string, data: ContentFormData) => Promise<string>;
+  removeUpload: (id: string) => void;
 }
 
-const UploadContext = createContext<UploadContextType | undefined>(undefined);
+const UploadContext = createContext<UploadContextType | null>(null);
 
 export const useUpload = () => {
   const context = useContext(UploadContext);
@@ -30,6 +29,8 @@ export const useUpload = () => {
   return context;
 };
 
+const generateUploadId = () => `upload_${Date.now()}_${Math.random()}`;
+
 interface UploadProviderProps {
   children: ReactNode;
 }
@@ -37,7 +38,9 @@ interface UploadProviderProps {
 export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
   const [uploads, setUploads] = useState<UploadProgress[]>([]);
 
-  const generateUploadId = () => `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const removeUpload = useCallback((id: string) => {
+    setUploads(prev => prev.filter(upload => upload.id !== id));
+  }, []);
 
   const updateUploadProgress = useCallback((id: string, updates: Partial<UploadProgress>) => {
     setUploads(prev => prev.map(upload => 
@@ -64,6 +67,8 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
       const createRequest: CreateContentRequest = {
         title: data.title,
         description: data.description,
+        subtitle: data.subtitle,
+        subcontent: data.subcontent,
         images: data.images,
         video: data.video,
         categories: data.categories,
@@ -73,32 +78,37 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
 
       const result = await contentServices.createContent(createRequest);
 
-      updateUploadProgress(uploadId, { status: 'completed', progress: 100 });
+      updateUploadProgress(uploadId, { 
+        status: 'success', 
+        progress: 100 
+      });
 
-      // Remove upload after 3 seconds
+      // Remove upload após 3 segundos
       setTimeout(() => {
-        setUploads(prev => prev.filter(upload => upload.id !== uploadId));
+        removeUpload(uploadId);
       }, 3000);
 
       return result.id;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       updateUploadProgress(uploadId, { 
         status: 'error', 
-        error: error instanceof Error ? error.message : 'Erro desconhecido' 
+        error: errorMessage,
+        progress: 0 
       });
       throw error;
     }
-  }, [updateUploadProgress]);
+  }, [updateUploadProgress, removeUpload]);
 
-  const updateContent = useCallback(async (id: string, data: Partial<ContentFormData>): Promise<string> => {
+  const updateContent = useCallback(async (contentId: string, data: ContentFormData): Promise<string> => {
     const uploadId = generateUploadId();
     
     const newUpload: UploadProgress = {
       id: uploadId,
-      type: 'update',
+      type: 'edit',
       progress: 0,
       status: 'pending',
-      data: data as ContentFormData
+      data
     };
 
     setUploads(prev => [...prev, newUpload]);
@@ -107,47 +117,51 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
       updateUploadProgress(uploadId, { status: 'uploading', progress: 20 });
 
       const updateRequest: UpdateContentRequest = {
-        id,
-        ...data
+        id: contentId,
+        title: data.title,
+        description: data.description,
+        subtitle: data.subtitle,
+        subcontent: data.subcontent,
+        images: data.images,
+        video: data.video,
+        categories: data.categories,
       };
 
       updateUploadProgress(uploadId, { progress: 50 });
 
       const result = await contentServices.updateContent(updateRequest);
 
-      updateUploadProgress(uploadId, { status: 'completed', progress: 100 });
+      updateUploadProgress(uploadId, { 
+        status: 'success', 
+        progress: 100 
+      });
 
-      // Remove upload after 3 seconds
+      // Remove upload após 3 segundos
       setTimeout(() => {
-        setUploads(prev => prev.filter(upload => upload.id !== uploadId));
+        removeUpload(uploadId);
       }, 3000);
 
       return result.id;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       updateUploadProgress(uploadId, { 
         status: 'error', 
-        error: error instanceof Error ? error.message : 'Erro desconhecido' 
+        error: errorMessage,
+        progress: 0 
       });
       throw error;
     }
-  }, [updateUploadProgress]);
+  }, [updateUploadProgress, removeUpload]);
 
-  const removeUpload = useCallback((uploadId: string) => {
-    setUploads(prev => prev.filter(upload => upload.id !== uploadId));
-  }, []);
-
-  const getUploadProgress = useCallback((uploadId: string) => {
-    return uploads.find(upload => upload.id === uploadId);
-  }, [uploads]);
+  const value: UploadContextType = {
+    uploads,
+    createContent,
+    updateContent,
+    removeUpload,
+  };
 
   return (
-    <UploadContext.Provider value={{
-      uploads,
-      createContent,
-      updateContent,
-      removeUpload,
-      getUploadProgress,
-    }}>
+    <UploadContext.Provider value={value}>
       {children}
     </UploadContext.Provider>
   );

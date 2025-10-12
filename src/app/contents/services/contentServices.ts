@@ -7,6 +7,8 @@ import { Content, ContentCategory } from "@/app/types/content";
 export interface CreateContentRequest {
   title: string;
   description: string;
+  subtitle?: string;
+  subcontent?: string;
   images: File[];
   video?: File;
   categories: string[];
@@ -34,8 +36,8 @@ const contentServices = {
     const mockContent: Content = {
       id: contentId,
       title: "Título do conteúdo",
+      description: "Descrição do conteúdo",
       subtitle: "Subtítulo do conteúdo",
-      description: "Descrição detalhada do conteúdo",
       subcontent: "Conteúdo adicional do post",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -70,6 +72,7 @@ const contentServices = {
         title: "5 Alimentos que Fortalecem o Assoalho Pélvico",
         subtitle: "Descubra como a alimentação pode ajudar",
         description: "Uma alimentação adequada pode contribuir significativamente para a saúde do assoalho pélvico.",
+        subcontent: "Neste artigo, vamos explorar os principais alimentos que podem fortalecer a musculatura pélvica e melhorar sua qualidade de vida.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 horas atrás
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
         coverUrl: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop",
@@ -86,6 +89,7 @@ const contentServices = {
         title: "Exercícios de Kegel: Guia Completo",
         subtitle: "Aprenda a técnica correta",
         description: "Os exercícios de Kegel são fundamentais para fortalecer a musculatura pélvica.",
+        subcontent: "Este guia completo vai te ensinar passo a passo como realizar os exercícios corretamente e obter os melhores resultados.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 horas atrás
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 6),
         coverUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
@@ -102,6 +106,7 @@ const contentServices = {
         title: "Minha Jornada de Superação",
         subtitle: "Um relato pessoal",
         description: "Compartilho aqui como consegui superar as dificuldades e melhorar minha qualidade de vida.",
+        subcontent: "Esta é uma história real de superação que pode inspirar outras pessoas que passam pelas mesmas dificuldades.",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 horas atrás
         updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 12),
         coverUrl: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=300&fit=crop",
@@ -142,8 +147,8 @@ const contentServices = {
       id: `content_${Date.now()}`,
       title: contentData.title,
       description: contentData.description,
-      subtitle: "",
-      subcontent: "",
+      subtitle: contentData.subtitle || "",
+      subcontent: contentData.subcontent || "",
       createdAt: new Date(),
       updatedAt: new Date(),
       coverUrl: contentData.images[0] ? URL.createObjectURL(contentData.images[0]) : "",
@@ -162,6 +167,8 @@ const contentServices = {
     
     formData.append('title', contentData.title);
     formData.append('description', contentData.description);
+    if (contentData.subtitle) formData.append('subtitle', contentData.subtitle);
+    if (contentData.subcontent) formData.append('subcontent', contentData.subcontent);
     formData.append('categories', JSON.stringify(contentData.categories));
 
     contentData.images.forEach((image, index) => {
@@ -193,8 +200,8 @@ const contentServices = {
       id: contentData.id,
       title: contentData.title || "Título atualizado",
       description: contentData.description || "Descrição atualizada",
-      subtitle: "",
-      subcontent: "",
+      subtitle: contentData.subtitle || "",
+      subcontent: contentData.subcontent || "",
       createdAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hora atrás
       updatedAt: new Date(),
       coverUrl: contentData.images?.[0] ? URL.createObjectURL(contentData.images[0]) : "",
@@ -213,6 +220,8 @@ const contentServices = {
     
     if (contentData.title) formData.append('title', contentData.title);
     if (contentData.description) formData.append('description', contentData.description);
+    if (contentData.subtitle) formData.append('subtitle', contentData.subtitle);
+    if (contentData.subcontent) formData.append('subcontent', contentData.subcontent);
     if (contentData.categories) formData.append('categories', JSON.stringify(contentData.categories));
 
     if (contentData.images) {
@@ -242,11 +251,10 @@ const contentServices = {
     await new Promise(resolve => setTimeout(resolve, 500));
 
     // Mock - em produção substituir pela chamada real
-    console.log(`Mock: Deletando conteúdo ${contentId}`);
-
-    // Implementação real (comentada por enquanto)
     // await api.delete(`/contents/${contentId}`);
-  }
+    
+    console.log(`Content ${contentId} deleted`);
+  },
 };
 
 export default contentServices;

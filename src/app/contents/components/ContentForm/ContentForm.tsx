@@ -44,7 +44,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
   });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <Controller
           control={control}
@@ -70,15 +70,26 @@ const ContentForm: React.FC<ContentFormProps> = ({
           render={({ field }) => (
             <Input
               type="textarea"
-              label="Descrição"
-              placeholder="Digite a descrição do post"
+              label="Conteúdo"
+              placeholder="Digite o conteúdo do post"
               value={field.value}
               onChange={field.onChange}
               error={errors.description?.message}
               required
-
             />
           )}
+        />
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-900 mb-4 mt-4">
+          Mídia
+          <span className="text-red-500"> *</span>
+        </label>
+        <FileUpload
+          images={watchedImages}
+          video={watchedVideo}
+          onFilesChange={handleFilesChange}
+          error={errors.images?.message || errors.video?.message}
         />
       </div>
 
@@ -88,16 +99,38 @@ const ContentForm: React.FC<ContentFormProps> = ({
         error={errors.categories?.message}
       />
 
+      </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Mídia
-          <span className="text-red-500"> *</span>
-        </label>
-        <FileUpload
-          images={watchedImages}
-          video={watchedVideo}
-          onFilesChange={handleFilesChange}
-          error={errors.images?.message || errors.video?.message}
+        <Controller
+          control={control}
+          name="subtitle"
+          render={({ field }) => (
+            <Input
+              type="text"
+              label="Subtópico"
+              placeholder="Digite o subtópico do post (opcional)"
+              value={field.value}
+              onChange={field.onChange}
+              error={errors.subtitle?.message}
+            />
+          )}
+        />
+      </div>
+
+      <div>
+        <Controller
+          control={control}
+          name="subcontent"
+          render={({ field }) => (
+            <Input
+              type="textarea"
+              label="Conteúdo adicional"
+              placeholder="Digite conteúdo adicional do post (opcional)"
+              value={field.value}
+              onChange={field.onChange}
+              error={errors.subcontent?.message}
+            />
+          )}
         />
       </div>
 
