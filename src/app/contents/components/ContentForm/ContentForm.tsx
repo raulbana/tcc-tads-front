@@ -46,19 +46,6 @@ const ContentForm: React.FC<ContentFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Mídia
-          <span className="text-red-500"> *</span>
-        </label>
-        <FileUpload
-          images={watchedImages}
-          video={watchedVideo}
-          onFilesChange={handleFilesChange}
-          error={errors.images?.message || errors.video?.message}
-        />
-      </div>
-
-      <div>
         <Controller
           control={control}
           name="title"
@@ -100,28 +87,42 @@ const ContentForm: React.FC<ContentFormProps> = ({
         onCategoriesChange={handleCategoriesChange}
         error={errors.categories?.message}
       />
-      
-      <div className="flex flex-col sm:flex-row gap-3 pt-4">
-        <Button
-          type="PRIMARY"
-          text={isSubmitting 
-            ? (mode === 'create' ? 'Publicando...' : 'Salvando...') 
-            : (mode === 'create' ? 'Publicar Post' : 'Salvar Alterações')
-          }
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="flex-1"
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Mídia
+          <span className="text-red-500"> *</span>
+        </label>
+        <FileUpload
+          images={watchedImages}
+          video={watchedVideo}
+          onFilesChange={handleFilesChange}
+          error={errors.images?.message || errors.video?.message}
         />
-        
+      </div>
+
+      <div className="flex flex-row gap-3 pt-4">
         {onCancel && (
           <Button
             type="SECONDARY"
             text="Cancelar"
             onClick={onCancel}
             disabled={isSubmitting}
-            className="flex-1 sm:flex-initial"
+            className=""
           />
         )}
+
+        <Button
+          type="PRIMARY"
+          text={isSubmitting
+            ? (mode === 'create' ? 'Publicando...' : 'Salvando...')
+            : (mode === 'create' ? 'Publicar Post' : 'Salvar Alterações')
+          }
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className=""
+        />
+
       </div>
     </form>
   );
