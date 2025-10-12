@@ -35,7 +35,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       type="button"
       className={`${baseStyle} ${getButtonSize(size)} ${getButtonColor(
-        type
+        type, disabled
       )} ${className}`}
       onClick={onClick}
       disabled={disabled}
