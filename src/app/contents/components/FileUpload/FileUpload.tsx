@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { TrashIcon, CloudArrowUpIcon } from '@phosphor-icons/react';
 import Button from '@/app/components/Button/Button';
+import Image from 'next/image';
 
 interface FileUploadProps {
   onFilesChange: (images: File[], video?: File) => void;
@@ -55,7 +56,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
       'video/*': ['.mp4', '.webm', '.ogg']
     },
-    maxSize: 10 * 1024 * 1024 // 10MB
+    maxSize: 50 * 1024 * 1024, // 50MB
   });
 
   const removeFile = useCallback((fileName: string) => {
@@ -100,7 +101,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             : 'Arraste e solte arquivos aqui ou clique para selecionar'}
         </p>
         <p className="text-sm text-gray-500">
-          Formatos: JPG, PNG, WebP, MP4, WebM / Máx: 10MB por arquivo
+          Formatos: JPG, PNG, WebP, MP4, WebM / Máx: 50MB por arquivo
         </p>
       </div>
 
@@ -112,13 +113,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
         <div className="space-y-3">
           {images.map((file) => (
             <div key={file.name} className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg">
-              {previews[file.name] && (
-                <img
+                <Image
                   src={previews[file.name]}
                   alt={file.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 object-cover rounded"
+                  style={{ objectFit: 'cover', borderRadius: '0.5rem' }}
                 />
-              )}
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
                 <p className="text-xs text-gray-500">

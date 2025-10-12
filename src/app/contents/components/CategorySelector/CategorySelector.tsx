@@ -57,8 +57,9 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
-        Categorias *
+      <label className="block text-sm font-medium text-gray-900">
+        Categorias
+        <span className="text-red-500"> *</span>
       </label>
       <div className="flex flex-wrap gap-2">
         {categories.map((category) => {

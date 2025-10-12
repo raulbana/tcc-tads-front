@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { useContentForm } from '../../hooks/useContentForm';
+import { useContentForm } from './useContentForm';
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
 import FileUpload from '../FileUpload/FileUpload';
@@ -46,10 +46,10 @@ const ContentForm: React.FC<ContentFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Upload de Arquivos */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Mídia *
+          Mídia
+          <span className="text-red-500"> *</span>
         </label>
         <FileUpload
           images={watchedImages}
@@ -59,7 +59,6 @@ const ContentForm: React.FC<ContentFormProps> = ({
         />
       </div>
 
-      {/* Título */}
       <div>
         <Controller
           control={control}
@@ -67,7 +66,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
           render={({ field }) => (
             <Input
               type="text"
-              label="Título *"
+              label="Título"
               placeholder="Digite o título do post"
               value={field.value}
               onChange={field.onChange}
@@ -78,7 +77,6 @@ const ContentForm: React.FC<ContentFormProps> = ({
         />
       </div>
 
-      {/* Descrição */}
       <div>
         <Controller
           control={control}
@@ -86,7 +84,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
           render={({ field }) => (
             <Input
               type="textarea"
-              label="Descrição *"
+              label="Descrição"
               placeholder="Digite a descrição do post"
               value={field.value}
               onChange={field.onChange}
@@ -98,14 +96,12 @@ const ContentForm: React.FC<ContentFormProps> = ({
         />
       </div>
 
-      {/* Categorias */}
       <CategorySelector
         selectedCategories={watchedCategories}
         onCategoriesChange={handleCategoriesChange}
         error={errors.categories?.message}
       />
-
-      {/* Botões */}
+      
       <div className="flex flex-col sm:flex-row gap-3 pt-4">
         <Button
           type="PRIMARY"

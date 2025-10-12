@@ -1,7 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ContentFormData, contentSchema } from "../schemas/contentSchema";
+import { ContentFormData, contentSchema } from "@/app/contents/schemas/contentSchema";
 import { useUpload } from "@/app/contexts/UploadContext";
 import { useState, useCallback } from "react";
 import { Content } from "@/app/types/content";
@@ -40,7 +40,7 @@ export const useContentForm = ({
       video: undefined,
       categories: initialData?.category ? [initialData.category] : [],
     },
-    mode: 'onChange',
+    mode: 'onSubmit',
   });
 
   const watchedImages = watch('images');
@@ -71,12 +71,12 @@ export const useContentForm = ({
   }, [createContent, updateContent, mode, contentId, onSuccess, onError]);
 
   const handleFilesChange = useCallback((images: File[], video?: File) => {
-    setValue('images', images, { shouldValidate: true });
-    setValue('video', video, { shouldValidate: true });
+    setValue('images', images);
+    setValue('video', video);
   }, [setValue]);
 
   const handleCategoriesChange = useCallback((categories: string[]) => {
-    setValue('categories', categories, { shouldValidate: true });
+    setValue('categories', categories);
   }, [setValue]);
 
   return {

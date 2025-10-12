@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { useUpload } from '@/app/contexts/UploadContext';
-import { XIcon, CheckIcon, ExclamationTriangleIcon } from '@phosphor-icons/react';
+import { XIcon, CheckIcon, WarningIcon } from '@phosphor-icons/react';
 
 const UploadProgress: React.FC = () => {
   const { uploads, removeUpload } = useUpload();
@@ -29,7 +29,7 @@ const UploadProgress: React.FC = () => {
               onClick={() => removeUpload(upload.id)}
               className="ml-2 text-gray-400 hover:text-gray-600"
             >
-              <XIcon className="w-4 h-4" />
+              <XIcon     />
             </button>
           </div>
 
@@ -59,7 +59,7 @@ const UploadProgress: React.FC = () => {
 
             {upload.status === 'error' && (
               <div className="flex items-center gap-2 text-red-600">
-                <ExclamationTriangleIcon className="w-4 h-4" />
+                <WarningIcon className="w-4 h-4" />
                 <span className="text-xs">{upload.error || 'Erro desconhecido'}</span>
               </div>
             )}
