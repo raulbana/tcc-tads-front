@@ -27,7 +27,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     acceptedFiles.forEach(file => {
       if (file.type.startsWith('image/')) {
         imageFiles.push(file);
-        // Create preview
+        
         const reader = new FileReader();
         reader.onload = () => {
           setPreviews(prev => ({
@@ -38,7 +38,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         reader.readAsDataURL(file);
       } else if (file.type.startsWith('video/') && !videoFile) {
         videoFile = file;
-        // Create video preview
+        
         const url = URL.createObjectURL(file);
         setPreviews(prev => ({
           ...prev,

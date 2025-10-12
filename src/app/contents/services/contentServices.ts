@@ -52,7 +52,7 @@ const contentServices = {
       comments: []
     };
 
-    // Implementação real (comentada por enquanto)
+    // Implementação real
     // const response = await api.get(`/contents/${contentId}`);
     // return response.data;
     
@@ -63,7 +63,7 @@ const contentServices = {
     // Simulando delay da API
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    // Mock data - em produção substituir pela chamada real
+    // Mock data
     const mockContents: Content[] = [
       {
         id: "1",
@@ -126,7 +126,7 @@ const contentServices = {
     // Simulando delay da API
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    // Implementação real (comentada por enquanto)
+    // Implementação real
     // const response = await api.get('/contents/categories');
     // return response.data;
     
@@ -137,7 +137,7 @@ const contentServices = {
     // Simulando delay de upload
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Mock da resposta - em produção substituir pela chamada real
+    // Mock da resposta
     const mockResponse: Content = {
       id: `content_${Date.now()}`,
       title: contentData.title,
@@ -156,7 +156,7 @@ const contentServices = {
       comments: []
     };
 
-    // Implementação real (comentada por enquanto)
+    // Implementação
     /*
     const formData = new FormData();
     
@@ -188,7 +188,7 @@ const contentServices = {
     // Simulando delay de upload
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Mock da resposta - em produção substituir pela chamada real
+    // Mock da resposta
     const mockResponse: Content = {
       id: contentData.id,
       title: contentData.title || "Título atualizado",

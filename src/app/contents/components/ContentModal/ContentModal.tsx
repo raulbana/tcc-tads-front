@@ -28,7 +28,7 @@ const ContentModal: React.FC<ContentModalProps> = ({
 
   const handleError = (error: string) => {
     console.error('Erro no formulário:', error);
-    // Aqui você pode adicionar um toast ou notificação de erro
+    //TODO: adicionar um toast ou notificação de erro
   };
 
   return (
