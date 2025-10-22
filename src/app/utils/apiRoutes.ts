@@ -1,9 +1,9 @@
 const apiRoutes = {
   authentication: {
-    login: '/auth/login',
-    register: '/auth/register',
-    forgotPasswordRequest: '/auth/forgot-password/request',
-    forgotPasswordValidate: '/auth/forgot-password/validate',
+    login: '/users/login',
+    register: '/users',
+    forgotPasswordRequest: '/users/password/forgot',
+    forgotPasswordValidate: '/users/password/reset',
   },
   onboarding: {
     questions: {
@@ -15,5 +15,8 @@ const apiRoutes = {
     category: '/contents/category',
     byId: (contentId: string) => `/contents/${contentId}`,
   },
+  contact: '/contact/support',
 };
+
 export default apiRoutes;
+export { apiRoutes };
