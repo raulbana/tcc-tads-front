@@ -34,6 +34,7 @@ export const useNavbar = () => {
       { name: "Conteúdos", link: "/contents", enabled: true },
       { name: "Sobre", link: "/about", enabled: true },
       { name: "Contato", link: "/support/talkToUs", enabled: true },
+      { name: "Administração", link: "/administration", enabled: true },
     ],
     []
   );
