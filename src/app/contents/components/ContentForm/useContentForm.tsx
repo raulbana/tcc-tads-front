@@ -40,7 +40,7 @@ export const useContentForm = ({
       subcontent: initialData?.subcontent || '',
       images: [],
       video: undefined,
-      categories: initialData?.category ? [typeof initialData.category === 'string' ? initialData.category : initialData.category.id] : [],
+      categories: initialData?.category || [],
     },
     mode: 'onSubmit',
   });
@@ -77,8 +77,8 @@ export const useContentForm = ({
     setValue('video', video);
   }, [setValue]);
 
-  const handleCategoriesChange = useCallback((categories: string[]) => {
-    setValue('categories', categories);
+  const handleCategoriesChange = useCallback((category: ContentCategory[]) => {
+    setValue('categories', category);
   }, [setValue]);
 
   return {

@@ -31,7 +31,19 @@ export const contentSchema = z.object({
       (file) => !file || ACCEPTED_VIDEO_TYPES.includes(file.type),
       "Apenas vídeos MP4, WebM ou OGG são aceitos"
     ),
-  categories: z.array(z.string()).min(1, 'No mínimo 1 categoria é obrigatória'),
+  categories: z
+    .array(z.object({
+      id: z.string(),
+      name: z.string(),
+      auditable: z.boolean()
+    }))
+    .min(1, 'Pelo menos uma categoria é obrigatória')
 });
+
+export interface ContentCategory {
+  id: string;
+  name: string;
+  auditable: boolean;
+}
 
 export type ContentFormData = z.infer<typeof contentSchema>;

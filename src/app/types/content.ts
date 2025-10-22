@@ -30,7 +30,7 @@ export interface Content {
   coverUrl: string;
   images?: string[];
   video?: string;
-  category: ContentCategory;
+  category: ContentCategory[];
   isReposted?: boolean;
   isLiked?: boolean;
   likesCount?: number;

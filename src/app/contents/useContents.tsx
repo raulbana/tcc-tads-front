@@ -3,11 +3,11 @@ import { useState, useMemo } from "react";
 import { Content, ContentCategory } from "@/app/types/content";
 
 const mockCategories: ContentCategory[] = [
-  { id: "1", name: "Ipsum", createdAt: new Date(), updatedAt: new Date() },
-  { id: "2", name: "Dolor", createdAt: new Date(), updatedAt: new Date() },
-  { id: "3", name: "Sit", createdAt: new Date(), updatedAt: new Date() },
-  { id: "4", name: "Amet", createdAt: new Date(), updatedAt: new Date() },
-  { id: "5", name: "Consectetur", createdAt: new Date(), updatedAt: new Date() },
+  { id: "1", name: "Alimentação e Nutrição", auditable: false},
+  { id: "2", name: "Hábitos Saudáveis", auditable: false},
+  { id: "3", name: "Dicas de Fisioterapia Pélvica", auditable: true},
+  { id: "4", name: "Depoimentos e Histórias Reais", auditable: false},
+  { id: "5", name: "Mitos e Verdades", auditable: true},
 ];
 
 const mockContents: Content[] = [
@@ -24,20 +24,16 @@ const mockContents: Content[] = [
       "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
       "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop"
     ],
-    videos: [
-      "https://file-examples.com/storage/fe5d50900268c77939263c8/2017/04/file_example_MP4_480_1_5MG.mp4"
-    ],
-    category: "1",
-    isFavorite: false,
-    authorId: "",
-    tags: ["Comunidade", "Saúde", "Bem-estar"],
+    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    category: [mockCategories[0], mockCategories[2], mockCategories[3]],
+    authorId: "id12",
+    commentsCount: 2,
     comments: [
       {
         id: "1",
         contentId: "1",
-        userId: "user1",
-        text: "Muito interessante este conteúdo! Obrigada por compartilhar.",
         authorId: "user1",
+        text: "Muito interessante este conteúdo! Obrigada por compartilhar.",
         authorName: "Maria Silva",
         authorImage: "https://ui-avatars.com/api/?name=MS&background=5F3C6F&color=F5E5FD",
         createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 min atrás
@@ -49,9 +45,8 @@ const mockContents: Content[] = [
           {
             id: "1-1",
             contentId: "1",
-            userId: "user3",
-            text: "Concordo totalmente! Muito útil mesmo.",
             authorId: "user3",
+            text: "Concordo totalmente! Muito útil mesmo.",
             authorName: "João Santos",
             authorImage: "https://ui-avatars.com/api/?name=JS&background=AC85BE&color=F5E5FD",
             createdAt: new Date(Date.now() - 1000 * 60 * 25),
@@ -64,9 +59,8 @@ const mockContents: Content[] = [
           {
             id: "1-2",
             contentId: "1",
-            userId: "user4",
-            text: "Estava precisando exatamente dessas informações!",
             authorId: "user4",
+            text: "Estava precisando exatamente dessas informações!",
             authorName: "Ana Costa",
             authorImage: "https://ui-avatars.com/api/?name=AC&background=AC85BE&color=F5E5FD",
             createdAt: new Date(Date.now() - 1000 * 60 * 20),
@@ -79,9 +73,8 @@ const mockContents: Content[] = [
           {
             id: "1-3",
             contentId: "1",
-            userId: "user5",
-            text: "Vou compartilhar com meus amigos também!",
             authorId: "user5",
+            text: "Vou compartilhar com meus amigos também!",
             authorName: "Pedro Lima",
             authorImage: "https://ui-avatars.com/api/?name=PL&background=5F3C6F&color=F5E5FD",
             createdAt: new Date(Date.now() - 1000 * 60 * 10),
@@ -96,9 +89,8 @@ const mockContents: Content[] = [
       {
         id: "2",
         contentId: "1",
-        userId: "user2",
-        text: "Concordo completamente! Esse tipo de informação é muito valiosa.",
         authorId: "user2",
+        text: "Concordo completamente! Esse tipo de informação é muito valiosa.",
         authorName: "Ana Costa",
         authorImage: "https://ui-avatars.com/api/?name=Ana+Costa&background=AC85BE&color=F5E5FD",
         createdAt: new Date(Date.now() - 1000 * 60 * 15), // 15 min atrás
@@ -119,11 +111,11 @@ const mockContents: Content[] = [
     updatedAt: new Date(),
     coverUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
     images: [],
-    videos: [],
-    category: "2",
-    isFavorite: false,
+    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    category: [mockCategories[0], mockCategories[1]],
     authorId: "author1",
-    tags: ["Lorem"],
+    comments: [],
+    commentsCount: 0,
   },
   {
     id: "3",
@@ -134,11 +126,11 @@ const mockContents: Content[] = [
     updatedAt: new Date(),
     coverUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
     images: [],
-    videos: [],
-    category: "3",
-    isFavorite: false,
+    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    category: [mockCategories[0], mockCategories[1]],
     authorId: "author1",
-    tags: ["Lorem"],
+    comments: [],
+    commentsCount: 0,
   },
   {
     id: "4",
@@ -149,11 +141,11 @@ const mockContents: Content[] = [
     updatedAt: new Date(),
     coverUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop",
     images: [],
-    videos: [],
-    category: "1",
-    isFavorite: false,
+    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    category: [mockCategories[0], mockCategories[1]],
     authorId: "author1",
-    tags: ["Lorem"],
+    comments: [],
+    commentsCount: 0,
   },
   {
     id: "5",
@@ -164,11 +156,10 @@ const mockContents: Content[] = [
     updatedAt: new Date(),
     coverUrl: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=300&fit=crop",
     images: [],
-    videos: [],
-    category: "2",
-    isFavorite: false,
+    category: [mockCategories[0], mockCategories[1]],
     authorId: "author1",
-    tags: ["Lorem"],
+    comments: [],
+    commentsCount: 0,
   },
   {
     id: "6",
@@ -179,22 +170,23 @@ const mockContents: Content[] = [
     updatedAt: new Date(),
     coverUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop",
     images: [],
-    videos: [],
-    category: "3",
-    isFavorite: false,
+    category: [mockCategories[0], mockCategories[1]],
     authorId: "author1",
-    tags: ["Lorem"],
+    comments: [],
+    commentsCount: 0,
   },
 ];
 
 const useContents = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<ContentCategory | null>(null);
   const [selectedContent, setSelectedContent] = useState<Content | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredContents = useMemo(() => {
     if (!selectedCategory) return mockContents;
-    return mockContents.filter(content => content.category === selectedCategory);
+    return mockContents.filter(content =>
+      content.category.some(cat => cat.id === selectedCategory.id)
+    );
   }, [selectedCategory]);
 
   const contentSections = useMemo(() => {
@@ -209,7 +201,7 @@ const useContents = () => {
   }, [filteredContents]);
 
   const handleCategorySelect = (categoryId: string | null) => {
-    setSelectedCategory(categoryId);
+    setSelectedCategory(categoryId ? mockCategories.find(cat => cat.id === categoryId) || null : null);
   };
 
   const handleContentClick = (content: Content) => {

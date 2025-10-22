@@ -20,11 +20,11 @@ export interface UpdateContentRequest extends Partial<CreateContentRequest> {
 
 // Mock data para desenvolvimento
 const mockCategories: ContentCategory[] = [
-  { id: "1", name: "Alimentação e Nutrição", description: "Dicas de alimentos que ajudam na saúde do trato urinário", auditable: false, createdAt: new Date() },
-  { id: "2", name: "Hábitos Saudáveis", description: "Rotinas que favorecem o bem-estar", auditable: false, createdAt: new Date() },
-  { id: "3", name: "Dicas de Fisioterapia Pélvica", description: "Conteúdos educativos sobre exercícios", auditable: true, createdAt: new Date() },
-  { id: "4", name: "Depoimentos e Histórias Reais", description: "Espaço para relatos de superação", auditable: false, createdAt: new Date() },
-  { id: "5", name: "Mitos e Verdades", description: "Desmistificação de crenças populares", auditable: true, createdAt: new Date() },
+  { id: "1", name: "Alimentação e Nutrição", auditable: false},
+  { id: "2", name: "Hábitos Saudáveis", auditable: false},
+  { id: "3", name: "Dicas de Fisioterapia Pélvica", auditable: true},
+  { id: "4", name: "Depoimentos e Histórias Reais", auditable: false},
+  { id: "5", name: "Mitos e Verdades", auditable: true},
 ];
 
 const contentServices = {
@@ -47,7 +47,7 @@ const contentServices = {
         "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop"
       ],
       videos: [],
-      category: "1",
+      category: mockCategories.slice(0, 2),
       isFavorite: false,
       authorId: "author1",
       tags: ["Saúde", "Bem-estar"],
