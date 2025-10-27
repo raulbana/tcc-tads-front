@@ -63,11 +63,34 @@ export interface forgotPasswordRequestResponse {
 
 export interface forgotPasswordValidateRequest {
   otp: string;
+  email: string;
   newPassword: string;
-  confirmPassword: string;
 }
 
 export interface forgotPasswordValidateResponse {
   message: string;
   status: string;
+}
+
+export interface updateUserRequest {
+  id: number;
+  name: string;
+  email: string;
+  profilePictureUrl?: string;
+  profile: PatientProfile;
+  preferences: Preferences;
+}
+
+export interface updateUserResponse {
+  message: string;
+  status: string;
+}
+
+export interface getUserByIdResponse {
+  id: number;
+  name: string;
+  email: string;
+  profilePictureUrl?: string;
+  profile: PatientProfile;
+  preferences: Preferences;
 }
