@@ -12,17 +12,15 @@ const apiFactory = (baseURL: string) => {
     },
   });
 
-  // Request interceptor - adiciona token JWT e user-id automaticamente
+  
   apiInstance.interceptors.request.use(
     (config) => {
-      // Adicionar token de autenticação
       if (typeof window !== 'undefined') {
         const token = localStorage.getItem(TOKEN_KEY);
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
 
-        // Adicionar user-id para endpoints que precisam
         const userData = localStorage.getItem(USER_KEY);
         if (userData) {
           try {
@@ -43,14 +41,12 @@ const apiFactory = (baseURL: string) => {
     }
   );
 
-  // Response interceptor - trata erros de autenticação
   apiInstance.interceptors.response.use(
     (response) => response,
     (error) => {
       if (error.response) {
         console.error('API Error:', error.response.data);
 
-        // Se o erro for 401 (Unauthorized), limpar dados de autenticação
         if (error.response.status === 401 && typeof window !== 'undefined') {
           console.warn('Token inválido ou expirado, limpando dados de autenticação');
           localStorage.removeItem(TOKEN_KEY);

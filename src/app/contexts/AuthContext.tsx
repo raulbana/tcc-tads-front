@@ -39,6 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (storedToken && storedUser) {
         const userData = JSON.parse(storedUser);
         setUser(userData);
+        document.cookie = `${TOKEN_KEY}=${storedToken}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 dias
       }
     } catch (error) {
       console.error('Erro ao carregar dados de autenticação:', error);
@@ -51,12 +52,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const storeAuth = (token: string, userData: User) => {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    document.cookie = `${TOKEN_KEY}=${token}; path=/; max-age=${60 * 60 * 24 * 7}`;
     setUser(userData);
   };
 
   const clearStoredAuth = () => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    document.cookie = `${TOKEN_KEY}=; path=/; max-age=0`;
     setUser(null);
   };
 
