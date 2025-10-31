@@ -50,7 +50,7 @@ const UploadProgress: React.FC = () => {
               </>
             )}
 
-            {upload.status === 'completed' && (
+            {upload.status === 'success' && (
               <div className="flex items-center gap-2 text-green-600">
                 <CheckIcon className="w-4 h-4" />
                 <span className="text-xs">Concluído!</span>
