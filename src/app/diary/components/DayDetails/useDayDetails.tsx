@@ -18,15 +18,16 @@ export const useDiaryPage = () => {
   const todayOrFirstDay = useMemo(() => {
     if (!daysFlat || daysFlat.length === 0) return null;
 
-    const today = daysFlat.find(day => day.isToday);
+    const today = daysFlat.find((day) => day.isToday);
     if (today) return today;
 
     const currentMonth = moment().month();
     const currentYear = moment().year();
 
-    const currentMonthDay = daysFlat.find(day =>
-      moment(day.date).month() === currentMonth &&
-      moment(day.date).year() === currentYear
+    const currentMonthDay = daysFlat.find(
+      (day) =>
+        moment(day.date).month() === currentMonth &&
+        moment(day.date).year() === currentYear
     );
 
     return currentMonthDay || daysFlat[0];
@@ -46,10 +47,13 @@ export const useDiaryPage = () => {
     setIsAddModalOpen(true);
   }, []);
 
-  const handleEditRecord = useCallback((record: UrinationData, index: number) => {
-    setEditingRecord({ record, index });
-    setIsEditModalOpen(true);
-  }, []);
+  const handleEditRecord = useCallback(
+    (record: UrinationData, index: number) => {
+      setEditingRecord({ record, index });
+      setIsEditModalOpen(true);
+    },
+    []
+  );
 
   const handleCloseAddModal = useCallback(() => {
     setIsAddModalOpen(false);
@@ -60,18 +64,24 @@ export const useDiaryPage = () => {
     setEditingRecord(null);
   }, []);
 
-  const handleSubmitNewRecord = useCallback((data: DayDataFormValues) => {
-    console.log("Novo registro:", data, "para data:", selectedDay?.date);
-    // TODO: Implementar a lógica de criação do registro
-    setIsAddModalOpen(false);
-  }, [selectedDay]);
+  const handleSubmitNewRecord = useCallback(
+    (data: DayDataFormValues) => {
+      console.log("Novo registro:", data, "para data:", selectedDay?.date);
+      // TODO: Implementar a lógica de criação do registro
+      setIsAddModalOpen(false);
+    },
+    [selectedDay]
+  );
 
-  const handleSubmitEditRecord = useCallback((data: DayDataFormValues) => {
-    console.log("Editando registro:", data, "índice:", editingRecord?.index);
-    // TODO: Implementar a lógica de edição do registro
-    setIsEditModalOpen(false);
-    setEditingRecord(null);
-  }, [editingRecord]);
+  const handleSubmitEditRecord = useCallback(
+    (data: DayDataFormValues) => {
+      console.log("Editando registro:", data, "índice:", editingRecord?.index);
+      // TODO: Implementar a lógica de edição do registro
+      setIsEditModalOpen(false);
+      setEditingRecord(null);
+    },
+    [editingRecord]
+  );
 
   return {
     selectedDay,
