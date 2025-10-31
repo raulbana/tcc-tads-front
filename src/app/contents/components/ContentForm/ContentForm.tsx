@@ -98,7 +98,6 @@ const ContentForm: React.FC<ContentFormProps> = ({
         onCategoriesChange={handleCategoriesChange}
         error={errors.categories?.message}
       />
-
       </div>
       <div>
         <Controller
