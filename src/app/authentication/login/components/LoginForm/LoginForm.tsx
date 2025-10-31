@@ -13,13 +13,30 @@ const LoginForm = () => {
     onSubmit,
     remember,
     watch,
+    isSubmitting,
+    errorMessage,
+    clearError,
   } = useLoginForm();
+
   return (
     <form
       className="flex flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}
       noValidate
     >
+      {errorMessage && (
+        <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+          {errorMessage}
+          <button
+            type="button"
+            onClick={clearError}
+            className="ml-2 text-red-800 hover:text-red-900"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       <div>
         <label
           htmlFor="email"
@@ -71,8 +88,9 @@ const LoginForm = () => {
       </div>
       <Button
         type="PRIMARY"
-        text="Entrar"
+        text={isSubmitting ? "Entrando..." : "Entrar"}
         className="w-full mt-2"
+        disabled={isSubmitting}
         onClick={() => {
           handleSubmit(onSubmit)();
         }}

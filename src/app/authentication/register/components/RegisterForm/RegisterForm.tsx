@@ -13,6 +13,9 @@ const RegisterForm = () => {
     onSubmit,
     acceptTerms,
     watch,
+    isSubmitting,
+    errorMessage,
+    clearError,
   } = useRegisterForm();
 
   return (
@@ -21,6 +24,19 @@ const RegisterForm = () => {
       onSubmit={handleSubmit(onSubmit)}
       noValidate
     >
+      {errorMessage && (
+        <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+          {errorMessage}
+          <button
+            type="button"
+            onClick={clearError}
+            className="ml-2 text-red-800 hover:text-red-900"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       <div>
         <label
           htmlFor="name"
@@ -33,7 +49,7 @@ const RegisterForm = () => {
           {...register("name")}
           value={watch("name")}
           onChange={(value: string) => setValue("name", value)}
-          placeholder="Digite seu name"
+          placeholder="Digite seu nome"
           required
           name="name"
           error={errors.name?.message}
@@ -69,7 +85,7 @@ const RegisterForm = () => {
           {...register("password")}
           value={watch("password")}
           onChange={(value: string) => setValue("password", value)}
-          placeholder="Digite sua password"
+          placeholder="Digite sua senha"
           required
           name="password"
           error={errors.password?.message}
@@ -87,7 +103,7 @@ const RegisterForm = () => {
           {...register("confirmPassword")}
           value={watch("confirmPassword")}
           onChange={(value: string) => setValue("confirmPassword", value)}
-          placeholder="Confirme sua password"
+          placeholder="Confirme sua senha"
           required
           name="confirmPassword"
           error={errors.confirmPassword?.message}
@@ -108,8 +124,9 @@ const RegisterForm = () => {
       </div>
       <Button
         type="PRIMARY"
-        text="Criar Conta"
+        text={isSubmitting ? "Criando conta..." : "Criar Conta"}
         className="w-full mt-2"
+        disabled={isSubmitting}
         onClick={() => {
           handleSubmit(onSubmit)();
         }}
