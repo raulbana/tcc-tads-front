@@ -29,7 +29,7 @@ const UploadProgress: React.FC = () => {
               onClick={() => removeUpload(upload.id)}
               className="ml-2 text-gray-400 hover:text-gray-600"
             >
-              <XIcon     />
+              <XIcon />
             </button>
           </div>
 
