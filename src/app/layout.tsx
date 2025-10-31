@@ -5,6 +5,7 @@ import ReactQueryProvider from "./providers/ReactQueryProvider/ReactQueryProvide
 import ClientNavbarWrapper from "./components/Navbar/components/ClientNavbarWrapper";
 import { UploadProvider } from "./contexts/UploadContext";
 import UploadProgress from "./contents/components/UploadProgress/UploadProgress";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,14 +24,21 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryProvider>
-      <UploadProvider>
-        <html lang="en">
-          <body className={`${inter.variable} antialiased`}>
-            <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
-            <UploadProgress />
-          </body>
-        </html>
-      </UploadProvider>
+
+      
+
+
+
+      <AuthProvider>
+         <UploadProvider>
+          <html lang="en">
+            <body className={`${inter.variable} antialiased`}>
+              <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
+            </body>
+          </html>
+        </UploadProvider>
+      </AuthProvider>
+
     </ReactQueryProvider>
   );
 }

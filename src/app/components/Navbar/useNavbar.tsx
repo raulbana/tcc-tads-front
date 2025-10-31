@@ -1,6 +1,7 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useMemo } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 interface NavItem {
   name: string;
@@ -8,18 +9,10 @@ interface NavItem {
   enabled: boolean;
 }
 
-interface AuthState {
-  isLogged: boolean;
-  username?: string;
-}
-
 export const useNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [authState, setAuthState] = useState<AuthState>({
-    isLogged: true,
-    username: "Maria",
-  });
   const [isAccessibilityOpen, setAccessibilityOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -34,6 +27,7 @@ export const useNavbar = () => {
       { name: "Conteúdos", link: "/contents", enabled: true },
       { name: "Sobre", link: "/about", enabled: true },
       { name: "Contato", link: "/support/talkToUs", enabled: true },
+      { name: "Administração", link: "/administration", enabled: true },
     ],
     []
   );
@@ -47,24 +41,15 @@ export const useNavbar = () => {
   );
 
   const currentNavItems = useMemo(() => {
-    return authState.isLogged ? authenticatedNavItems : publicNavItems;
-  }, [authState.isLogged, authenticatedNavItems, publicNavItems]);
+    return isAuthenticated ? authenticatedNavItems : publicNavItems;
+  }, [isAuthenticated, authenticatedNavItems, publicNavItems]);
 
   const isActiveItem = (link: string): boolean => pathname === link;
 
-  const login = (username?: string) => {
-    setAuthState({
-      isLogged: true,
-      username: username || "Usuário",
-    });
-  };
-
-  const logout = () => {
-    setAuthState({
-      isLogged: false,
-      username: undefined,
-    });
+  const handleLogout = () => {
+    logout();
     setIsOpen(false);
+    router.push("/");
   };
 
   const closeSidebar = () => setIsOpen(false);
@@ -74,13 +59,16 @@ export const useNavbar = () => {
 
   return {
     isOpen,
-    authState,
+    authState: {
+      isLogged: isAuthenticated,
+      username: user?.name,
+    },
+    user,
     currentNavItems,
     pathname,
     toggle,
     closeSidebar,
-    login,
-    logout,
+    logout: handleLogout,
     isActiveItem,
     goToLogin,
     goToRegister,
