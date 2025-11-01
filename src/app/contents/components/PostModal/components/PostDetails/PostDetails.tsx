@@ -6,7 +6,6 @@ import { usePostDetails } from "./usePostDetails";
 import MediaCarousel from "../MediaCarousel/MediaCarousel";
 import PostAuthor from "../PostAuthor/PostAuthor";
 import PostActions from "../PostActions/PostActions";
-import CategoryBadges from "../CategoryBadges/CategoryBadges";
 import CommentsSection from "../CommentsSection/CommentsSection";
 import moment from "moment";
 
@@ -21,7 +20,6 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
     mediaItems,
     formattedDate,
     hasMedia,
-    hasTags,
     handleToggleLike,
     handleToggleRepost,
     localContent
@@ -90,9 +88,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
                 </div>
               )}
 
-              {hasTags && (
-                <CategoryBadges tags={localContent.tags!} />
-              )}
+
             </div>
           </div>
         </div>

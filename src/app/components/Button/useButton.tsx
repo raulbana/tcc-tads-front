@@ -1,16 +1,28 @@
 import { ButtonType, ButtonSize } from "./Button";
 
 const useButton = () => {
-  const getButtonColor = (type: ButtonType) => {
+  const getButtonColor = (type: ButtonType, disabled: boolean) => {
     switch (type) {
       case "PRIMARY":
+        if (disabled) {
+          return "text-white bg-purple-03 hover:cursor-not-allowed";
+        }
         return "text-white bg-purple-04 hover:bg-purple-03";
       case "SECONDARY":
+        if (disabled) {
+          return "text-purple-03 bg-purple-02 hover:cursor-not-allowed";
+        }
         return "text-purple-04 bg-purple-02 hover:bg-purple-03";
       case "TERTIARY":
-        return "text-gray-08 bg-white hover:bg-gray-06";
+        if (disabled) {
+          return "text-gray-04 border-gray-04 border-1 bg-white hover:cursor-not-allowed";
+        }
+        return "text-gray-08 border-gray-08 border-1 bg-white hover:bg-gray-06";
       default:
-        return "text-gray-08 bg-white hover:bg-gray-06";
+        if (disabled) {
+          return "text-white bg-purple-03 hover:cursor-not-allowed";
+        }
+        return "text-white bg-purple-04 hover:bg-purple-03";
     }
   };
 

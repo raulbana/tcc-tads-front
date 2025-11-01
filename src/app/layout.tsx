@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "./providers/ReactQueryProvider/ReactQueryProvider";
 import ClientNavbarWrapper from "./components/Navbar/components/ClientNavbarWrapper";
+import { UploadProvider } from "./contexts/UploadContext";
+import UploadProgress from "./contents/components/UploadProgress/UploadProgress";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const inter = Inter({
@@ -22,13 +24,21 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryProvider>
+
+      
+
+
+
       <AuthProvider>
-        <html lang="en">
-          <body className={`${inter.variable} antialiased`}>
-            <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
-          </body>
-        </html>
+         <UploadProvider>
+          <html lang="en">
+            <body className={`${inter.variable} antialiased`}>
+              <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
+            </body>
+          </html>
+        </UploadProvider>
       </AuthProvider>
+
     </ReactQueryProvider>
   );
 }

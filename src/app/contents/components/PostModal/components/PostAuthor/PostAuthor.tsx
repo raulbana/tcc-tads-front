@@ -8,7 +8,6 @@ interface PostAuthorProps {
 }
 
 const PostAuthor: React.FC<PostAuthorProps> = ({ authorId, createdAt }) => {
-  // Mock data
   const authorName = `Autor fe ee gefeferferferfefer fefe f  ${authorId}`;
   const authorAvatar = `https://ui-avatars.com/api/?name=UA&background=A97EAA&color=FFFFFF`;
 

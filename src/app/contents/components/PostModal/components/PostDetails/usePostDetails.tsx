@@ -26,7 +26,7 @@ export const usePostDetails = (content: Content) => {
       });
     }
 
-    content.images.forEach((image, index) => {
+    content.images?.forEach((image, index) => {
       media.push({
         type: 'image',
         url: image,
@@ -34,7 +34,7 @@ export const usePostDetails = (content: Content) => {
       });
     });
 
-    content.videos.forEach((video, index) => {
+    content.videos?.forEach((video, index) => {
       media.push({
         type: 'video',
         url: video,
@@ -74,8 +74,7 @@ export const usePostDetails = (content: Content) => {
   const mediaItems = useMemo(() => getAllMedia(localContent), [localContent, getAllMedia]);
   const formattedDate = useMemo(() => formatDate(localContent.createdAt), [localContent.createdAt, formatDate]);
   const hasMedia = useMemo(() => mediaItems.length > 0, [mediaItems]);
-  const hasImages = useMemo(() => localContent.images.length > 0, [localContent.images]);
-  const hasTags = useMemo(() => localContent.tags && localContent.tags.length > 0, [localContent.tags]);
+  const hasImages = useMemo(() => (localContent.images?.length ?? 0) > 0, [localContent.images]);
 
   return {
     formatDate,
@@ -84,7 +83,6 @@ export const usePostDetails = (content: Content) => {
     formattedDate,
     hasMedia,
     hasImages,
-    hasTags,
     handleToggleLike,
     handleToggleRepost,
     localContent
