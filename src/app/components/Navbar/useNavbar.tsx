@@ -77,4 +77,4 @@ export const useNavbar = () => {
   };
 };
 
-export type { NavItem, AuthState };
+export type { NavItem };

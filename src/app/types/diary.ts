@@ -1,25 +1,48 @@
-export type LeakageLevel = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH'
-export type UrinationAmount = 'LOW' | 'MEDIUM' | 'HIGH'
-export interface UrinationData {
-  observation: string;
+export type LeakageLevel = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
+
+export interface UrinationDataDTO {
   time: string;
-  amount: UrinationAmount;
+  amount: string;
   leakage: boolean;
   reason?: string;
   urgency?: boolean;
 }
 
-export type CalendarDayData = {
-  date: Date;
-  leakageLevel?: LeakageLevel;
-  eventsCount?: number;
-  completedExercises?: number;
+export interface CalendarDayDTO {
+  date: string;
+  leakageLevel: string;
+  eventsCount: number;
+  completedExercises: number;
   notesPreview?: string;
-  urinationData?: UrinationData[];
+  urinationData: UrinationDataDTO[];
   dayTitle: string;
   dayNumber: number;
-  isToday?: boolean;
-  level?: LeakageLevel;
-};
+  isToday: boolean;
+  today?: boolean;
+}
 
-export type CalendarRangeResponse = Record<string, CalendarDayData>;
+export interface CalendarRequestDTO {
+  date: string;
+  leakageLevel: string;
+  notesPreview?: string;
+  urinationData?: UrinationDataDTO[];
+}
+
+export type CalendarRangeResponse = Record<string, CalendarDayDTO>;
+
+export interface ReportParamDTO {
+  from: string; // YYYY-MM-DD
+  to: string; // YYYY-MM-DD
+}
+
+export interface ReportUserDTO {
+  name: string;
+  age: number;
+  gender: string;
+}
+
+export interface ReportDTO {
+  user: ReportUserDTO;
+  history: CalendarDayDTO[];
+  generatedAt: string; // ISO date-time
+}

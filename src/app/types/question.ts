@@ -8,7 +8,7 @@ export interface ICIQSFAnswers {
 
 export interface QuestionOptions {
   label: string;
-  value: string | number | boolean | string[];
+  value: string | number | boolean;
 }
 
 export interface Question {

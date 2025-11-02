@@ -34,6 +34,7 @@ export type WorkoutMediaType = 'video' | 'image';
 export interface loginRequest {
   email: string;
   password: string;
+  remember?: boolean;
 }
 
 export interface loginResponse {
