@@ -4,7 +4,6 @@ import "./globals.css";
 import ReactQueryProvider from "./providers/ReactQueryProvider/ReactQueryProvider";
 import ClientNavbarWrapper from "./components/Navbar/components/ClientNavbarWrapper";
 import { UploadProvider } from "./contexts/UploadContext";
-import UploadProgress from "./contents/components/UploadProgress/UploadProgress";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const inter = Inter({
@@ -24,11 +23,6 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryProvider>
-
-      
-
-
-
       <AuthProvider>
          <UploadProvider>
           <html lang="en">
@@ -38,7 +32,6 @@ export default function RootLayout({
           </html>
         </UploadProvider>
       </AuthProvider>
-
     </ReactQueryProvider>
   );
 }

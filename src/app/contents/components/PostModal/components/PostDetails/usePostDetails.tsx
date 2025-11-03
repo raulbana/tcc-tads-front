@@ -1,6 +1,8 @@
 import { useMemo, useCallback, useState } from "react";
 import moment from "moment";
 import { Content } from "@/app/types/content";
+import useContentQueries from "@/app/contents/services/contentQueryFactory";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export interface MediaItem {
   type: 'image' | 'video';
@@ -9,80 +11,106 @@ export interface MediaItem {
 }
 
 export const usePostDetails = (content: Content) => {
+  const { user } = useAuth();
   const [localContent, setLocalContent] = useState(content);
+  const contentQueries = useContentQueries(['content']);
+  const toggleLikeMutation = contentQueries.toggleLike();
+  const toggleRepostMutation = contentQueries.toggleRepost();
 
-  const formatDate = useCallback((date: Date) => {
+  const formatDate = useCallback((date: Date | string) => {
     return moment(date).format("DD [de] MMMM [de] YYYY");
   }, []);
 
   const getAllMedia = useCallback((content: Content): MediaItem[] => {
     const media: MediaItem[] = [];
     
-    if (content.coverUrl) {
+    if (content.cover?.url) {
       media.push({
-        type: 'image',
-        url: content.coverUrl,
+        type: content.cover.contentType.startsWith('video/') ? 'video' : 'image',
+        url: content.cover.url,
         alt: content.title
       });
     }
 
-    content.images?.forEach((image, index) => {
+    content.media?.forEach((mediaItem) => {
       media.push({
-        type: 'image',
-        url: image,
-        alt: `${content.title} - Imagem ${index + 1}`
-      });
-    });
-
-    content.videos?.forEach((video, index) => {
-      media.push({
-        type: 'video',
-        url: video,
-        alt: `${content.title} - Vídeo ${index + 1}`
+        type: mediaItem.contentType.startsWith('video/') ? 'video' : 'image',
+        url: mediaItem.url,
+        alt: mediaItem.altText || content.title
       });
     });
 
     return media;
   }, []);
 
-  const handleToggleLike = useCallback((contentId: string) => {
-    setLocalContent(prev => {
-      const isCurrentlyLiked = prev.isLiked || false;
-      const currentLikesCount = prev.likesCount || 0;
-      
-      return {
-        ...prev,
-        isLiked: !isCurrentlyLiked,
-        likesCount: isCurrentlyLiked ? currentLikesCount - 1 : currentLikesCount + 1
-      };
-    });
-  }, []);
-
-  const handleToggleRepost = useCallback((contentId: string) => {
-    setLocalContent(prev => {
-      const isCurrentlyReposted = prev.isReposted || false;
-      const currentRepostsCount = prev.repostsCount || 0;
-
-      return {
-        ...prev,
-        isReposted: !isCurrentlyReposted,
-        repostsCount: isCurrentlyReposted ? currentRepostsCount - 1 : currentRepostsCount + 1
-      };
-    });
-  }, []);
-
   const mediaItems = useMemo(() => getAllMedia(localContent), [localContent, getAllMedia]);
   const formattedDate = useMemo(() => formatDate(localContent.createdAt), [localContent.createdAt, formatDate]);
   const hasMedia = useMemo(() => mediaItems.length > 0, [mediaItems]);
-  const hasImages = useMemo(() => (localContent.images?.length ?? 0) > 0, [localContent.images]);
+
+  const handleToggleLike = useCallback(async () => {
+    if (!user) return;
+
+    const newLikedState = !localContent.isLiked;
+    const newLikesCount = newLikedState
+      ? (localContent.likesCount || 0) + 1
+      : Math.max((localContent.likesCount || 0) - 1, 0);
+
+    setLocalContent(prev => ({
+      ...prev,
+      isLiked: newLikedState,
+      likesCount: newLikesCount,
+    }));
+
+    try {
+      await toggleLikeMutation.mutateAsync({
+        id: localContent.id,
+        liked: newLikedState,
+        userId: user.id.toString(),
+      });
+    } catch (error) {
+      setLocalContent(prev => ({
+        ...prev,
+        isLiked: !newLikedState,
+        likesCount: localContent.likesCount || 0,
+      }));
+      console.error('Error toggling like:', error);
+    }
+  }, [localContent, toggleLikeMutation, user]);
+
+  const handleToggleRepost = useCallback(async () => {
+    if (!user) return;
+
+    const newRepostedState = !localContent.isReposted;
+    const newRepostsCount = newRepostedState
+      ? (localContent.repostsCount || 0) + 1
+      : Math.max((localContent.repostsCount || 0) - 1, 0);
+
+    setLocalContent(prev => ({
+      ...prev,
+      isReposted: newRepostedState,
+      repostsCount: newRepostsCount,
+    }));
+
+    try {
+      await toggleRepostMutation.mutateAsync({
+        id: localContent.id,
+        reposted: newRepostedState,
+        userId: user.id.toString(),
+      });
+    } catch (error) {
+      setLocalContent(prev => ({
+        ...prev,
+        isReposted: !newRepostedState,
+        repostsCount: localContent.repostsCount || 0,
+      }));
+      console.error('Error toggling repost:', error);
+    }
+  }, [localContent, toggleRepostMutation, user]);
 
   return {
-    formatDate,
-    getAllMedia,
     mediaItems,
     formattedDate,
     hasMedia,
-    hasImages,
     handleToggleLike,
     handleToggleRepost,
     localContent

@@ -1,98 +1,146 @@
 import { useState, useCallback, useMemo } from "react";
 import { Content, Comment } from "@/app/types/content";
+import useContentQueries from "@/app/contents/services/contentQueryFactory";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export const useCommentsSection = (content: Content) => {
-  const [comments, setComments] = useState<Comment[]>(content.comments || []);
+  const { user } = useAuth();
+  const contentQueries = useContentQueries(['content']);
+  const createCommentMutation = contentQueries.createComment();
+  const likeCommentMutation = contentQueries.likeComment();
+
+  const [localComments, setLocalComments] = useState<Comment[]>(content.comments || []);
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
-  const [repliesVisibleCount, setRepliesVisibleCount] = useState<Record<string, number>>({});
+  const [repliesVisibleCount, setRepliesVisibleCount] = useState<Map<string, number>>(new Map());
 
-  const handleAddComment = useCallback((text: string) => {
-    const newComment: Comment = {
-      id: Date.now().toString(),
+  const comments = useMemo(() => localComments, [localComments]);
+  const commentsCount = useMemo(() => comments.length, [comments]);
+
+  const handleAddComment = useCallback(async (text: string) => {
+    if (!user || !text.trim()) return;
+
+    const optimisticComment: Comment = {
+      id: `temp-${Date.now()}`,
       contentId: content.id,
-      userId: "current-user",
-      text,
-      authorId: "current-user",
-      authorName: "Usuário Atual",
-      authorImage: "https://ui-avatars.com/api/?name=UA&background=F5E5FD&color=5F3C6F",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      text: text.trim(),
+      authorId: user.id.toString(),
+      authorName: user.name,
+      authorImage: user.profilePictureUrl || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       likesCount: 0,
       isLikedByCurrentUser: false,
       repliesCount: 0,
-      replies: []
+      replies: [],
     };
 
-    setComments(prev => [newComment, ...prev]);
-  }, [content.id]);
+    setLocalComments(prev => [...prev, optimisticComment]);
 
-  const handleAddReply = useCallback((parentCommentId: string, text: string) => {
-    const newReply: Comment = {
-      id: Date.now().toString(),
+    try {
+      await createCommentMutation.mutateAsync({
+        contentId: parseInt(content.id),
+        authorId: user.id,
+        text: text.trim(),
+      });
+    } catch (error) {
+      setLocalComments(prev => prev.filter(c => c.id !== optimisticComment.id));
+      console.error('Error adding comment:', error);
+    }
+  }, [user, content.id, createCommentMutation]);
+
+  const handleAddReply = useCallback(async (parentCommentId: string, text: string) => {
+    if (!user || !text.trim()) return;
+
+    const optimisticReply: Comment = {
+      id: `temp-reply-${Date.now()}`,
       contentId: content.id,
-      userId: "current-user",
-      text,
-      authorId: "current-user",
-      authorName: "Usuário Atual",
-      authorImage: "https://ui-avatars.com/api/?name=UA&background=F5E5FD&color=5F3C6F",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      text: text.trim(),
+      authorId: user.id.toString(),
+      authorName: user.name,
+      authorImage: user.profilePictureUrl || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       likesCount: 0,
       isLikedByCurrentUser: false,
       repliesCount: 0,
-      replies: []
+      replies: [],
     };
 
-    setComments(prev => prev.map(comment => {
-      if (comment.id === parentCommentId) {
-        const updatedReplies = [...(comment.replies || []), newReply].sort(
-          (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
-        return {
-          ...comment,
-          replies: updatedReplies,
-          repliesCount: updatedReplies.length
-        };
-      }
-      return comment;
-    }));
-
-    setExpandedReplies(prev => new Set([...prev, parentCommentId]));
-  }, [content.id]);
-
-  const handleToggleLike = useCallback((commentId: string, isReply = false, parentId?: string) => {
-    if (isReply && parentId) {
-      setComments(prev => prev.map(comment => {
-        if (comment.id === parentId) {
-          const updatedReplies = comment.replies?.map(reply => {
-            if (reply.id === commentId) {
-              const isLiked = reply.isLikedByCurrentUser;
-              return {
-                ...reply,
-                isLikedByCurrentUser: !isLiked,
-                likesCount: (reply.likesCount || 0) + (isLiked ? -1 : 1)
-              };
-            }
-            return reply;
-          });
-          return { ...comment, replies: updatedReplies };
-        }
-        return comment;
-      }));
-    } else {
-      setComments(prev => prev.map(comment => {
-        if (comment.id === commentId) {
-          const isLiked = comment.isLikedByCurrentUser;
+    setLocalComments(prev =>
+      prev.map(comment => {
+        if (comment.id === parentCommentId) {
           return {
             ...comment,
-            isLikedByCurrentUser: !isLiked,
-            likesCount: (comment.likesCount || 0) + (isLiked ? -1 : 1)
+            replies: [...(comment.replies || []), optimisticReply],
+            repliesCount: (comment.repliesCount || 0) + 1,
           };
         }
         return comment;
-      }));
+      })
+    );
+
+    try {
+      await createCommentMutation.mutateAsync({
+        contentId: parseInt(content.id),
+        authorId: user.id,
+        text: text.trim(),
+        replyToCommentId: parseInt(parentCommentId),
+      });
+    } catch (error) {
+      setLocalComments(prev =>
+        prev.map(comment => {
+          if (comment.id === parentCommentId) {
+            return {
+              ...comment,
+              replies: (comment.replies || []).filter(r => r.id !== optimisticReply.id),
+              repliesCount: Math.max((comment.repliesCount || 0) - 1, 0),
+            };
+          }
+          return comment;
+        })
+      );
+      console.error('Error adding reply:', error);
     }
-  }, []);
+  }, [user, content.id, createCommentMutation]);
+
+  const handleToggleLike = useCallback(async (commentId: string) => {
+    setLocalComments(prev =>
+      prev.map(comment => {
+        if (comment.id === commentId) {
+          const newLikedState = !comment.isLikedByCurrentUser;
+          return {
+            ...comment,
+            isLikedByCurrentUser: newLikedState,
+            likesCount: newLikedState
+              ? (comment.likesCount || 0) + 1
+              : Math.max((comment.likesCount || 0) - 1, 0),
+          };
+        }
+        return comment;
+      })
+    );
+
+    try {
+      await likeCommentMutation.mutateAsync(commentId);
+    } catch (error) {
+      setLocalComments(prev =>
+        prev.map(comment => {
+          if (comment.id === commentId) {
+            const revertLikedState = !comment.isLikedByCurrentUser;
+            return {
+              ...comment,
+              isLikedByCurrentUser: revertLikedState,
+              likesCount: revertLikedState
+                ? (comment.likesCount || 0) + 1
+                : Math.max((comment.likesCount || 0) - 1, 0),
+            };
+          }
+          return comment;
+        })
+      );
+      console.error('Error toggling comment like:', error);
+    }
+  }, [likeCommentMutation]);
 
   const handleToggleReplies = useCallback((commentId: string) => {
     setExpandedReplies(prev => {
@@ -101,22 +149,19 @@ export const useCommentsSection = (content: Content) => {
         newSet.delete(commentId);
       } else {
         newSet.add(commentId);
-        if (!repliesVisibleCount[commentId]) {
-          setRepliesVisibleCount(prev => ({ ...prev, [commentId]: 5 }));
-        }
       }
       return newSet;
     });
-  }, [repliesVisibleCount]);
-
-  const handleShowMoreReplies = useCallback((commentId: string) => {
-    setRepliesVisibleCount(prev => ({
-      ...prev,
-      [commentId]: (prev[commentId] || 5) + 5
-    }));
   }, []);
 
-  const commentsCount = useMemo(() => comments.length, [comments]);
+  const handleShowMoreReplies = useCallback((commentId: string) => {
+    setRepliesVisibleCount(prev => {
+      const newMap = new Map(prev);
+      const current = newMap.get(commentId) || 3;
+      newMap.set(commentId, current + 5);
+      return newMap;
+    });
+  }, []);
 
   return {
     comments,
@@ -127,6 +172,6 @@ export const useCommentsSection = (content: Content) => {
     handleAddReply,
     handleToggleLike,
     handleToggleReplies,
-    handleShowMoreReplies
+    handleShowMoreReplies,
   };
 };
