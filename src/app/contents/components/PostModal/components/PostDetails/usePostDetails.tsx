@@ -14,8 +14,8 @@ export const usePostDetails = (content: Content) => {
   const { user } = useAuth();
   const [localContent, setLocalContent] = useState(content);
   const contentQueries = useContentQueries(['content']);
-  const toggleLikeMutation = contentQueries.toggleLike();
-  const toggleRepostMutation = contentQueries.toggleRepost();
+  const toggleLikeMutation = contentQueries.useToggleLike();
+  const toggleRepostMutation = contentQueries.useToggleRepost();
 
   const formatDate = useCallback((date: Date | string) => {
     return moment(date).format("DD [de] MMMM [de] YYYY");

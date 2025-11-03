@@ -10,7 +10,7 @@ interface CategorySelectorProps {
 }
 
 const CategorySelector: React.FC<CategorySelectorProps> = ({
-  selectedCategories,
+  contentServices,
   onCategoriesChange,
   error
 }) => {

@@ -114,7 +114,7 @@ const contentServices = {
     if (contentData.files && contentData.files.length > 0) {
       const formData = new FormData();
       contentData.files.forEach((file) => {
-        formData.append('files', file as MediaDTO);
+        formData.append('files', file as );
       });
 
       const uploadRes = await contentServices.uploadMedia(formData);
@@ -127,7 +127,7 @@ const contentServices = {
 
     const mediaArray = uploadedMedia.map((m) => ({
       url: m.url,
-      contentType: m.contentType || m.type,
+      contentType: m.contentType,
       contentSize: m.contentSize || 0,
       altText: m.altText || contentData.title,
     }));

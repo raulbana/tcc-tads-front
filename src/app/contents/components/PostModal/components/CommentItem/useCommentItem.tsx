@@ -67,7 +67,7 @@ export const useCommentItem = ({
   );
 
   const formattedDate = useMemo(() =>
-    formatDate(comment.createdAt),
+    formatDate(new Date(comment.createdAt)),
     [comment.createdAt, formatDate]
   );
 

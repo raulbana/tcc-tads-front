@@ -15,13 +15,13 @@ const useContents = () => {
   const {
     data: categories = [],
     isLoading: isLoadingCategories,
-  } = contentQueries.getCategories();
+  } = contentQueries.useGetCategories();
 
   const {
     data: contentsList = [],
     isLoading: isLoadingContents,
     refetch: refetchContents,
-  } = contentQueries.getList(user?.id.toString() || '', false);
+  } = contentQueries.useGetList(user?.id.toString() || '', false);
 
   const filteredContents = useMemo(() => {
     if (!selectedCategory) return contentsList;
@@ -49,7 +49,7 @@ const useContents = () => {
     if (!user) return;
     
     try {
-      const fullContent = await contentQueries.getById(
+      const fullContent = await contentQueries.useGetById(
         content.id.toString(),
         user.id.toString()
       ).queryFn();

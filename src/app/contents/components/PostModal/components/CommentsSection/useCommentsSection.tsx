@@ -6,8 +6,8 @@ import { useAuth } from "@/app/contexts/AuthContext";
 export const useCommentsSection = (content: Content) => {
   const { user } = useAuth();
   const contentQueries = useContentQueries(['content']);
-  const createCommentMutation = contentQueries.createComment();
-  const likeCommentMutation = contentQueries.likeComment();
+  const createCommentMutation = contentQueries.useCreateComment();
+  const likeCommentMutation = contentQueries.useLikeComment();
 
   const [localComments, setLocalComments] = useState<Comment[]>(content.comments || []);
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());

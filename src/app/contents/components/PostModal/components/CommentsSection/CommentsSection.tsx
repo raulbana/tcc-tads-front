@@ -45,7 +45,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ content }) => {
               onToggleReplies={handleToggleReplies}
               onShowMoreReplies={handleShowMoreReplies}
               isExpanded={expandedReplies.has(comment.id)}
-              visibleRepliesCount={repliesVisibleCount[comment.id] || 5}
+              visibleRepliesCount={repliesVisibleCount.get(comment.id) || 5}
             />
           ))
         )}

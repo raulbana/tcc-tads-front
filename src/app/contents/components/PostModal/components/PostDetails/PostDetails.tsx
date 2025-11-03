@@ -68,7 +68,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
               ) : (
                 <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden relative">
                   <Image
-                    src={localContent.coverUrl}
+                    src={localContent.media[0].url}
                     alt={localContent.title}
                     fill
                     className="object-cover"

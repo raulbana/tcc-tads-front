@@ -41,10 +41,7 @@ const ContentsPage = () => {
             text="Novo Post"
             onClick={() => setIsCreateModalOpen(true)}
             className="flex items-center gap-2"
-          >
-            <PlusIcon className="w-5 h-5" />
-            Novo Post
-          </Button>
+          />
         </div>
 
         <CategoryChips
