@@ -4,13 +4,13 @@ import { ContentCategory } from '@/app/types/content';
 import contentServices from '../../services/contentServices';
 
 interface CategorySelectorProps {
-  selectedCategories: string[];
-  onCategoriesChange: (categories: string[]) => void;
+  selectedCategories: ContentCategory[];
+  onCategoriesChange: (categories: ContentCategory[]) => void;
   error?: string;
 }
 
 const CategorySelector: React.FC<CategorySelectorProps> = ({
-  contentServices,
+  selectedCategories,
   onCategoriesChange,
   error
 }) => {
@@ -32,13 +32,13 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
     fetchCategories();
   }, []);
 
-  const toggleCategory = (categoryId: string) => {
-    const isSelected = selectedCategories.includes(categoryId);
+  const toggleCategory = (category: ContentCategory) => {
+    const isSelected = selectedCategories.some(c => c.id === category.id);
     
     if (isSelected) {
-      onCategoriesChange(selectedCategories.filter(id => id !== categoryId));
+      onCategoriesChange(selectedCategories.filter(c => c.id !== category.id));
     } else {
-      onCategoriesChange([...selectedCategories, categoryId]);
+      onCategoriesChange([...selectedCategories, category]);
     }
   };
 
@@ -63,15 +63,15 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
       </label>
       <div className="flex flex-wrap gap-2">
         {categories.map((category) => {
-          const isSelected = selectedCategories.includes(category.id);
+          const isSelected = selectedCategories.some(c => c.id === category.id);
           return (
             <button
               key={category.id}
               type="button"
-              onClick={() => toggleCategory(category.id)}
+              onClick={() => toggleCategory(category)}
               className={`px-3 py-1 text-sm rounded-full border transition-colors ${
                 isSelected
-                  ? 'bg-purple-04 text-white border-purple-04'
+                  ? 'bg-purple-600 text-white border-purple-600'
                   : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
               }`}
             >

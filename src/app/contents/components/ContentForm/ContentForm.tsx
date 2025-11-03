@@ -109,7 +109,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
               type="text"
               label="Subtópico"
               placeholder="Digite o subtópico do post (opcional)"
-              value={field.value ? field.value : ''}
+              value={field.value || ''}
               onChange={field.onChange}
               error={errors.subtitle?.message}
             />
@@ -126,7 +126,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
               type="textarea"
               label="Conteúdo adicional"
               placeholder="Digite conteúdo adicional do post (opcional)"
-              value={field.value ? field.value : ''}
+              value={field.value || ''}
               onChange={field.onChange}
               error={errors.subcontent?.message}
             />
@@ -141,7 +141,6 @@ const ContentForm: React.FC<ContentFormProps> = ({
             text="Cancelar"
             onClick={onCancel}
             disabled={isSubmitting}
-            className=""
           />
         )}
 
@@ -153,9 +152,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
           }
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className=""
         />
-
       </div>
     </form>
   );

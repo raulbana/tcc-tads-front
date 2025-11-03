@@ -1,4 +1,4 @@
-
+import { apiFactory } from "@/app/services/apiFactory";
 import { API_BASE_URL } from "@/app/config/env";
 import apiRoutes from "@/app/utils/apiRoutes";
 import {
@@ -12,26 +12,12 @@ import {
   ContentSimpleDTO,
   MediaDTO,
   Comment,
+  UploadFile,
   CreateContentWithFilesRequest,
 } from "@/app/types/content";
 import { contentCache } from "./contentCache";
-import apiFactory from "@/app/services/apiFactory";
 
 const api = apiFactory(API_BASE_URL);
-
-export interface CreateContentRequestService {
-  title: string;
-  description: string;
-  subtitle?: string;
-  subcontent?: string;
-  categories: number[];
-  images: File[];
-  video?: File;
-}
-
-export interface UpdateContentRequestService extends Partial<CreateContentRequestService> {
-  id: string;
-}
 
 const contentServices = {
   getById: async (contentId: string, userId: string): Promise<Content> => {
@@ -114,7 +100,7 @@ const contentServices = {
     if (contentData.files && contentData.files.length > 0) {
       const formData = new FormData();
       contentData.files.forEach((file) => {
-        formData.append('files', file as );
+        formData.append('files', file as any);
       });
 
       const uploadRes = await contentServices.uploadMedia(formData);
@@ -127,7 +113,7 @@ const contentServices = {
 
     const mediaArray = uploadedMedia.map((m) => ({
       url: m.url,
-      contentType: m.contentType,
+      contentType: m.contentType || m.type,
       contentSize: m.contentSize || 0,
       altText: m.altText || contentData.title,
     }));
@@ -272,7 +258,7 @@ const contentServices = {
     return response.data;
   },
 
-  uploadMedia: async (files: FormData): Promise<MediaDTO> => {
+  uploadMedia: async (files: FormData): Promise<any> => {
     const headers = {
       'Content-Type': 'multipart/form-data',
     };

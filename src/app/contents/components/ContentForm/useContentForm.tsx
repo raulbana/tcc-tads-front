@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ContentFormData, contentSchema } from "@/app/contents/schemas/contentSchema";
 import { useUpload } from "@/app/contexts/UploadContext";
 import { useState, useCallback } from "react";
-import { Content } from "@/app/types/content";
+import { Content, ContentCategory } from "@/app/types/content";
 
 interface UseContentFormProps {
   onSuccess?: (contentId: string) => void;
@@ -40,7 +40,11 @@ export const useContentForm = ({
       subcontent: initialData?.subcontent || '',
       images: [],
       video: undefined,
-      categories: initialData?.category || [],
+      categories: initialData?.categories?.map(cat => ({
+        id: typeof cat === 'string' ? cat : cat.toString(),
+        name: cat,
+        auditable: false
+      })) || [],
     },
     mode: 'onSubmit',
   });
@@ -77,8 +81,8 @@ export const useContentForm = ({
     setValue('video', video);
   }, [setValue]);
 
-  const handleCategoriesChange = useCallback((category: ContentCategory[]) => {
-    setValue('categories', category);
+  const handleCategoriesChange = useCallback((categories: ContentCategory[]) => {
+    setValue('categories', categories);
   }, [setValue]);
 
   return {

@@ -33,17 +33,11 @@ export const contentSchema = z.object({
     ),
   categories: z
     .array(z.object({
-      id: z.string(),
+      id: z.union([z.string(), z.number()]),
       name: z.string(),
       auditable: z.boolean()
     }))
     .min(1, 'Pelo menos uma categoria é obrigatória')
 });
-
-export interface ContentCategory {
-  id: string;
-  name: string;
-  auditable: boolean;
-}
 
 export type ContentFormData = z.infer<typeof contentSchema>;
