@@ -1,5 +1,5 @@
 import React from "react";
-import { CalendarDayData, UrinationData } from "@/app/types/diary";
+import { CalendarDayData, LeakageLevel, UrinationData } from "@/app/types/diary";
 import Button from "@/app/components/Button/Button";
 import DayDetailsContent from "../DayDetailsContent/DayDetailsContent";
 import DayDetailsEmpty from "../DayDetailsEmpty/DayDetailsEmpty";
@@ -9,12 +9,18 @@ interface DayDetailsProps {
   selectedDay: CalendarDayData;
   onAddRecord: () => void;
   onEditRecord?: (record: UrinationData, index: number) => void;
+  onDeleteRecord?: (index: number) => void;
+  onUpdateLeakage?: (level: LeakageLevel) => void;
+  onUpdateNotes?: (notes: string) => void;
 }
 
 const DayDetails: React.FC<DayDetailsProps> = ({ 
   selectedDay, 
   onAddRecord, 
-  onEditRecord 
+  onEditRecord,
+  onDeleteRecord,
+  onUpdateLeakage,
+  onUpdateNotes,
 }) => {
   const hasRecords = selectedDay.urinationData && selectedDay.urinationData.length > 0;
 
@@ -25,6 +31,9 @@ const DayDetails: React.FC<DayDetailsProps> = ({
           <DayDetailsContent 
             selectedDay={selectedDay} 
             onEditRecord={onEditRecord}
+            onDeleteRecord={onDeleteRecord}
+            onUpdateLeakage={onUpdateLeakage}
+            onUpdateNotes={onUpdateNotes}
           />
         ) : (
           <DayDetailsEmpty selectedDay={selectedDay} />

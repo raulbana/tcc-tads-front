@@ -6,6 +6,7 @@ import ClientNavbarWrapper from "./components/Navbar/components/ClientNavbarWrap
 import { UploadProvider } from "./contexts/UploadContext";
 import UploadProgress from "./contents/components/UploadProgress/UploadProgress";
 import { AuthProvider } from "./contexts/AuthContext";
+import { DiaryProvider } from "./contexts/DiaryContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,11 +32,13 @@ export default function RootLayout({
 
       <AuthProvider>
          <UploadProvider>
-          <html lang="en">
-            <body className={`${inter.variable} antialiased`}>
-              <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
-            </body>
-          </html>
+          <DiaryProvider>
+            <html lang="en">
+              <body className={`${inter.variable} antialiased`}>
+                <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
+              </body>
+            </html>
+          </DiaryProvider>
         </UploadProvider>
       </AuthProvider>
 

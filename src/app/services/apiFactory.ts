@@ -26,7 +26,9 @@ const apiFactory = (baseURL: string) => {
           try {
             const user = JSON.parse(userData);
             if (user?.id) {
-              config.headers['user-id'] = user.id.toString();
+              const userId = user.id.toString();
+              config.headers['user-id'] = userId;
+              config.headers['X-User-Id'] = userId;
             }
           } catch (error) {
             console.warn('Erro ao parsear dados do usuário:', error);

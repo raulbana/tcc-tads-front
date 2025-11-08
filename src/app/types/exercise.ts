@@ -77,3 +77,72 @@ export interface Workout {
     description: string;
     category: string;
 }
+
+export interface ExerciseCategory {
+    id: string;
+    name: string;
+    description?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface ExerciseAttribute {
+    id: string;
+    name: string;
+    valueType?: 'NUMBER' | 'TEXT' | 'BOOLEAN';
+    unit?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface WorkoutPlan {
+    id: string;
+    name: string;
+    description?: string;
+    difficulty?: WorkoutDifficulty;
+    workouts: Workout[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface ExerciseFeedbackCreatorDTO {
+    exerciseId: number;
+    workoutId: number;
+    rating: number;
+    evaluation: string;
+    comments?: string;
+    completedAt?: string;
+}
+
+export interface WorkoutCompletionDTO {
+    workoutId: number;
+    completedAt: string;
+}
+
+export interface UserWorkoutFeedbackDTO {
+    userId: string;
+    workoutId: string;
+    rating: WorkoutEvaluation;
+    difficultyFeedback: string;
+    comments?: string;
+}
+
+export interface UserWorkoutCompletionDTO {
+    userId: string;
+    workoutId: string;
+    completedAt: string;
+    duration?: string;
+}
+
+export interface UserWorkoutPlanDTO {
+    id: number;
+    plan: WorkoutPlan;
+    startDate: string;
+    endDate?: string;
+    totalProgress: number;
+    weekProgress: number;
+    currentWeek: number;
+    nextWorkout?: number;
+    lastWorkoutDate?: string;
+    completed: boolean;
+}
