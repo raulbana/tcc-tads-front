@@ -5,6 +5,7 @@ import {
   Exercise,
   Workout,
   WorkoutPlan,
+  WorkoutDifficulty,
   UserWorkoutPlanDTO,
   ExerciseFeedbackCreatorDTO,
   WorkoutCompletionDTO,
@@ -68,6 +69,26 @@ function mapExerciseDTO(raw: any): Exercise {
   };
 }
 
+const mapDifficultyLevel = (
+  rawDifficulty?: string | null
+): WorkoutDifficulty => {
+  const normalized = (rawDifficulty ?? "").toString().toUpperCase();
+
+  switch (normalized) {
+    case "BEGINNER":
+    case "EASY":
+      return "EASY";
+    case "MODERATE":
+    case "MEDIUM":
+      return "MODERATE";
+    case "HARD":
+    case "ADVANCED":
+      return "HARD";
+    default:
+      return "EASY";
+  }
+};
+
 function mapWorkoutDTO(raw: any): Workout {
   const exercisesSource = raw.exercises;
   const exercisesArray: any[] = Array.isArray(exercisesSource)
@@ -76,15 +97,7 @@ function mapWorkoutDTO(raw: any): Workout {
     ? Object.values(exercisesSource)
     : [];
 
-  const difficultyLevel = raw.difficultyLevel || raw.difficulty;
-  const difficulty: Workout["difficulty"] =
-    difficultyLevel === "BEGINNER"
-      ? "EASY"
-      : difficultyLevel === "MODERATE"
-      ? "MODERATE"
-      : difficultyLevel === "HARD"
-      ? "HARD"
-      : "EASY";
+  const difficulty = mapDifficultyLevel(raw.difficultyLevel || raw.difficulty);
 
   const totalDuration = raw.totalDuration;
   const duration =
@@ -139,21 +152,11 @@ export const exerciseServices = {
         ? Object.values(workoutsSource)
         : [];
 
-      const difficultyLevel = raw.difficultyLevel || raw.difficulty;
-      const difficulty: WorkoutPlan["difficulty"] =
-        difficultyLevel === "BEGINNER"
-          ? "EASY"
-          : difficultyLevel === "MODERATE"
-          ? "MODERATE"
-          : difficultyLevel === "HARD"
-          ? "HARD"
-          : "EASY";
-
       return {
         id: String(raw.id),
         name: raw.name || raw.title || "",
         description: raw.description || "",
-        difficulty,
+        difficulty: mapDifficultyLevel(raw.difficultyLevel || raw.difficulty),
         workouts: workoutsArray.map(mapWorkoutDTO),
         createdAt: new Date(raw.createdAt || Date.now()),
         updatedAt: new Date(raw.updatedAt || Date.now()),
@@ -171,21 +174,11 @@ export const exerciseServices = {
       ? Object.values(workoutsSource)
       : [];
 
-    const difficultyLevel = raw.difficultyLevel || raw.difficulty;
-    const difficulty: WorkoutPlan["difficulty"] =
-      difficultyLevel === "BEGINNER"
-        ? "EASY"
-        : difficultyLevel === "MODERATE"
-        ? "MODERATE"
-        : difficultyLevel === "HARD"
-        ? "HARD"
-        : "EASY";
-
     return {
       id: String(raw.id),
       name: raw.name || raw.title || "",
       description: raw.description || "",
-      difficulty,
+      difficulty: mapDifficultyLevel(raw.difficultyLevel || raw.difficulty),
       workouts: workoutsArray.map(mapWorkoutDTO),
       createdAt: new Date(raw.createdAt || Date.now()),
       updatedAt: new Date(raw.updatedAt || Date.now()),
@@ -223,21 +216,13 @@ export const exerciseServices = {
         ? Object.values(workoutsSource)
         : [];
 
-      const difficultyLevel = raw.plan.difficultyLevel || raw.plan.difficulty;
-      const difficulty: WorkoutPlan["difficulty"] =
-        difficultyLevel === "BEGINNER"
-          ? "EASY"
-          : difficultyLevel === "MODERATE"
-          ? "MODERATE"
-          : difficultyLevel === "HARD"
-          ? "HARD"
-          : "EASY";
-
       const mappedPlan: WorkoutPlan = {
         id: String(raw.plan.id),
         name: raw.plan.name || raw.plan.title || "",
         description: raw.plan.description || "",
-        difficulty,
+        difficulty: mapDifficultyLevel(
+          raw.plan.difficultyLevel || raw.plan.difficulty
+        ),
         workouts: workoutsArray.map(mapWorkoutDTO),
         createdAt: new Date(raw.plan.createdAt || Date.now()),
         updatedAt: new Date(raw.plan.updatedAt || Date.now()),

@@ -1,21 +1,20 @@
-import axios from 'axios';
+import axios from "axios";
 
-const TOKEN_KEY = 'dailyiu_token';
-const USER_KEY = 'dailyiu_user';
+const TOKEN_KEY = "dailyiu_token";
+const USER_KEY = "dailyiu_user";
 
 const apiFactory = (baseURL: string) => {
   const apiInstance = axios.create({
     baseURL,
     timeout: 15000,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
-  
   apiInstance.interceptors.request.use(
     (config) => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const token = localStorage.getItem(TOKEN_KEY);
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
@@ -27,11 +26,10 @@ const apiFactory = (baseURL: string) => {
             const user = JSON.parse(userData);
             if (user?.id) {
               const userId = user.id.toString();
-              config.headers['user-id'] = userId;
-              config.headers['X-User-Id'] = userId;
+              config.headers["X-User-Id"] = userId;
             }
           } catch (error) {
-            console.warn('Erro ao parsear dados do usuário:', error);
+            console.warn("Erro ao parsear dados do usuário:", error);
           }
         }
       }
@@ -47,13 +45,15 @@ const apiFactory = (baseURL: string) => {
     (response) => response,
     (error) => {
       if (error.response) {
-        console.error('API Error:', error.response.data);
+        console.error("API Error:", error.response.data);
 
-        if (error.response.status === 401 && typeof window !== 'undefined') {
-          console.warn('Token inválido ou expirado, limpando dados de autenticação');
+        if (error.response.status === 401 && typeof window !== "undefined") {
+          console.warn(
+            "Token inválido ou expirado, limpando dados de autenticação"
+          );
           localStorage.removeItem(TOKEN_KEY);
           localStorage.removeItem(USER_KEY);
-          window.location.href = '/authentication/login';
+          window.location.href = "/authentication/login";
         }
       }
 

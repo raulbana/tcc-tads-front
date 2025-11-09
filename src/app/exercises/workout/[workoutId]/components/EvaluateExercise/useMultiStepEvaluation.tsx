@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Exercise, Workout } from "@/app/types/exercise";
@@ -12,14 +12,18 @@ import {
 } from "./schema/exerciseEvaluation";
 import useExerciseQueries from "@/app/exercises/services/exerciseQueryFactory";
 
+const RATING_EASILY = 1;
+const RATING_WITH_DIFFICULTY = 2;
+const RATING_COULD_NOT_COMPLETE = 3;
+
 const formatLocalDate = (date: Date): string => {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 
-type EvaluationStep = 'WORKOUT_EVALUATION' | 'EXERCISE_EVALUATION';
+type EvaluationStep = "WORKOUT_EVALUATION" | "EXERCISE_EVALUATION";
 
 interface UseMultiStepEvaluationProps {
   workout: Workout;
@@ -40,11 +44,11 @@ const useMultiStepEvaluation = ({
   onComplete,
   scrollToTop,
 }: UseMultiStepEvaluationProps) => {
-  const queries = useExerciseQueries(['exercises', 'feedback']);
+  const queries = useExerciseQueries(["exercises", "feedback"]);
   const submitWorkoutFeedbackMutation = queries.useSubmitWorkoutFeedback();
 
   const [currentStep, setCurrentStep] =
-    useState<EvaluationStep>('WORKOUT_EVALUATION');
+    useState<EvaluationStep>("WORKOUT_EVALUATION");
   const [workoutEvaluationData, setWorkoutEvaluationData] =
     useState<WorkoutEvaluationAnswers | null>(null);
   const [currentExerciseEvaluationIndex, setCurrentExerciseEvaluationIndex] =
@@ -58,7 +62,7 @@ const useMultiStepEvaluation = ({
 
   const workoutForm = useForm<WorkoutEvaluationAnswers>({
     resolver: zodResolver(workoutEvaluationSchema),
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
       difficulty: undefined,
     },
@@ -66,62 +70,63 @@ const useMultiStepEvaluation = ({
 
   const exerciseForm = useForm<ExerciseSpecificEvaluationAnswers>({
     resolver: zodResolver(exerciseSpecificEvaluationSchema),
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
       completion: undefined,
     },
   });
 
+  const resetExerciseForm = exerciseForm.reset;
+
   useEffect(() => {
-    if (currentStep === 'EXERCISE_EVALUATION') {
-      exerciseForm.reset({
+    if (currentStep === "EXERCISE_EVALUATION") {
+      resetExerciseForm({
         completion: undefined,
       });
     }
-  }, [currentExerciseEvaluationIndex, currentStep]);
+  }, [currentExerciseEvaluationIndex, currentStep, resetExerciseForm]);
 
   const totalExercises = workout.exercises.length;
   const currentExercise = workout.exercises[currentExerciseEvaluationIndex];
   const isLastExercise = currentExerciseEvaluationIndex === totalExercises - 1;
-  const isLastStep = currentStep === 'EXERCISE_EVALUATION' && isLastExercise;
+  const isLastStep = currentStep === "EXERCISE_EVALUATION" && isLastExercise;
 
   const totalSteps = 1 + totalExercises;
   const currentStepIndex =
-    currentStep === 'WORKOUT_EVALUATION'
+    currentStep === "WORKOUT_EVALUATION"
       ? 1
       : 1 + currentExerciseEvaluationIndex + 1;
 
-  const difficultyOptions: QuestionOptions[] = [
-    {value: 'EASY', label: 'Fácil'},
-    {value: 'MODERATE', label: 'Regular'},
-    {value: 'HARD', label: 'Difícil'},
-  ];
+  const difficultyOptions: QuestionOptions[] = useMemo(
+    () => [
+      { value: "EASY", label: "Fácil" },
+      { value: "MODERATE", label: "Regular" },
+      { value: "HARD", label: "Difícil" },
+    ],
+    []
+  );
 
-  const completionOptions: QuestionOptions[] = [
-    {value: 'EASILY', label: 'Consegui com tranquilidade'},
-    {value: 'WITH_DIFFICULTY', label: 'Consegui com dificuldade'},
-    {value: 'COULD_NOT_COMPLETE', label: 'Não consegui'},
-  ];
-
-  const confidenceOptions: QuestionOptions[] = [
-    {value: 'VERY_CONFIDENT', label: 'Muito confiante'},
-    {value: 'CONFIDENT', label: 'Confiante'},
-    {value: 'NEUTRAL', label: 'Neutro'},
-    {value: 'NOT_CONFIDENT', label: 'Não confiante'},
-  ];
+  const completionOptions: QuestionOptions[] = useMemo(
+    () => [
+      { value: "EASILY", label: "Consegui com tranquilidade" },
+      { value: "WITH_DIFFICULTY", label: "Consegui com dificuldade" },
+      { value: "COULD_NOT_COMPLETE", label: "Não consegui" },
+    ],
+    []
+  );
 
   const handleNextStep = () => {
-    if (currentStep === 'WORKOUT_EVALUATION') {
+    if (currentStep === "WORKOUT_EVALUATION") {
       const workoutData = workoutForm.getValues();
       setWorkoutEvaluationData(workoutData);
-      setCurrentStep('EXERCISE_EVALUATION');
+      setCurrentStep("EXERCISE_EVALUATION");
     }
   };
 
   const handlePreviousStep = () => {
-    if (currentStep === 'EXERCISE_EVALUATION') {
+    if (currentStep === "EXERCISE_EVALUATION") {
       if (currentExerciseEvaluationIndex === 0) {
-        setCurrentStep('WORKOUT_EVALUATION');
+        setCurrentStep("WORKOUT_EVALUATION");
       } else {
         setCurrentExerciseEvaluationIndex(currentExerciseEvaluationIndex - 1);
       }
@@ -138,7 +143,7 @@ const useMultiStepEvaluation = ({
   };
 
   const handleWorkoutContinue = () => {
-    workoutForm.handleSubmit(data => {
+    workoutForm.handleSubmit((data) => {
       handleNextStep();
       if (scrollToTop) {
         setTimeout(() => scrollToTop(), 100);
@@ -147,7 +152,7 @@ const useMultiStepEvaluation = ({
   };
 
   const handleExerciseContinue = async () => {
-    exerciseForm.handleSubmit(async data => {
+    exerciseForm.handleSubmit(async (data) => {
       const newEvaluation = {
         exerciseId: currentExercise.id,
         evaluation: data,
@@ -164,10 +169,6 @@ const useMultiStepEvaluation = ({
       } else {
         if (workoutEvaluationData && updatedEvaluations.length > 0) {
           try {
-            const RATING_EASILY = 1;
-            const RATING_WITH_DIFFICULTY = 2;
-            const RATING_COULD_NOT_COMPLETE = 3;
-
             const completionToRating: Record<string, number> = {
               EASILY: RATING_EASILY,
               WITH_DIFFICULTY: RATING_WITH_DIFFICULTY,
@@ -175,18 +176,19 @@ const useMultiStepEvaluation = ({
             };
 
             const feedbackArray = updatedEvaluations
-              .map(evalData => {
+              .map((evalData) => {
                 const exercise = workout.exercises.find(
-                  ex => ex.id === evalData.exerciseId,
+                  (ex) => ex.id === evalData.exerciseId
                 );
                 const rating =
-                  completionToRating[evalData.evaluation.completion] || RATING_COULD_NOT_COMPLETE;
-                
+                  completionToRating[evalData.evaluation.completion] ||
+                  RATING_COULD_NOT_COMPLETE;
+
                 const exerciseId = Number(evalData.exerciseId);
                 const workoutId = Number(workout.id);
 
-                if (isNaN(exerciseId) || isNaN(workoutId)) {
-                  console.error('IDs inválidos:', {
+                if (Number.isNaN(exerciseId) || Number.isNaN(workoutId)) {
+                  console.error("IDs inválidos:", {
                     exerciseId: evalData.exerciseId,
                     workoutId: workout.id,
                   });
@@ -194,7 +196,7 @@ const useMultiStepEvaluation = ({
                 }
 
                 if (!workoutEvaluationData?.difficulty) {
-                  console.error('Dificuldade do treino não definida');
+                  console.error("Dificuldade do treino não definida");
                   return null;
                 }
 
@@ -219,15 +221,17 @@ const useMultiStepEvaluation = ({
 
                 return feedbackItem;
               })
-              .filter((item): item is NonNullable<typeof item> => item !== null);
+              .filter(
+                (item): item is NonNullable<typeof item> => item !== null
+              );
 
             if (feedbackArray.length > 0) {
               await submitWorkoutFeedbackMutation.mutateAsync(feedbackArray);
             } else {
-              console.warn('Nenhum feedback válido para enviar');
+              console.warn("Nenhum feedback válido para enviar");
             }
           } catch (error) {
-            console.error('Erro ao enviar feedback do treino:', error);
+            console.error("Erro ao enviar feedback do treino:", error);
           }
         }
 
@@ -257,7 +261,6 @@ const useMultiStepEvaluation = ({
 
     difficultyOptions,
     completionOptions,
-    confidenceOptions,
 
     currentExercise,
     currentExerciseIndex: currentExerciseEvaluationIndex + 1,
@@ -267,4 +270,3 @@ const useMultiStepEvaluation = ({
 };
 
 export default useMultiStepEvaluation;
-

@@ -13,7 +13,7 @@ import {
   normalizeTimeToHHMMSS,
 } from "@/app/types/diary";
 
-const api = apiFactory(API_BASE_URL);
+const api = apiFactory(API_BASE_URL ?? "");
 
 const toISODate = (date: Date) => date.toISOString().split("T")[0];
 
@@ -35,7 +35,7 @@ export const diaryServices = {
   async getCalendarEvents(
     fromDate: Date,
     toDate: Date,
-    userId?: string,
+    userId?: string
   ): Promise<CalendarRangeResponse> {
     if (!userId) {
       return {};
@@ -50,9 +50,9 @@ export const diaryServices = {
       `${apiRoutes.diary.calendar}${queryString ? `?${queryString}` : ""}`,
       {
         headers: {
-          "user-id": ensureUserId(userId),
+          "user-Id": ensureUserId(userId),
         },
-      },
+      }
     );
 
     return mapCalendarRangeDTOToData(response.data ?? {});
@@ -60,7 +60,7 @@ export const diaryServices = {
 
   async setCalendarEvent(
     request: CalendarRequestDTO,
-    userId?: string,
+    userId?: string
   ): Promise<CalendarDayData> {
     if (!userId) {
       throw new Error("Usuário não autenticado");
@@ -68,7 +68,7 @@ export const diaryServices = {
 
     const normalizedPayload: CalendarRequestDTO = {
       ...request,
-      urinationData: request.urinationData?.map(urination => ({
+      urinationData: request.urinationData?.map((urination) => ({
         ...urination,
         time: normalizeTimeToHHMMSS(urination.time),
       })),
@@ -79,9 +79,9 @@ export const diaryServices = {
       normalizedPayload,
       {
         headers: {
-          "x-user-id": ensureUserId(userId),
+          "user-Id": ensureUserId(userId),
         },
-      },
+      }
     );
 
     return mapCalendarDayDTOToData(response.data);
@@ -90,7 +90,7 @@ export const diaryServices = {
   async getReport(
     from: string,
     to: string,
-    userId?: string,
+    userId?: string
   ): Promise<ReportDTO> {
     if (!userId) {
       throw new Error("Usuário não autenticado");
@@ -101,9 +101,9 @@ export const diaryServices = {
       `${apiRoutes.diary.report}?${params.toString()}`,
       {
         headers: {
-          "x-user-id": ensureUserId(userId),
+          "X-User-Id": ensureUserId(userId),
         },
-      },
+      }
     );
 
     return response.data;

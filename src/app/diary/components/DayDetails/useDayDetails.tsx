@@ -52,21 +52,18 @@ export const useDiaryPage = () => {
     }
   }, [todayOrFirstDay, selectedDay]);
 
-  const updateSelectedDayFromContext = useCallback(() => {
-    if (!selectedDay) return;
+  useEffect(() => {
+    if (!selectedDay) {
+      return;
+    }
+
     const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
     const updated = getDayData(isoDate);
-    if (updated) {
+
+    if (updated && updated !== selectedDay) {
       setSelectedDay(updated);
     }
   }, [selectedDay, getDayData]);
-
-
-  useEffect(() => {
-    if (selectedDay) {
-      updateSelectedDayFromContext();
-    }
-  }, [selectedDay, updateSelectedDayFromContext]);
 
   const handleDaySelect = (day: CalendarDayData) => {
     setSelectedDay(day);
@@ -98,9 +95,12 @@ export const useDiaryPage = () => {
       if (!selectedDay) return;
       const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
       await deleteUrinationData(isoDate, index);
-      updateSelectedDayFromContext();
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
     },
-    [selectedDay, deleteUrinationData, updateSelectedDayFromContext]
+    [selectedDay, deleteUrinationData, getDayData]
   );
 
   const handleUpdateLeakage = useCallback(
@@ -108,9 +108,12 @@ export const useDiaryPage = () => {
       if (!selectedDay) return;
       const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
       await updateLeakageLevel(isoDate, level);
-      updateSelectedDayFromContext();
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
     },
-    [selectedDay, updateLeakageLevel, updateSelectedDayFromContext]
+    [selectedDay, updateLeakageLevel, getDayData]
   );
 
   const handleUpdateNotes = useCallback(
@@ -118,9 +121,12 @@ export const useDiaryPage = () => {
       if (!selectedDay) return;
       const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
       await updateNotes(isoDate, notes);
-      updateSelectedDayFromContext();
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
     },
-    [selectedDay, updateNotes, updateSelectedDayFromContext]
+    [selectedDay, updateNotes, getDayData]
   );
 
   const handleSubmitNewRecord = useCallback(
@@ -128,10 +134,13 @@ export const useDiaryPage = () => {
       if (!selectedDay) return;
       const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
       await addUrinationData(isoDate, data);
-      updateSelectedDayFromContext();
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
       setIsAddModalOpen(false);
     },
-    [selectedDay, addUrinationData, updateSelectedDayFromContext]
+    [selectedDay, addUrinationData, getDayData]
   );
 
   const handleSubmitEditRecord = useCallback(
@@ -139,16 +148,14 @@ export const useDiaryPage = () => {
       if (!selectedDay || editingRecord === null) return;
       const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
       await editUrinationData(isoDate, editingRecord.index, data);
-      updateSelectedDayFromContext();
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
       setIsEditModalOpen(false);
       setEditingRecord(null);
     },
-    [
-      selectedDay,
-      editingRecord,
-      editUrinationData,
-      updateSelectedDayFromContext,
-    ]
+    [selectedDay, editingRecord, editUrinationData, getDayData]
   );
 
   return {

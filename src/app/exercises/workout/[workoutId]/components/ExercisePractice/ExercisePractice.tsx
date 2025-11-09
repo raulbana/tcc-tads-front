@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Exercise, Workout } from "@/app/types/exercise";
 import Button from "@/app/components/Button/Button";
 import VideoPlayer from "../../../../components/VideoPlayer/VideoPlayer";
+import { FALLBACK_VIDEO_URL } from "../../../../utils/workoutStorage";
 
 interface ExercisePracticeProps {
   workout: Workout;
@@ -19,11 +20,13 @@ const ExercisePractice: React.FC<ExercisePracticeProps> = ({
   onPreviousExercise,
   onLeaveWorkout,
 }) => {
-  const [currentTab, setCurrentTab] = useState<'VIDEO' | 'ILLUSTRATION'>('VIDEO');
+  const [currentTab, setCurrentTab] = useState<"VIDEO" | "ILLUSTRATION">(
+    "VIDEO"
+  );
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const currentExerciseIndex = workout.exercises.findIndex(
-    exercise => exercise.id === currentExercise.id,
+    (exercise) => exercise.id === currentExercise.id
   );
   const exerciseNumber = currentExerciseIndex + 1;
   const totalExercises = workout.exercises.length;
@@ -31,7 +34,6 @@ const ExercisePractice: React.FC<ExercisePracticeProps> = ({
 
   const images = currentExercise.media?.images || [];
   const videos = currentExercise.media?.videos || [];
-  const fallbackVideo = 'https://www.w3schools.com/html/mov_bbb.mp4';
 
   const handleNextImage = () => {
     if (images.length > 0) {
@@ -41,7 +43,9 @@ const ExercisePractice: React.FC<ExercisePracticeProps> = ({
 
   const handlePreviousImage = () => {
     if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+      setCurrentImageIndex(
+        (prev) => (prev - 1 + images.length) % images.length
+      );
     }
   };
 
@@ -60,21 +64,21 @@ const ExercisePractice: React.FC<ExercisePracticeProps> = ({
 
       <div className="flex gap-2 border-b border-gray-200">
         <button
-          onClick={() => setCurrentTab('VIDEO')}
+          onClick={() => setCurrentTab("VIDEO")}
           className={`px-4 py-2 font-medium ${
-            currentTab === 'VIDEO'
-              ? 'border-b-2 border-purple-600 text-purple-600'
-              : 'text-gray-500'
+            currentTab === "VIDEO"
+              ? "border-b-2 border-purple-600 text-purple-600"
+              : "text-gray-500"
           }`}
         >
           Vídeo
         </button>
         <button
-          onClick={() => setCurrentTab('ILLUSTRATION')}
+          onClick={() => setCurrentTab("ILLUSTRATION")}
           className={`px-4 py-2 font-medium ${
-            currentTab === 'ILLUSTRATION'
-              ? 'border-b-2 border-purple-600 text-purple-600'
-              : 'text-gray-500'
+            currentTab === "ILLUSTRATION"
+              ? "border-b-2 border-purple-600 text-purple-600"
+              : "text-gray-500"
           }`}
         >
           Ilustração
@@ -82,9 +86,9 @@ const ExercisePractice: React.FC<ExercisePracticeProps> = ({
       </div>
 
       <div className="w-full">
-        {currentTab === 'VIDEO' ? (
+        {currentTab === "VIDEO" ? (
           <VideoPlayer
-            src={videos.length > 0 ? videos[0] : fallbackVideo}
+            src={videos.length > 0 ? videos[0] : FALLBACK_VIDEO_URL}
             controls
             className="rounded-lg"
           />
@@ -97,14 +101,26 @@ const ExercisePractice: React.FC<ExercisePracticeProps> = ({
                     onClick={handlePreviousImage}
                     className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-70"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                   </button>
                 )}
                 <img
                   src={images[currentImageIndex]}
-                  alt={`${currentExercise.title} - Imagem ${currentImageIndex + 1}`}
+                  alt={`${currentExercise.title} - Imagem ${
+                    currentImageIndex + 1
+                  }`}
                   className="w-full h-auto rounded-lg"
                 />
                 {images.length > 1 && (
@@ -112,8 +128,18 @@ const ExercisePractice: React.FC<ExercisePracticeProps> = ({
                     onClick={handleNextImage}
                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-70"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </button>
                 )}
@@ -141,7 +167,7 @@ const ExercisePractice: React.FC<ExercisePracticeProps> = ({
       <div className="space-y-3">
         <Button
           type="PRIMARY"
-          text={isLastExercise ? 'Finalizar Treino' : 'Próximo Exercício'}
+          text={isLastExercise ? "Finalizar Treino" : "Próximo Exercício"}
           onClick={onNextExercise}
           className="w-full"
         />
@@ -167,4 +193,3 @@ const ExercisePractice: React.FC<ExercisePracticeProps> = ({
 };
 
 export default ExercisePractice;
-

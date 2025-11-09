@@ -5,6 +5,7 @@ import ExerciseCard from "../../../components/ExerciseCard/ExerciseCard";
 import Button from "@/app/components/Button/Button";
 import VideoPlayer from "../../../components/VideoPlayer/VideoPlayer";
 import { WorkoutDifficultyLabels } from "@/app/types/exercise";
+import { FALLBACK_VIDEO_URL } from "@/app/exercises/utils/workoutStorage";
 
 interface ExerciseDetailsContentProps {
   workout: Workout;
@@ -15,10 +16,12 @@ const ExerciseDetailsContent: React.FC<ExerciseDetailsContentProps> = ({
   workout,
   onStartWorkout,
 }) => {
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
-  const [activeMediaTab, setActiveMediaTab] = useState<'videos' | 'images'>('videos');
-
-  const fallbackVideo = 'https://www.w3schools.com/html/mov_bbb.mp4';
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
+    null
+  );
+  const [activeMediaTab, setActiveMediaTab] = useState<"videos" | "images">(
+    "videos"
+  );
 
   return (
     <div className="space-y-6">
@@ -28,9 +31,7 @@ const ExerciseDetailsContent: React.FC<ExerciseDetailsContentProps> = ({
             <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700 mb-2">
               {WorkoutDifficultyLabels[workout.difficulty]}
             </span>
-            <h1 className="text-2xl font-bold text-gray-800">
-              {workout.name}
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-800">{workout.name}</h1>
           </div>
         </div>
 
@@ -39,12 +40,8 @@ const ExerciseDetailsContent: React.FC<ExerciseDetailsContentProps> = ({
         )}
 
         <div className="flex items-center gap-4 text-sm text-gray-500 mb-6">
-          {workout.duration && (
-            <span>Duração: {workout.duration}</span>
-          )}
-          {workout.category && (
-            <span>Categoria: {workout.category}</span>
-          )}
+          {workout.duration && <span>Duração: {workout.duration}</span>}
+          {workout.category && <span>Categoria: {workout.category}</span>}
         </div>
 
         <Button
@@ -84,55 +81,69 @@ const ExerciseDetailsContent: React.FC<ExerciseDetailsContentProps> = ({
                 onClick={() => setSelectedExercise(null)}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
 
             {selectedExercise.description && (
-              <p className="text-gray-600 mb-6">{selectedExercise.description}</p>
+              <p className="text-gray-600 mb-6">
+                {selectedExercise.description}
+              </p>
             )}
 
             <div className="mb-6">
               <div className="flex gap-2 mb-4">
                 <button
-                  onClick={() => setActiveMediaTab('videos')}
+                  onClick={() => setActiveMediaTab("videos")}
                   className={`px-4 py-2 rounded-lg ${
-                    activeMediaTab === 'videos'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-200 text-gray-700'
+                    activeMediaTab === "videos"
+                      ? "bg-purple-600 text-white"
+                      : "bg-gray-200 text-gray-700"
                   }`}
                 >
                   Vídeos
                 </button>
                 <button
-                  onClick={() => setActiveMediaTab('images')}
+                  onClick={() => setActiveMediaTab("images")}
                   className={`px-4 py-2 rounded-lg ${
-                    activeMediaTab === 'images'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-200 text-gray-700'
+                    activeMediaTab === "images"
+                      ? "bg-purple-600 text-white"
+                      : "bg-gray-200 text-gray-700"
                   }`}
                 >
                   Imagens
                 </button>
               </div>
 
-              {activeMediaTab === 'videos' && (
+              {activeMediaTab === "videos" && (
                 <div className="space-y-4">
-                  {selectedExercise.media?.videos && selectedExercise.media.videos.length > 0 ? (
+                  {selectedExercise.media?.videos &&
+                  selectedExercise.media.videos.length > 0 ? (
                     selectedExercise.media.videos.map((video, index) => (
                       <VideoPlayer key={index} src={video} controls />
                     ))
                   ) : (
-                    <VideoPlayer src={fallbackVideo} controls />
+                    <VideoPlayer src={FALLBACK_VIDEO_URL} controls />
                   )}
                 </div>
               )}
 
-              {activeMediaTab === 'images' && (
+              {activeMediaTab === "images" && (
                 <div className="grid grid-cols-2 gap-4">
-                  {selectedExercise.media?.images && selectedExercise.media.images.length > 0 ? (
+                  {selectedExercise.media?.images &&
+                  selectedExercise.media.images.length > 0 ? (
                     selectedExercise.media.images.map((image, index) => (
                       <img
                         key={index}
@@ -152,19 +163,25 @@ const ExerciseDetailsContent: React.FC<ExerciseDetailsContentProps> = ({
               {selectedExercise.duration && (
                 <div>
                   <span className="text-gray-500">Duração</span>
-                  <p className="font-semibold text-gray-800">{selectedExercise.duration}</p>
+                  <p className="font-semibold text-gray-800">
+                    {selectedExercise.duration}
+                  </p>
                 </div>
               )}
               {selectedExercise.repetitions > 0 && (
                 <div>
                   <span className="text-gray-500">Repetições</span>
-                  <p className="font-semibold text-gray-800">{selectedExercise.repetitions}</p>
+                  <p className="font-semibold text-gray-800">
+                    {selectedExercise.repetitions}
+                  </p>
                 </div>
               )}
               {selectedExercise.sets > 0 && (
                 <div>
                   <span className="text-gray-500">Séries</span>
-                  <p className="font-semibold text-gray-800">{selectedExercise.sets}</p>
+                  <p className="font-semibold text-gray-800">
+                    {selectedExercise.sets}
+                  </p>
                 </div>
               )}
             </div>
@@ -176,4 +193,3 @@ const ExerciseDetailsContent: React.FC<ExerciseDetailsContentProps> = ({
 };
 
 export default ExerciseDetailsContent;
-

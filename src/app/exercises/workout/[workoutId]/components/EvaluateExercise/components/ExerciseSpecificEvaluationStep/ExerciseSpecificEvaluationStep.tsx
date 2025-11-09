@@ -10,7 +10,6 @@ interface ExerciseSpecificEvaluationStepProps {
   control: Control<ExerciseSpecificEvaluationAnswers>;
   errors: FieldErrors<ExerciseSpecificEvaluationAnswers>;
   completionOptions: QuestionOptions[];
-  confidenceOptions: QuestionOptions[];
   currentExercise: Exercise;
   currentExerciseIndex: number;
   totalExercises: number;
@@ -65,7 +64,8 @@ const ExerciseSpecificEvaluationStep: React.FC<
                     style={{
                       borderColor:
                         value === option.value ? "#5F3C6F" : "#E5E5E5",
-                      backgroundColor: value === option.value ? "#F3E8FF" : "transparent",
+                      backgroundColor:
+                        value === option.value ? "#F3E8FF" : "transparent",
                     }}
                   >
                     <input
@@ -86,7 +86,7 @@ const ExerciseSpecificEvaluationStep: React.FC<
           />
           {errors.completion && (
             <p className="text-red-500 text-sm mt-2">
-              {errors.completion.message || 'Erro de validação'}
+              {errors.completion.message || "Erro de validação"}
             </p>
           )}
         </div>
@@ -111,4 +111,3 @@ const ExerciseSpecificEvaluationStep: React.FC<
 };
 
 export default ExerciseSpecificEvaluationStep;
-

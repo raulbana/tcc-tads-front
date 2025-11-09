@@ -30,7 +30,6 @@ const EvaluateExercise: React.FC<EvaluateExerciseProps> = ({
     handlePreviousStep,
     difficultyOptions,
     completionOptions,
-    confidenceOptions,
     currentExercise: evaluationExercise,
     currentExerciseIndex,
     totalExercises,
@@ -38,7 +37,7 @@ const EvaluateExercise: React.FC<EvaluateExerciseProps> = ({
   } = useMultiStepEvaluation({
     workout,
     currentExercise,
-    onComplete: data => {
+    onComplete: (data) => {
       onContinue();
     },
     scrollToTop,
@@ -46,7 +45,7 @@ const EvaluateExercise: React.FC<EvaluateExerciseProps> = ({
 
   const renderCurrentStep = () => {
     switch (currentStep) {
-      case 'WORKOUT_EVALUATION':
+      case "WORKOUT_EVALUATION":
         return (
           <WorkoutEvaluationStep
             control={workoutForm.control}
@@ -56,13 +55,12 @@ const EvaluateExercise: React.FC<EvaluateExerciseProps> = ({
             isValid={workoutForm.formState.isValid}
           />
         );
-      case 'EXERCISE_EVALUATION':
+      case "EXERCISE_EVALUATION":
         return (
           <ExerciseSpecificEvaluationStep
             control={exerciseForm.control}
             errors={exerciseForm.formState.errors}
             completionOptions={completionOptions}
-            confidenceOptions={confidenceOptions}
             currentExercise={evaluationExercise}
             currentExerciseIndex={currentExerciseIndex}
             totalExercises={totalExercises}
@@ -89,4 +87,3 @@ const EvaluateExercise: React.FC<EvaluateExerciseProps> = ({
 };
 
 export default EvaluateExercise;
-

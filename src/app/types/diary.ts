@@ -1,5 +1,5 @@
-export type LeakageLevel = 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
-export type UrinationAmount = 'LOW' | 'MEDIUM' | 'HIGH';
+export type LeakageLevel = "NONE" | "LOW" | "MEDIUM" | "HIGH";
+export type UrinationAmount = "LOW" | "MEDIUM" | "HIGH";
 
 /** API DTOs **/
 export interface UrinationDataDTO {
@@ -78,22 +78,29 @@ export const normalizeTimeToHHMMSS = (time: string): string => {
 };
 
 export const formatTimeToShort = (time: string): string => {
-  if (/^\d{2}:\d{2}:\d{2}$/.test(time)) {
-    return time.substring(0, 5);
+  if (!time) return time;
+  const match = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(time);
+  if (match) {
+    const [, hours, minutes] = match;
+    return `${hours}:${minutes}`;
   }
   return time;
 };
 
-export const mapUrinationDTOToData = (dto: UrinationDataDTO): UrinationData => ({
+export const mapUrinationDTOToData = (
+  dto: UrinationDataDTO
+): UrinationData => ({
   time: formatTimeToShort(dto.time),
-  amount: (dto.amount?.toUpperCase() as UrinationAmount) ?? 'LOW',
+  amount: (dto.amount?.toUpperCase() as UrinationAmount) ?? "LOW",
   leakage: dto.leakage,
   reason: dto.reason,
   urgency: dto.urgency,
   observation: dto.observation,
 });
 
-export const mapUrinationDataToDTO = (data: UrinationData): UrinationDataDTO => ({
+export const mapUrinationDataToDTO = (
+  data: UrinationData
+): UrinationDataDTO => ({
   time: normalizeTimeToHHMMSS(data.time),
   amount: data.amount,
   leakage: data.leakage,
@@ -111,12 +118,14 @@ const ensureLocalDate = (value: string | Date): Date => {
 
 const formatDateToISO = (date: Date): string => {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 
-export const mapCalendarDayDTOToData = (dto: CalendarDayDTO): CalendarDayData => ({
+export const mapCalendarDayDTOToData = (
+  dto: CalendarDayDTO
+): CalendarDayData => ({
   date: ensureLocalDate(dto.date),
   leakageLevel: dto.leakageLevel as LeakageLevel,
   level: dto.leakageLevel as LeakageLevel,
@@ -129,9 +138,11 @@ export const mapCalendarDayDTOToData = (dto: CalendarDayDTO): CalendarDayData =>
   isToday: dto.isToday,
 });
 
-export const mapCalendarDayDataToDTO = (data: CalendarDayData): CalendarDayDTO => ({
+export const mapCalendarDayDataToDTO = (
+  data: CalendarDayData
+): CalendarDayDTO => ({
   date: formatDateToISO(data.date),
-  leakageLevel: (data.leakageLevel ?? 'NONE').toString(),
+  leakageLevel: (data.leakageLevel ?? "NONE").toString(),
   eventsCount: data.eventsCount ?? data.urinationData?.length ?? 0,
   completedExercises: data.completedExercises ?? 0,
   notesPreview: data.notesPreview,
@@ -143,7 +154,7 @@ export const mapCalendarDayDataToDTO = (data: CalendarDayData): CalendarDayDTO =
 });
 
 export const mapCalendarRangeDTOToData = (
-  dto: CalendarRangeResponseDTO,
+  dto: CalendarRangeResponseDTO
 ): CalendarRangeResponse => {
   const result: CalendarRangeResponse = {};
   Object.entries(dto).forEach(([key, value]) => {
@@ -153,7 +164,7 @@ export const mapCalendarRangeDTOToData = (
 };
 
 export const mapCalendarRangeDataToDTO = (
-  data: CalendarRangeResponse,
+  data: CalendarRangeResponse
 ): CalendarRangeResponseDTO => {
   const result: CalendarRangeResponseDTO = {};
   Object.entries(data).forEach(([key, value]) => {
