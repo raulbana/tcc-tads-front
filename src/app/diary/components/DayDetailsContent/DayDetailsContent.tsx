@@ -1,16 +1,20 @@
 import React from "react";
 import { CalendarDayData, UrinationData } from "@/app/types/diary";
-import { ClockIcon, DropHalfBottomIcon, DropSimpleIcon, ExclamationMarkIcon, PencilIcon } from "@phosphor-icons/react";
+import { ClockIcon, DropHalfBottomIcon, DropSimpleIcon, ExclamationMarkIcon, PencilIcon, TrashIcon } from "@phosphor-icons/react";
 import { useDayDetailsContent } from "./useDayDetailsContent";
 
 interface DayDetailsContentProps {
   selectedDay: CalendarDayData;
   onEditRecord?: (record: UrinationData, index: number) => void;
+  onDeleteRecord?: (index: number) => void;
+  onUpdateLeakage?: (level: string) => void;
+  onUpdateNotes?: (notes: string) => void;
 }
 
 const DayDetailsContent: React.FC<DayDetailsContentProps> = ({ 
   selectedDay, 
-  onEditRecord 
+  onEditRecord,
+  onDeleteRecord,
 }) => {
   const {
     formatDate,
@@ -64,10 +68,20 @@ const DayDetailsContent: React.FC<DayDetailsContentProps> = ({
                 {onEditRecord && (
                   <button
                     onClick={() => onEditRecord(record, index)}
-                    className="absolute top-2 right-2 p-1 hover:bg-gray-100 rounded transition-colors"
+                    className="absolute top-2 right-10 p-1 hover:bg-gray-100 rounded transition-colors"
                     title="Editar registro"
                   >
                     <PencilIcon className="w-6 h-6 text-gray-500 hover:text-purple-600" />
+                  </button>
+                )}
+
+                {onDeleteRecord && (
+                  <button
+                    onClick={() => onDeleteRecord(index)}
+                    className="absolute top-2 right-2 p-1 hover:bg-red-50 rounded transition-colors"
+                    title="Excluir registro"
+                  >
+                    <TrashIcon className="w-6 h-6 text-red-500 hover:text-red-600" />
                   </button>
                 )}
 

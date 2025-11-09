@@ -1,12 +1,25 @@
 "use client";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { CalendarDayData, UrinationData } from "@/app/types/diary";
+import {
+  CalendarDayData,
+  LeakageLevel,
+  UrinationData,
+} from "@/app/types/diary";
 import moment from "moment";
 import { useCalendar } from "../Calendar/useCalendar";
 import { DayDataFormValues } from "../DayDataForm/useDayDataForm";
+import { useDiary } from "@/app/contexts/DiaryContext";
 
 export const useDiaryPage = () => {
   const { daysFlat } = useCalendar();
+  const {
+    addUrinationData,
+    editUrinationData,
+    deleteUrinationData,
+    updateLeakageLevel,
+    updateNotes,
+    getDayData,
+  } = useDiary();
   const [selectedDay, setSelectedDay] = useState<CalendarDayData | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -39,6 +52,19 @@ export const useDiaryPage = () => {
     }
   }, [todayOrFirstDay, selectedDay]);
 
+  useEffect(() => {
+    if (!selectedDay) {
+      return;
+    }
+
+    const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
+    const updated = getDayData(isoDate);
+
+    if (updated && updated !== selectedDay) {
+      setSelectedDay(updated);
+    }
+  }, [selectedDay, getDayData]);
+
   const handleDaySelect = (day: CalendarDayData) => {
     setSelectedDay(day);
   };
@@ -64,23 +90,72 @@ export const useDiaryPage = () => {
     setEditingRecord(null);
   }, []);
 
+  const handleDeleteRecord = useCallback(
+    async (index: number) => {
+      if (!selectedDay) return;
+      const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
+      await deleteUrinationData(isoDate, index);
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
+    },
+    [selectedDay, deleteUrinationData, getDayData]
+  );
+
+  const handleUpdateLeakage = useCallback(
+    async (level: LeakageLevel) => {
+      if (!selectedDay) return;
+      const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
+      await updateLeakageLevel(isoDate, level);
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
+    },
+    [selectedDay, updateLeakageLevel, getDayData]
+  );
+
+  const handleUpdateNotes = useCallback(
+    async (notes: string) => {
+      if (!selectedDay) return;
+      const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
+      await updateNotes(isoDate, notes);
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
+    },
+    [selectedDay, updateNotes, getDayData]
+  );
+
   const handleSubmitNewRecord = useCallback(
-    (data: DayDataFormValues) => {
-      console.log("Novo registro:", data, "para data:", selectedDay?.date);
-      // TODO: Implementar a lógica de criação do registro
+    async (data: DayDataFormValues) => {
+      if (!selectedDay) return;
+      const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
+      await addUrinationData(isoDate, data);
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
       setIsAddModalOpen(false);
     },
-    [selectedDay]
+    [selectedDay, addUrinationData, getDayData]
   );
 
   const handleSubmitEditRecord = useCallback(
-    (data: DayDataFormValues) => {
-      console.log("Editando registro:", data, "índice:", editingRecord?.index);
-      // TODO: Implementar a lógica de edição do registro
+    async (data: DayDataFormValues) => {
+      if (!selectedDay || editingRecord === null) return;
+      const isoDate = moment(selectedDay.date).format("YYYY-MM-DD");
+      await editUrinationData(isoDate, editingRecord.index, data);
+      const updated = getDayData(isoDate);
+      if (updated) {
+        setSelectedDay(updated);
+      }
       setIsEditModalOpen(false);
       setEditingRecord(null);
     },
-    [editingRecord]
+    [selectedDay, editingRecord, editUrinationData, getDayData]
   );
 
   return {
@@ -88,6 +163,9 @@ export const useDiaryPage = () => {
     handleDaySelect,
     handleAddRecord,
     handleEditRecord,
+    handleDeleteRecord,
+    handleUpdateLeakage,
+    handleUpdateNotes,
     isAddModalOpen,
     isEditModalOpen,
     editingRecord,
