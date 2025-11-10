@@ -23,6 +23,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/api/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'dailyiuwebmediastorage.blob.core.windows.net',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
