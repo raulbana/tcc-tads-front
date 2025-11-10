@@ -115,7 +115,7 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
           description: data.description,
           subtitle: data.subtitle,
           subcontent: data.subcontent,
-          categories: data.categories.map(c => parseInt(c.id)),
+          categories: data.categories.map(c => parseInt(c.id.toString())),
           files: files,
         },
         user.id.toString()
@@ -172,7 +172,7 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
           description: data.description,
           subtitle: data.subtitle,
           subcontent: data.subcontent,
-          categories: data.categories.map(c => c.id),
+          categories: data.categories.map(c => c.id.toString()),
         },
         user.id.toString()
       );
