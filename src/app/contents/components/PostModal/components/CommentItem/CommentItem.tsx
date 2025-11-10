@@ -6,6 +6,8 @@ import { HeartIcon, ChatCircleIcon } from "@phosphor-icons/react";
 import Button from "@/app/components/Button/Button";
 import ReplyForm from "../ReplyForm/ReplyForm";
 import { useCommentItem } from "./useCommentItem";
+import AnonymousUser from "@/app/assets/illustrations/anonymous_user.svg";
+
 
 interface CommentItemProps {
   comment: Comment;
@@ -36,13 +38,17 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
     handleShowMoreRepliesClick
   } = useCommentItem(props);
 
+  const profilePicture = comment.author.profilePicture === '' || comment.author.profilePicture === null
+    ? AnonymousUser
+    : comment.author.profilePicture;
+
   return (
     <div className={`${isReply ? 'ml-6 border-l border-gray-05 bg-gray-03 pr-3' : 'bg-gray-03 rounded-lg pb-4'}`}>
       <div className="flex gap-3 p-3">
         <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
           <Image
-            src={comment.authorImage}
-            alt={comment.authorName}
+            src={profilePicture}
+            alt={comment.author.name}
             fill
             className="object-cover"
             sizes="32px"
@@ -53,7 +59,7 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="font-medium text-gray-08 text-sm">
-                {comment.authorName}
+                {comment.author.name}
               </span>
               ·
               <span className="text-xs text-gray-07">
@@ -65,7 +71,7 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
               {comment.likesCount || 0}
               <HeartIcon
                 className="w-4 h-4"
-                weight={comment.isLikedByCurrentUser ? "fill" : "regular"}
+                weight={comment.isLiked ? "fill" : "regular"}
               />
             </button>
           </div>
@@ -96,7 +102,7 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
           <ReplyForm
             onSubmit={handleSubmitReply}
             onCancel={handleCancelReply}
-            placeholder={`Respondendo a ${comment.authorName}...`}
+            placeholder={`Respondendo a ${comment.author.name}...`}
           />
         </div>
       )}

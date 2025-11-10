@@ -78,12 +78,12 @@ export const useCommentItem = ({
 
   const likeButtonProps = useMemo(() => ({
     onClick: handleLike,
-    className: `flex items-center gap-1 text-xs transition-colors ${comment.isLikedByCurrentUser
+    className: `flex items-center gap-1 text-xs transition-colors ${comment.isLiked
         ? 'text-purple-04 hover:text-purple-03'
         : 'text-gray-07 hover:text-purple-03'
       }`,
-    'aria-label': `${comment.isLikedByCurrentUser ? 'Descurtir' : 'Curtir'} comentário`
-  }), [comment.isLikedByCurrentUser, handleLike]);
+    'aria-label': `${comment.isLiked ? 'Descurtir' : 'Curtir'} comentário`
+  }), [comment.isLiked, handleLike]);
 
   const replyButtonProps = useMemo(() => ({
     onClick: handleReply,

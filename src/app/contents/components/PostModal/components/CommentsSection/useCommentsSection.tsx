@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { Content, Comment } from "@/app/types/content";
+import { Content, Comment, AuthorDTO } from "@/app/types/content";
 import useContentQueries from "@/app/contents/services/contentQueryFactory";
 import { useAuth } from "@/app/contexts/AuthContext";
 
@@ -19,17 +19,21 @@ export const useCommentsSection = (content: Content) => {
   const handleAddComment = useCallback(async (text: string) => {
     if (!user || !text.trim()) return;
 
+    const optimisticCommentAuthor: AuthorDTO = {
+      id: user.id,
+      name: user.name,
+      profilePicture: user.profilePictureUrl || '',
+    }
+
     const optimisticComment: Comment = {
       id: `temp-${Date.now()}`,
       contentId: content.id,
       text: text.trim(),
-      authorId: user.id.toString(),
-      authorName: user.name,
-      authorImage: user.profilePictureUrl || '',
+      author: optimisticCommentAuthor,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       likesCount: 0,
-      isLikedByCurrentUser: false,
+      isLiked: false,
       repliesCount: 0,
       replies: [],
     };
@@ -51,17 +55,21 @@ export const useCommentsSection = (content: Content) => {
   const handleAddReply = useCallback(async (parentCommentId: string, text: string) => {
     if (!user || !text.trim()) return;
 
+    const optimisticCommentAuthor: AuthorDTO = {
+      id: user.id,
+      name: user.name,
+      profilePicture: user.profilePictureUrl || '',
+    }
+
     const optimisticReply: Comment = {
       id: `temp-reply-${Date.now()}`,
       contentId: content.id,
       text: text.trim(),
-      authorId: user.id.toString(),
-      authorName: user.name,
-      authorImage: user.profilePictureUrl || '',
+      author: optimisticCommentAuthor,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       likesCount: 0,
-      isLikedByCurrentUser: false,
+      isLiked: false,
       repliesCount: 0,
       replies: [],
     };
@@ -107,10 +115,10 @@ export const useCommentsSection = (content: Content) => {
     setLocalComments(prev =>
       prev.map(comment => {
         if (comment.id === commentId) {
-          const newLikedState = !comment.isLikedByCurrentUser;
+          const newLikedState = !comment.isLiked;
           return {
             ...comment,
-            isLikedByCurrentUser: newLikedState,
+            isLiked: newLikedState,
             likesCount: newLikedState
               ? (comment.likesCount || 0) + 1
               : Math.max((comment.likesCount || 0) - 1, 0),
@@ -126,10 +134,10 @@ export const useCommentsSection = (content: Content) => {
       setLocalComments(prev =>
         prev.map(comment => {
           if (comment.id === commentId) {
-            const revertLikedState = !comment.isLikedByCurrentUser;
+            const revertLikedState = !comment.isLiked;
             return {
               ...comment,
-              isLikedByCurrentUser: revertLikedState,
+              isLiked: revertLikedState,
               likesCount: revertLikedState
                 ? (comment.likesCount || 0) + 1
                 : Math.max((comment.likesCount || 0) - 1, 0),
