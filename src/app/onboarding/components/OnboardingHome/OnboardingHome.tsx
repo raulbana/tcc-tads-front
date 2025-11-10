@@ -10,7 +10,7 @@ const OnboardingHome = () => {
     <div className="flex flex-col items-center justify-center min-h-96 gap-8 p-8">
       <div className="text-center max-w-2xl">
         <h1 className="text-3xl font-semibold text-gray-800 mb-4">
-          Seja bem-vindo(a) ao DailyIU! Seu app para acompanhamento de{" "}
+          Seja bem-vinda(o) ao DailyIU! Seu app para acompanhamento de{" "}
           <span className="font-bold text-purple-04">
             Incontinência Urinária!
           </span>

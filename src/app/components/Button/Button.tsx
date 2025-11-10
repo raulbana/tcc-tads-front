@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   type = "PRIMARY",
   size = "MEDIUM",
   onClick,
-  disabled,
+  disabled = false,
   text,
   icon,
   iconPosition,
