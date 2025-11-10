@@ -18,7 +18,6 @@ interface PostDetailsProps {
 const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
   const {
     mediaItems,
-    formattedDate,
     hasMedia,
     handleToggleLike,
     handleToggleRepost,
@@ -36,8 +35,8 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <PostAuthor
-                    authorId={localContent.authorId}
-                    createdAt={formattedDate}
+                    author={localContent.author!}
+                    createdAt={localContent.createdAt}
                   />
                   
                   <PostActions
