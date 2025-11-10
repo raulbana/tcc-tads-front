@@ -47,17 +47,15 @@ export interface ContentCategory {
 
 export interface Comment {
   id: string;
-  contentId: string;
+  author: AuthorDTO;
   text: string;
-  authorId: string;
-  authorName: string;
-  authorImage: string;
   createdAt: string;
   updatedAt: string;
-  likesCount?: number;
-  isLikedByCurrentUser?: boolean;
-  repliesCount?: number;
+  likesCount: number;
+  isLiked: boolean;
+  repliesCount: number;
   replies?: Comment[];
+  contentId: string;
 }
 
 export interface Content {
