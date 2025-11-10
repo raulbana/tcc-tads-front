@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useRef, useState, MouseEvent } from "react";
 import { ContentCategory } from "@/app/types/content";
 
 interface CategoryChipsProps {
@@ -13,13 +13,53 @@ const CategoryChips: React.FC<CategoryChipsProps> = ({
   selectedCategory,
   onCategorySelect,
 }) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    if (!scrollContainerRef.current) return;
+    
+    setIsDragging(true);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Multiplicador para controlar a velocidade do scroll
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   return (
-    <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+    <div
+      ref={scrollContainerRef}
+      onMouseDown={handleMouseDown}
+      onMouseLeave={handleMouseLeave}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+      className={`flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide ${
+        isDragging ? "cursor-grabbing" : "cursor-grab"
+      }`}
+      style={{ userSelect: "none" }}
+    >
       <button
         onClick={() => onCategorySelect(null)}
         className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
           !selectedCategory
-            ? "bg-purple-600 text-white"
+            ? "bg-purple-04 text-white"
             : "bg-gray-200 text-gray-700 hover:bg-gray-300"
         }`}
       >
@@ -31,7 +71,7 @@ const CategoryChips: React.FC<CategoryChipsProps> = ({
           onClick={() => onCategorySelect(category.id.toString())}
           className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
             selectedCategory?.id === category.id
-              ? "bg-purple-600 text-white"
+              ? "bg-purple-04 text-white"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
