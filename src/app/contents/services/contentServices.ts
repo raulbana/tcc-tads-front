@@ -1,4 +1,4 @@
-import { apiFactory } from "@/app/services/apiFactory";
+import apiFactory from "@/app/services/apiFactory";
 import { API_BASE_URL } from "@/app/config/env";
 import apiRoutes from "@/app/utils/apiRoutes";
 import {
@@ -12,7 +12,6 @@ import {
   ContentSimpleDTO,
   MediaDTO,
   Comment,
-  UploadFile,
   CreateContentWithFilesRequest,
 } from "@/app/types/content";
 import { contentCache } from "./contentCache";
@@ -113,7 +112,7 @@ const contentServices = {
 
     const mediaArray = uploadedMedia.map((m) => ({
       url: m.url,
-      contentType: m.contentType || m.type,
+      contentType: m.contentType || 'application/octet-stream',
       contentSize: m.contentSize || 0,
       altText: m.altText || contentData.title,
     }));

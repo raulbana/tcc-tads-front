@@ -2,7 +2,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
-import { CloudArrowUpIcon, TrashIcon, FilmIcon } from '@heroicons/react/24/outline';
+import { CloudArrowUpIcon, TrashIcon, VideoIcon } from '@phosphor-icons/react';
 import Button from '@/app/components/Button/Button';
 
 interface FileUploadProps {
@@ -192,7 +192,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           {video && (
             <div className="flex items-center gap-3 p-3 bg-gray-100 rounded-lg">
               <div className="w-12 h-12 bg-purple-100 rounded flex items-center justify-center">
-                <FilmIcon className="w-6 h-6 text-purple-600" />
+                <VideoIcon className="w-6 h-6 text-purple-600" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-800 truncate">{video.name}</p>

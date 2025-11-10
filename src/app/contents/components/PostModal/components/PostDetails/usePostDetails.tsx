@@ -1,5 +1,4 @@
 import { useMemo, useCallback, useState } from "react";
-import moment from "moment";
 import { Content } from "@/app/types/content";
 import useContentQueries from "@/app/contents/services/contentQueryFactory";
 import { useAuth } from "@/app/contexts/AuthContext";
@@ -16,10 +15,6 @@ export const usePostDetails = (content: Content) => {
   const contentQueries = useContentQueries(['content']);
   const toggleLikeMutation = contentQueries.useToggleLike();
   const toggleRepostMutation = contentQueries.useToggleRepost();
-
-  const formatDate = useCallback((date: Date | string) => {
-    return moment(date).format("DD [de] MMMM [de] YYYY");
-  }, []);
 
   const getAllMedia = useCallback((content: Content): MediaItem[] => {
     const media: MediaItem[] = [];
@@ -44,7 +39,6 @@ export const usePostDetails = (content: Content) => {
   }, []);
 
   const mediaItems = useMemo(() => getAllMedia(localContent), [localContent, getAllMedia]);
-  const formattedDate = useMemo(() => formatDate(localContent.createdAt), [localContent.createdAt, formatDate]);
   const hasMedia = useMemo(() => mediaItems.length > 0, [mediaItems]);
 
   const handleToggleLike = useCallback(async () => {
@@ -109,7 +103,6 @@ export const usePostDetails = (content: Content) => {
 
   return {
     mediaItems,
-    formattedDate,
     hasMedia,
     handleToggleLike,
     handleToggleRepost,

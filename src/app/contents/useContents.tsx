@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { Content, ContentCategory, ContentSimpleDTO } from "@/app/types/content";
 import useContentQueries from "./services/contentQueryFactory";
 import { useAuth } from "@/app/contexts/AuthContext";
+import contentServices from "./services/contentServices";
 
 const useContents = () => {
   const { user } = useAuth();
@@ -49,10 +50,10 @@ const useContents = () => {
     if (!user) return;
     
     try {
-      const fullContent = await contentQueries.useGetById(
+      const fullContent = await contentServices.getById(
         content.id.toString(),
         user.id.toString()
-      ).queryFn();
+      );
       setSelectedContent(fullContent);
       setIsModalOpen(true);
     } catch (error) {
