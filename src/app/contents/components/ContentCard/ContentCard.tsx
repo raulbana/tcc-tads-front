@@ -1,30 +1,41 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { ContentSimpleDTO } from "@/app/types/content";
 import moment from "moment";
+import AnonymousUserIcon from "@/app/assets/illustrations/anonymous_user.svg";
 
 interface ContentCardProps {
   content: ContentSimpleDTO;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const ContentCard: React.FC<ContentCardProps> = ({ content, onClick }) => {
+  const [imageError, setImageError] = useState(false);
   const formattedDate = moment(content.createdAt).format("DD/MM/YYYY");
+  
+  const hasValidImage = content.cover?.url && !imageError;
 
   return (
     <div
       onClick={onClick}
       className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
     >
-      <div className="relative h-48 w-full">
-        <Image
-          src={content.cover?.url || "/placeholder-image.jpg"}
-          alt={content.cover?.altText || content.title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+      <div className="relative h-48 w-full bg-gray-100 flex items-center justify-center">
+        {hasValidImage ? (
+          <Image
+            src={content.cover.url}
+            alt={content.cover.altText || content.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-24 h-24 text-gray-400">
+            <AnonymousUserIcon className="w-full h-full" />
+          </div>
+        )}
       </div>
       <div className="p-4">
         <div className="mb-2">
