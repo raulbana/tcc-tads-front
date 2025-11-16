@@ -123,10 +123,7 @@ export const exercisesService = {
     type: number;
   }): Promise<ExerciseAttribute> {
     const body = attributePayloadSchema.parse(payload);
-    const response = await api.post(
-      apiRoutes.exercises.attributes.list,
-      body
-    );
+    const response = await api.post(apiRoutes.exercises.attributes.list, body);
     return attributeSchema.parse(response.data);
   },
 
@@ -148,4 +145,3 @@ export const exercisesService = {
 };
 
 export default exercisesService;
-

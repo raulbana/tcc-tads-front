@@ -5,22 +5,17 @@ import {
   type UseMutationResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import complaintsService, {
-  type ContentAdmin,
-  type ReportToggle,
-} from "./complaintsService";
+import complaintsService from "./complaintsService";
 import exercisesService, {
-  type ExerciseAdmin,
-  type ExerciseCreator,
   type ExerciseCategory,
   type ExerciseAttribute,
 } from "./exercisesService";
-import workoutsService, {
-  type WorkoutAdmin,
-} from "./workoutsService";
-import workoutPlansService, {
-  type WorkoutPlanAdmin,
-} from "./workoutPlansService";
+import workoutsService from "./workoutsService";
+import workoutPlansService from "./workoutPlansService";
+import { ContentAdmin, ReportToggle } from "../schema/complaintsSchema";
+import { ExerciseAdmin, ExerciseCreator } from "../schema/exercisesSchema";
+import { WorkoutPlanAdmin } from "../schema/workoutPlansSchema";
+import { WorkoutAdmin } from "../schema/workoutsSchema";
 
 const staleTime = 5 * 60 * 1000;
 const gcTime = 10 * 60 * 1000;
@@ -94,10 +89,7 @@ const useAdministrationQueries = (key: string[] = ["administration"]) => {
       onSuccess: () => invalidate(["exercises"]),
     });
 
-  const useExerciseCategories = (): UseQueryResult<
-    ExerciseCategory[],
-    Error
-  > =>
+  const useExerciseCategories = (): UseQueryResult<ExerciseCategory[], Error> =>
     useQuery({
       queryKey: [...key, "exerciseCategories"],
       queryFn: () => exercisesService.listCategories(),
@@ -128,7 +120,11 @@ const useAdministrationQueries = (key: string[] = ["administration"]) => {
       onSuccess: () => invalidate(["exerciseCategories"]),
     });
 
-  const useDeleteExerciseCategory = (): UseMutationResult<void, Error, number> =>
+  const useDeleteExerciseCategory = (): UseMutationResult<
+    void,
+    Error,
+    number
+  > =>
     useMutation({
       mutationFn: (id) => exercisesService.deleteCategory(id),
       onSuccess: () => invalidate(["exerciseCategories"]),
@@ -168,7 +164,11 @@ const useAdministrationQueries = (key: string[] = ["administration"]) => {
       onSuccess: () => invalidate(["exerciseAttributes"]),
     });
 
-  const useDeleteExerciseAttribute = (): UseMutationResult<void, Error, number> =>
+  const useDeleteExerciseAttribute = (): UseMutationResult<
+    void,
+    Error,
+    number
+  > =>
     useMutation({
       mutationFn: (id) => exercisesService.deleteAttribute(id),
       onSuccess: () => invalidate(["exerciseAttributes"]),
@@ -314,4 +314,3 @@ const useAdministrationQueries = (key: string[] = ["administration"]) => {
 };
 
 export default useAdministrationQueries;
-
