@@ -1,0 +1,32 @@
+import { z } from "zod";
+import { exerciseSchema } from "./exercisesSchema";
+
+const workoutExerciseEntrySchema = z.tuple([z.string(), exerciseSchema]);
+
+export const workoutSchema = z.object({
+  id: z.number().nullable().optional(),
+  name: z.string(),
+  description: z.string(),
+  totalDuration: z.number(),
+  difficultyLevel: z.string(),
+  exercises: z.record(z.string(), exerciseSchema).transform((record) =>
+    Object.entries(record)
+      .map(([order, exercise]) => ({
+        order: Number(order),
+        exercise,
+      }))
+      .sort((a, b) => a.order - b.order)
+  ),
+  createdAt: z.string(),
+});
+
+export const workoutCreatorSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional().default(""),
+  totalDuration: z.number().min(0),
+  difficultyLevel: z.string().min(1),
+  exerciseIds: z.record(z.string(), z.number()),
+});
+
+export type WorkoutAdmin = z.infer<typeof workoutSchema>;
+export type WorkoutExerciseEntry = WorkoutAdmin["exercises"][number];

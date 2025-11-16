@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import Link from "next/link";
 
@@ -25,19 +24,19 @@ const Administration = () => {
           </button>
         </Link>
 
-        <Link href="/administration/adminUsers">
+        <Link href="/administration/adminExercises">
           <button className="w-64 p-4 bg-purple-500 text-white rounded-2xl hover:bg-purple-700 transition">
             Painel de Exercícios
           </button>
         </Link>
 
-        <Link href="/administration/adminUsers">
+        <Link href="/administration/adminWorkouts">
           <button className="w-64 p-4 bg-purple-500 text-white rounded-2xl hover:bg-purple-700 transition">
             Treinos
           </button>
         </Link>
 
-        <Link href="/administration/adminUsers">
+        <Link href="/administration/adminWorkoutPlans">
           <button className="w-64 p-4 bg-purple-500 text-white rounded-2xl hover:bg-purple-700 transition">
             Plano de Treino
           </button>

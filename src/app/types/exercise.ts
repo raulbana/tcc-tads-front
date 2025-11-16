@@ -1,32 +1,32 @@
-export type ExerciseStatus = 'COMPLETED' | 'PENDING' | 'IN_PROGRESS';
-export type WorkoutStatus = 'PAUSED' | 'COMPLETED' | 'MISSED' | 'IN_PROGRESS';
-export type WorkoutDifficulty = 'EASY' | 'MODERATE' | 'HARD';
-export type WorkoutEvaluation = 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
+export type ExerciseStatus = "COMPLETED" | "PENDING" | "IN_PROGRESS";
+export type WorkoutStatus = "PAUSED" | "COMPLETED" | "MISSED" | "IN_PROGRESS";
+export type WorkoutDifficulty = "EASY" | "MODERATE" | "HARD";
+export type WorkoutEvaluation = "EXCELLENT" | "GOOD" | "FAIR" | "POOR";
 
 export const ExerciseStatusLabels: Record<ExerciseStatus, string> = {
-  COMPLETED: 'Completo',
-  PENDING: 'Pendente',
-  IN_PROGRESS: 'Em Progresso',
+  COMPLETED: "Completo",
+  PENDING: "Pendente",
+  IN_PROGRESS: "Em Progresso",
 };
 
 export const WorkoutStatusLabels: Record<WorkoutStatus, string> = {
-  PAUSED: 'Pausado',
-  COMPLETED: 'Completo',
-  IN_PROGRESS: 'Em Progresso',
-  MISSED: 'Perdido',
+  PAUSED: "Pausado",
+  COMPLETED: "Completo",
+  IN_PROGRESS: "Em Progresso",
+  MISSED: "Perdido",
 };
 
 export const WorkoutDifficultyLabels: Record<WorkoutDifficulty, string> = {
-  EASY: 'Fácil',
-  MODERATE: 'Moderado',
-  HARD: 'Difícil',
+  EASY: "Fácil",
+  MODERATE: "Moderado",
+  HARD: "Difícil",
 };
 
 export const WorkoutEvaluationLabels: Record<WorkoutEvaluation, string> = {
-  EXCELLENT: 'Excelente',
-  GOOD: 'Bom',
-  FAIR: 'Razoável',
-  POOR: 'Ruim',
+  EXCELLENT: "Excelente",
+  GOOD: "Bom",
+  FAIR: "Razoável",
+  POOR: "Ruim",
 };
 
 export interface ExerciseBenefit {
@@ -89,7 +89,7 @@ export interface ExerciseCategory {
 export interface ExerciseAttribute {
   id: string;
   name: string;
-  valueType?: 'NUMBER' | 'TEXT' | 'BOOLEAN';
+  valueType?: "NUMBER" | "TEXT" | "BOOLEAN";
   unit?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -120,16 +120,16 @@ export interface WorkoutCompletionDTO {
 }
 
 export interface UserWorkoutFeedbackDTO {
-  userId: string;
-  workoutId: string;
+  userId: number;
+  workoutId: number;
   rating: WorkoutEvaluation;
   difficultyFeedback: string;
   comments?: string;
 }
 
 export interface UserWorkoutCompletionDTO {
-  userId: string;
-  workoutId: string;
+  userId: number;
+  workoutId: number;
   completedAt: string;
   duration?: string;
 }

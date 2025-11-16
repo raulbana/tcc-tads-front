@@ -5,6 +5,7 @@ import ReactQueryProvider from "./providers/ReactQueryProvider/ReactQueryProvide
 import ClientNavbarWrapper from "./components/Navbar/components/ClientNavbarWrapper";
 import { UploadProvider } from "./contexts/UploadContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { DiaryProvider } from "./contexts/DiaryContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,11 +26,13 @@ export default function RootLayout({
     <ReactQueryProvider>
       <AuthProvider>
          <UploadProvider>
-          <html lang="en">
-            <body className={`${inter.variable} antialiased`}>
-              <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
-            </body>
-          </html>
+          <DiaryProvider>
+            <html lang="en">
+              <body className={`${inter.variable} antialiased`}>
+                <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
+              </body>
+            </html>
+          </DiaryProvider>
         </UploadProvider>
       </AuthProvider>
     </ReactQueryProvider>

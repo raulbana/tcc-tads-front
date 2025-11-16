@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import moment, { Moment } from "moment";
 import { CalendarDayData } from "@/app/types/diary";
 import {
@@ -7,7 +7,7 @@ import {
   formatToFirstLetterUppercase,
   getMonthIsoRange,
 } from "../../utils/calendarUtils";
-import useDiaryQueries from "../../services/diaryQueryFactory";
+import { useDiary } from "@/app/contexts/DiaryContext";
 
 const COLUMNS = 6;
 
@@ -18,14 +18,16 @@ export function useCalendar() {
 
   const { from, to } = useMemo(() => getMonthIsoRange(monthRef), [monthRef]);
 
-  const diaryQueries = useDiaryQueries(["calendar-range", from, to]);
-  const { data, isLoading, refetch } = diaryQueries.useGetByRange(
-    new Date(from),
-    new Date(to)
-  );
+  const { calendarData, isLoading, loadCalendarEvents } = useDiary();
+
+  useEffect(() => {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    void loadCalendarEvents(fromDate, toDate);
+  }, [from, to, loadCalendarEvents]);
 
   const daysFlat: CalendarDayData[] = useMemo(() => {
-    const backendMap: Record<string, CalendarDayData> = data ?? {};
+    const backendMap: Record<string, CalendarDayData> = calendarData ?? {};
 
     const selectedMonth = monthRef.month();
     const selectedYear = monthRef.year();
@@ -55,7 +57,7 @@ export function useCalendar() {
         urinationData: dayData?.urinationData,
       };
     });
-  }, [matrix, data, monthRef]);
+  }, [matrix, calendarData, monthRef]);
 
   const formatCalendarRows = (daysFlat: CalendarDayData[]) => {
     const rows: CalendarDayData[][] = [];
@@ -90,7 +92,6 @@ export function useCalendar() {
     daysFlat,
     rows,
     isLoading,
-    refetch,
     goPrevMonth,
     goNextMonth,
     setMonth,
