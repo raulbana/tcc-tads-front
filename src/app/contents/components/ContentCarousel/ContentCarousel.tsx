@@ -27,14 +27,14 @@ const ContentCarousel: React.FC<ContentCarouselProps> = ({
         }}
       >
         <div className="flex gap-6 min-w-max px-1">
-          {contents.map((content) => (
+        {contents.map((content) => (
             <div key={content.id} className="w-64 sm:w-72 flex-shrink-0">
-              <ContentCard
-                content={content}
-                onClick={() => onContentClick(content)}
-              />
+          <ContentCard
+            content={content}
+            onClick={() => onContentClick(content)}
+          />
             </div>
-          ))}
+        ))}
         </div>
       </div>
     </div>

@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import useAdministrationQueries from "../../services/adminQueryFactory";
-import type { ExerciseAdmin } from "../../services/exercisesService";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
+import contentServices from "@/app/contents/services/contentServices";
+import MediaManager from "./components/MediaManager/MediaManager";
+import { ExerciseAdmin } from "../../schema/exercisesSchema";
 
 type ExerciseFormValues = {
   title: string;
@@ -76,6 +78,21 @@ const ExercisesDashboard = () => {
   const [editingAttributeId, setEditingAttributeId] = useState<number | null>(
     null
   );
+  const [exerciseImages, setExerciseImages] = useState<File[]>([]);
+  const [exerciseVideo, setExerciseVideo] = useState<File | undefined>(
+    undefined
+  );
+  const [existingMedia, setExistingMedia] = useState<
+    Array<{
+      id?: number | null;
+      url: string;
+      contentType: string;
+      contentSize: number;
+      altText?: string | null;
+    }>
+  >([]);
+  const [removedMediaIds, setRemovedMediaIds] = useState<number[]>([]);
+  const [uploadError, setUploadError] = useState<string>("");
 
   const form = useForm<ExerciseFormValues>({
     defaultValues: {
@@ -129,7 +146,7 @@ const ExercisesDashboard = () => {
         : true;
       const matchAttribute = attributeFilter
         ? exercise.benefits.some(
-            (benefit) =>
+            (benefit: { id: number; }) =>
               typeof benefit.id === "number" && benefit.id === attributeFilter
           )
         : true;
@@ -183,6 +200,11 @@ const ExercisesDashboard = () => {
       return;
     }
     setEditingExercise(null);
+    setExerciseImages([]);
+    setExerciseVideo(undefined);
+    setExistingMedia([]);
+    setRemovedMediaIds([]);
+    setUploadError("");
     form.reset({
       title: "",
       instructions: "",
@@ -217,13 +239,87 @@ const ExercisesDashboard = () => {
     setExerciseModalOpen(true);
   };
 
+  useEffect(() => {
+    if (isExerciseModalOpen && editingExercise) {
+      const mediaArray = Array.isArray(editingExercise.media)
+        ? editingExercise.media
+        : [];
+      setExistingMedia(mediaArray);
+      setRemovedMediaIds([]);
+      setExerciseImages([]);
+      setExerciseVideo(undefined);
+      setUploadError("");
+    }
+  }, [isExerciseModalOpen, editingExercise]);
+
   const closeExerciseModal = () => {
     setExerciseModalOpen(false);
     setEditingExercise(null);
+    setExerciseImages([]);
+    setExerciseVideo(undefined);
+    setExistingMedia([]);
+    setRemovedMediaIds([]);
+    setUploadError("");
     form.reset();
   };
 
   const onExerciseSubmit = async (values: ExerciseFormValues) => {
+    setUploadError("");
+
+    let uploadedMedia: Array<{
+      url: string;
+      contentType: string;
+      contentSize: number;
+      altText?: string;
+    }> = [];
+
+    const allFiles = [
+      ...exerciseImages,
+      ...(exerciseVideo ? [exerciseVideo] : []),
+    ];
+
+    if (allFiles.length > 0) {
+      try {
+        const formData = new FormData();
+        allFiles.forEach((file) => {
+          formData.append("files", file);
+        });
+
+        const uploadRes = await contentServices.uploadMedia(formData);
+        uploadedMedia = Array.isArray(uploadRes?.media)
+          ? uploadRes.media
+          : Array.isArray(uploadRes)
+          ? uploadRes
+          : [];
+      } catch (error) {
+        setUploadError("Erro ao fazer upload das mídias. Tente novamente.");
+        showToast("Erro ao fazer upload das mídias.", "ERROR");
+        return;
+      }
+    }
+
+    const newMediaArray = uploadedMedia.map((m) => ({
+      url: m.url,
+      contentType: m.contentType || "application/octet-stream",
+      contentSize: m.contentSize || 0,
+      altText: m.altText || values.title,
+    }));
+
+    const keptExistingMedia = existingMedia
+      .filter((media) => {
+        if (media.id === null || media.id === undefined) return false;
+        return !removedMediaIds.includes(media.id);
+      })
+      .map((media) => ({
+        id: media.id,
+        url: media.url,
+        contentType: media.contentType,
+        contentSize: media.contentSize,
+        altText: media.altText || values.title,
+      }));
+
+    const allMedia = [...keptExistingMedia, ...newMediaArray];
+
     const payload = {
       title: values.title,
       instructions: values.instructions,
@@ -233,7 +329,7 @@ const ExercisesDashboard = () => {
       restTime: Number(values.restTime),
       duration: Number(values.duration),
       attributes: values.attributeIds,
-      media: [],
+      media: allMedia,
     };
 
     try {
@@ -470,9 +566,10 @@ const ExercisesDashboard = () => {
                     paginatedExercises.length > 0
                       ? (currentPage - 1) * pageSize + 1
                       : 0
-                  } - ${Math.min(currentPage * pageSize, totalFiltered)} de ${
+                  } - ${Math.min(
+                    currentPage * pageSize,
                     totalFiltered
-                  }`
+                  )} de ${totalFiltered}`
                 : "Nenhum exercício encontrado"}
             </span>
             {categoryFilter && (
@@ -919,6 +1016,27 @@ const ExercisesDashboard = () => {
                 </div>
 
                 <div className="md:col-span-2">
+                  <MediaManager
+                    existingMedia={existingMedia}
+                    newImages={exerciseImages}
+                    newVideo={exerciseVideo}
+                    onExistingMediaChange={setExistingMedia}
+                    onNewFilesChange={(images, video) => {
+                      setExerciseImages(images);
+                      setExerciseVideo(video);
+                      setUploadError("");
+                    }}
+                    onRemoveExisting={(id) => {
+                      setRemovedMediaIds((prev) => [...prev, id]);
+                      setExistingMedia((prev) =>
+                        prev.filter((m) => m.id !== id)
+                      );
+                    }}
+                    error={uploadError}
+                  />
+                </div>
+
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">
                     Benefícios / atributos
                   </label>
@@ -975,8 +1093,8 @@ const ExercisesDashboard = () => {
                         })}
                         {attributes.length === 0 && (
                           <p className="text-sm text-gray-500">
-                            Cadastre atributos no painel ao lado para associá-los
-                            aos exercícios.
+                            Cadastre atributos no painel ao lado para
+                            associá-los aos exercícios.
                           </p>
                         )}
                       </div>
@@ -1019,4 +1137,3 @@ const ExercisesDashboard = () => {
 };
 
 export default ExercisesDashboard;
-
