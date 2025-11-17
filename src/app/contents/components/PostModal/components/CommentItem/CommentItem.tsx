@@ -76,7 +76,7 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="font-medium text-gray-08 text-sm">
-                {comment.author.name}
+                {comment.author?.name || "Usuário"}
               </span>
               ·<span className="text-xs text-gray-07">{formattedDate}</span>
             </div>
@@ -110,7 +110,9 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
           <ReplyForm
             onSubmit={handleSubmitReply}
             onCancel={handleCancelReply}
-            placeholder={`Respondendo a ${comment.author.name}...`}
+            placeholder={`Respondendo a ${
+              comment.author?.name || "usuário"
+            }...`}
           />
         </div>
       )}

@@ -119,7 +119,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       if (totalSize > MAX_TOTAL_SIZE) {
         const totalSizeMB = (totalSize / 1024 / 1024).toFixed(2);
         setLocalError(
-          `Limite excedido (${totalSizeMB}MB). Máximo: 10MB total por post`
+          `Limite excedido (${totalSizeMB}MB). Máximo: 500MB total por post`
         );
         return;
       }

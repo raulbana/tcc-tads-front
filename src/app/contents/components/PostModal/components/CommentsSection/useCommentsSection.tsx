@@ -13,11 +13,11 @@ export const useCommentsSection = (content: Content) => {
   const normalizeComments = useCallback((comments: Comment[]): Comment[] => {
     return comments.map((comment) => ({
       ...comment,
-      id: comment.id ? String(comment.id) : comment.id,
+      id: String(comment.id),
       replies: comment.replies
         ? comment.replies.map((reply) => ({
             ...reply,
-            id: reply.id ? String(reply.id) : reply.id,
+            id: String(reply.id),
           }))
         : undefined,
     }));
