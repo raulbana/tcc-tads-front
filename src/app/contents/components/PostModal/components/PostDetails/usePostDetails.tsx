@@ -27,10 +27,10 @@ export const usePostDetails = (content: Content) => {
   }, [content]);
 
   const getAllMedia = useCallback((content: Content): MediaItem[] => {
-    const media: MediaItem[] = [];
+    const allMedia: MediaItem[] = [];
 
     if (content.cover?.url) {
-      media.push({
+      allMedia.push({
         type: content.cover.contentType.startsWith("video/")
           ? "video"
           : "image",
@@ -40,14 +40,17 @@ export const usePostDetails = (content: Content) => {
     }
 
     content.media?.forEach((mediaItem) => {
-      media.push({
+      allMedia.push({
         type: mediaItem.contentType.startsWith("video/") ? "video" : "image",
         url: mediaItem.url,
         alt: mediaItem.altText || content.title,
       });
     });
 
-    return media;
+    const videos = allMedia.filter((item) => item.type === "video");
+    const images = allMedia.filter((item) => item.type === "image");
+
+    return [...videos, ...images];
   }, []);
 
   const mediaItems = useMemo(

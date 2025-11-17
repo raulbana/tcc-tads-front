@@ -1,7 +1,8 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { ContentCategory } from '@/app/types/content';
-import contentServices from '../../services/contentServices';
+import React, { useEffect, useState, useMemo } from "react";
+import { ContentCategory } from "@/app/types/content";
+import contentServices from "../../services/contentServices";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 interface CategorySelectorProps {
   selectedCategories: ContentCategory[];
@@ -12,8 +13,9 @@ interface CategorySelectorProps {
 const CategorySelector: React.FC<CategorySelectorProps> = ({
   selectedCategories,
   onCategoriesChange,
-  error
+  error,
 }) => {
+  const { user } = useAuth();
   const [categories, setCategories] = useState<ContentCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +25,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
         const data = await contentServices.getCategories();
         setCategories(data);
       } catch (error) {
-        console.error('Erro ao carregar categorias:', error);
+        console.error("Erro ao carregar categorias:", error);
       } finally {
         setLoading(false);
       }
@@ -32,11 +34,24 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
     fetchCategories();
   }, []);
 
+  const filteredCategories = useMemo(() => {
+    const userRole = user?.role?.toUpperCase();
+    const isUser = !userRole || userRole === "USER";
+
+    if (isUser) {
+      return categories.filter((category) => !category.auditable);
+    }
+
+    return categories;
+  }, [categories, user?.role]);
+
   const toggleCategory = (category: ContentCategory) => {
-    const isSelected = selectedCategories.some(c => c.id === category.id);
-    
+    const isSelected = selectedCategories.some((c) => c.id === category.id);
+
     if (isSelected) {
-      onCategoriesChange(selectedCategories.filter(c => c.id !== category.id));
+      onCategoriesChange(
+        selectedCategories.filter((c) => c.id !== category.id)
+      );
     } else {
       onCategoriesChange([...selectedCategories, category]);
     }
@@ -45,10 +60,15 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
   if (loading) {
     return (
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Categorias</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Categorias
+        </label>
         <div className="flex flex-wrap gap-2">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-8 w-20 bg-gray-200 rounded animate-pulse"
+            />
           ))}
         </div>
       </div>
@@ -62,8 +82,10 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
         <span className="text-red-500"> *</span>
       </label>
       <div className="flex flex-wrap gap-2">
-        {categories.map((category) => {
-          const isSelected = selectedCategories.some(c => c.id === category.id);
+        {filteredCategories.map((category) => {
+          const isSelected = selectedCategories.some(
+            (c) => c.id === category.id
+          );
           return (
             <button
               key={category.id}
@@ -71,8 +93,8 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
               onClick={() => toggleCategory(category)}
               className={`px-3 py-1 text-sm rounded-full border transition-colors ${
                 isSelected
-                  ? 'bg-purple-600 text-white border-purple-600'
-                  : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                  ? "bg-purple-600 text-white border-purple-600"
+                  : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
               }`}
             >
               {category.name}
@@ -80,9 +102,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
           );
         })}
       </div>
-      {error && (
-        <p className="text-red-500 text-sm mt-1">{error}</p>
-      )}
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 };
