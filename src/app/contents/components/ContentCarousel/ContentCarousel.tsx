@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import { Content } from "@/app/types/content";
 import ContentCard from "../ContentCard/ContentCard";
+import { ContentSimpleDTO } from "@/app/types/content";
 
 interface ContentCarouselProps {
   title: string;
-  contents: Content[];
-  onContentClick?: (content: Content) => void;
+  contents: ContentSimpleDTO[];
+  onContentClick: (content: ContentSimpleDTO) => void;
 }
 
 const ContentCarousel: React.FC<ContentCarouselProps> = ({
@@ -18,15 +18,24 @@ const ContentCarousel: React.FC<ContentCarouselProps> = ({
 
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">{title}</h2>
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">{title}</h2>
+      <div 
+        className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
+        <div className="flex gap-6 min-w-max px-1">
         {contents.map((content) => (
+            <div key={content.id} className="w-64 sm:w-72 flex-shrink-0">
           <ContentCard
-            key={content.id}
             content={content}
-            onContentClick={onContentClick}
+            onClick={() => onContentClick(content)}
           />
+            </div>
         ))}
+        </div>
       </div>
     </div>
   );

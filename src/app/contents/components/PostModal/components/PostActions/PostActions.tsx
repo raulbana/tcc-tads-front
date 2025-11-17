@@ -1,37 +1,35 @@
 "use client";
 import React from "react";
-import { HeartIcon, ShareIcon } from "@phosphor-icons/react";
+import { HeartIcon, BookmarkIcon } from "@phosphor-icons/react";
 import { usePostActions } from "./usePostActions";
 
 interface PostActionsProps {
   contentId: string;
   isLiked?: boolean;
   likesCount?: number;
-  isReposted?: boolean;
-  repostsCount?: number;
+  isSaved?: boolean;
   onToggleLike: (contentId: string) => void;
-  onToggleRepost: (contentId: string) => void;
+  onToggleSave: (contentId: string) => void;
 }
 
 const PostActions: React.FC<PostActionsProps> = ({
   contentId,
   isLiked = false,
   likesCount = 0,
-  isReposted = false,
-  repostsCount = 0,
+  isSaved = false,
   onToggleLike,
-  onToggleRepost,
+  onToggleSave,
 }) => {
   const {
     likeButtonProps,
-    repostButtonProps,
+    saveButtonProps,
     formatCount
   } = usePostActions({
     contentId,
     isLiked,
-    isReposted,
+    isSaved,
     onToggleLike,
-    onToggleRepost
+    onToggleSave
   });
 
   return (
@@ -46,14 +44,11 @@ const PostActions: React.FC<PostActionsProps> = ({
         </span>
       </button>
 
-      <button {...repostButtonProps}>
-        <ShareIcon
+      <button {...saveButtonProps}>
+        <BookmarkIcon
           className="w-5 h-5"
-          weight={isReposted ? "fill" : "regular"}
+          weight={isSaved ? "fill" : "regular"}
         />
-        <span className="text-sm font-medium">
-          {formatCount(repostsCount)}
-        </span>
       </button>
     </div>
   );

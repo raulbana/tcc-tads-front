@@ -1,7 +1,8 @@
 "use client";
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import contentServices, { CreateContentRequest, UpdateContentRequest } from '@/app/contents/services/contentServices';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import contentServices from '@/app/contents/services/contentServices';
 import { ContentFormData } from '@/app/contents/schemas/contentSchema';
+import { useAuth } from './AuthContext';
 
 export interface UploadProgress {
   id: string;
@@ -10,6 +11,7 @@ export interface UploadProgress {
   status: 'pending' | 'uploading' | 'success' | 'error';
   error?: string;
   data?: Partial<ContentFormData>;
+  contentId?: string;
 }
 
 interface UploadContextType {
@@ -31,12 +33,37 @@ export const useUpload = () => {
 
 const generateUploadId = () => `upload_${Date.now()}_${Math.random()}`;
 
+const UPLOAD_STORAGE_KEY = 'daily_iu_uploads';
+
 interface UploadProviderProps {
   children: ReactNode;
 }
 
 export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
+  const { user } = useAuth();
   const [uploads, setUploads] = useState<UploadProgress[]>([]);
+
+  // Restaurar uploads do localStorage ao montar
+  useEffect(() => {
+    const storedUploads = localStorage.getItem(UPLOAD_STORAGE_KEY);
+    if (storedUploads) {
+      try {
+        const parsed = JSON.parse(storedUploads);
+        setUploads(parsed);
+      } catch (error) {
+        console.error('Erro ao restaurar uploads:', error);
+      }
+    }
+  }, []);
+
+  // Persistir uploads no localStorage sempre que mudarem
+  useEffect(() => {
+    if (uploads.length > 0) {
+      localStorage.setItem(UPLOAD_STORAGE_KEY, JSON.stringify(uploads));
+    } else {
+      localStorage.removeItem(UPLOAD_STORAGE_KEY);
+    }
+  }, [uploads]);
 
   const removeUpload = useCallback((id: string) => {
     setUploads(prev => prev.filter(upload => upload.id !== id));
@@ -49,6 +76,10 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
   }, []);
 
   const createContent = useCallback(async (data: ContentFormData): Promise<string> => {
+    if (!user) {
+      throw new Error('Usuário não autenticado');
+    }
+
     const uploadId = generateUploadId();
     
     const newUpload: UploadProgress = {
@@ -62,25 +93,38 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
     setUploads(prev => [...prev, newUpload]);
 
     try {
-      updateUploadProgress(uploadId, { status: 'uploading', progress: 20 });
+      updateUploadProgress(uploadId, { status: 'uploading', progress: 10 });
 
-      const createRequest: CreateContentRequest = {
-        title: data.title,
-        description: data.description,
-        subtitle: data.subtitle,
-        subcontent: data.subcontent,
-        images: data.images,
-        video: data.video,
-        categories: data.categories,
-      };
+      // Converter Files para UploadFile
+      const files: File[] = [];
+      
+      if (data.images && data.images.length > 0) {
+        files.push(...data.images);
+      }
+      
+      if (data.video) {
+        files.push(data.video);
+      }
 
-      updateUploadProgress(uploadId, { progress: 50 });
+      updateUploadProgress(uploadId, { progress: 30 });
 
-      const result = await contentServices.createContent(createRequest);
+      // Criar conteúdo com arquivos
+      const result = await contentServices.createContentWithFiles(
+        {
+          title: data.title,
+          description: data.description,
+          subtitle: data.subtitle,
+          subcontent: data.subcontent,
+          categories: data.categories.map(c => typeof c.id === 'string' ? parseInt(c.id, 10) : c.id),
+          files: files,
+        },
+        user.id.toString()
+      );
 
       updateUploadProgress(uploadId, { 
         status: 'success', 
-        progress: 100 
+        progress: 100,
+        contentId: result.id
       });
 
       // Remove upload após 3 segundos
@@ -98,9 +142,13 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
       });
       throw error;
     }
-  }, [updateUploadProgress, removeUpload]);
+  }, [user, updateUploadProgress, removeUpload]);
 
   const updateContent = useCallback(async (contentId: string, data: ContentFormData): Promise<string> => {
+    if (!user) {
+      throw new Error('Usuário não autenticado');
+    }
+
     const uploadId = generateUploadId();
     
     const newUpload: UploadProgress = {
@@ -108,7 +156,8 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
       type: 'edit',
       progress: 0,
       status: 'pending',
-      data
+      data,
+      contentId
     };
 
     setUploads(prev => [...prev, newUpload]);
@@ -116,20 +165,17 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
     try {
       updateUploadProgress(uploadId, { status: 'uploading', progress: 20 });
 
-      const updateRequest: UpdateContentRequest = {
-        id: contentId,
-        title: data.title,
-        description: data.description,
-        subtitle: data.subtitle,
-        subcontent: data.subcontent,
-        images: data.images,
-        video: data.video,
-        categories: data.categories,
-      };
-
-      updateUploadProgress(uploadId, { progress: 50 });
-
-      const result = await contentServices.updateContent(updateRequest);
+      const result = await contentServices.updateContent(
+        contentId,
+        {
+          title: data.title,
+          description: data.description,
+          subtitle: data.subtitle,
+          subcontent: data.subcontent,
+          categories: data.categories.map(c => c.id.toString()),
+        },
+        user.id.toString()
+      );
 
       updateUploadProgress(uploadId, { 
         status: 'success', 
@@ -151,7 +197,7 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
       });
       throw error;
     }
-  }, [updateUploadProgress, removeUpload]);
+  }, [user, updateUploadProgress, removeUpload]);
 
   const value: UploadContextType = {
     uploads,

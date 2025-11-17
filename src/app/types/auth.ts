@@ -3,6 +3,7 @@ export interface User {
   name: string;
   email: string;
   profilePictureUrl?: string;
+  role?: string;
   profile: PatientProfile;
   preferences: Preferences;
 }
@@ -28,12 +29,13 @@ export interface Preferences {
   workoutMediaType: WorkoutMediaType;
 }
 
-export type Gender = 'male' | 'female' | 'other';
-export type WorkoutMediaType = 'video' | 'image';
+export type Gender = "male" | "female" | "other";
+export type WorkoutMediaType = "video" | "image";
 
 export interface loginRequest {
   email: string;
   password: string;
+  remember?: boolean;
 }
 
 export interface loginResponse {

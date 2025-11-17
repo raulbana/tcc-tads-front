@@ -1,259 +1,367 @@
-//import { apiFactory } from "@/app/services/apiFactory";
-//import { API_BASE_URL } from "@/app/config/env";
-import { Content, ContentCategory } from "@/app/types/content";
+import apiFactory from "@/app/services/apiFactory";
+import { API_BASE_URL } from "@/app/config/env";
+import apiRoutes from "@/app/utils/apiRoutes";
+import {
+  Content,
+  ContentCategory,
+  CreateContentRequest,
+  UpdateContentRequest,
+  ToggleDTO,
+  CommentCreatorDTO,
+  ReportContentDTO,
+  ContentSimpleDTO,
+  MediaDTO,
+  Comment,
+  CreateContentWithFilesRequest,
+} from "@/app/types/content";
+import { contentCache } from "./contentCache";
 
-//const api = apiFactory(API_BASE_URL);
+const api = apiFactory(API_BASE_URL || "");
 
-export interface CreateContentRequest {
-  title: string;
-  description: string;
-  subtitle?: string;
-  subcontent?: string;
-  images: File[];
-  video?: File;
-  categories: string[];
-}
+const updateCachedContent = (
+  contentId: string,
+  updater: (content: Content) => Content
+) => {
+  const cachedContent = contentCache.getContent(contentId);
+  if (cachedContent) {
+    const updated = updater({ ...cachedContent });
+    contentCache.setContent(contentId, updated);
+  }
 
-export interface UpdateContentRequest extends Partial<CreateContentRequest> {
-  id: string;
-}
+  const cachedList = contentCache.getContents();
+  if (cachedList) {
+    let hasChanges = false;
+    const updatedList = cachedList.map((content) => {
+      if (content.id === contentId) {
+        hasChanges = true;
+        return updater({ ...content });
+      }
+      return content;
+    });
 
-// Mock data para desenvolvimento
-const mockCategories: ContentCategory[] = [
-  { id: "1", name: "Alimentação e Nutrição", auditable: false},
-  { id: "2", name: "Hábitos Saudáveis", auditable: false},
-  { id: "3", name: "Dicas de Fisioterapia Pélvica", auditable: true},
-  { id: "4", name: "Depoimentos e Histórias Reais", auditable: false},
-  { id: "5", name: "Mitos e Verdades", auditable: true},
-];
+    if (hasChanges) {
+      contentCache.setContents(updatedList);
+    }
+  }
+};
 
 const contentServices = {
-  getById: async (contentId: string): Promise<Content> => {
-    // Simulando delay da API
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Mock data - em produção substituir pela chamada real
-    const mockContent: Content = {
-      id: contentId,
-      title: "Título do conteúdo",
-      description: "Descrição do conteúdo",
-      subtitle: "Subtítulo do conteúdo",
-      subcontent: "Conteúdo adicional do post",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      coverUrl: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=300&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop"
-      ],
-      videos: [],
-      category: mockCategories.slice(0, 2),
-      isFavorite: false,
-      authorId: "author1",
-      tags: ["Saúde", "Bem-estar"],
-      comments: []
+  getById: async (contentId: string, userId: string): Promise<Content> => {
+    const cached = contentCache.getContent(contentId);
+    if (cached) {
+      return cached;
+    }
+
+    const headers = {
+      "x-user-id": userId,
     };
 
-    // Implementação real
-    // const response = await api.get(`/contents/${contentId}`);
-    // return response.data;
-    
-    return mockContent;
+    const response = await api.get(apiRoutes.content.byId(contentId), {
+      headers,
+    });
+
+    contentCache.setContent(contentId, response.data);
+    return response.data;
   },
 
-  getAll: async (): Promise<Content[]> => {
-    // Simulando delay da API
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Mock data
-    const mockContents: Content[] = [
-      {
-        id: "1",
-        title: "5 Alimentos que Fortalecem o Assoalho Pélvico",
-        subtitle: "Descubra como a alimentação pode ajudar",
-        description: "Uma alimentação adequada pode contribuir significativamente para a saúde do assoalho pélvico.",
-        subcontent: "Neste artigo, vamos explorar os principais alimentos que podem fortalecer a musculatura pélvica e melhorar sua qualidade de vida.",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 horas atrás
-        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
-        coverUrl: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop",
-        images: [],
-        videos: [],
-        category: "1",
-        isFavorite: false,
-        authorId: "author1",
-        tags: ["Alimentação", "Saúde"],
-        comments: []
-      },
-      {
-        id: "2",
-        title: "Exercícios de Kegel: Guia Completo",
-        subtitle: "Aprenda a técnica correta",
-        description: "Os exercícios de Kegel são fundamentais para fortalecer a musculatura pélvica.",
-        subcontent: "Este guia completo vai te ensinar passo a passo como realizar os exercícios corretamente e obter os melhores resultados.",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 horas atrás
-        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 6),
-        coverUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
-        images: [],
-        videos: [],
-        category: "3",
-        isFavorite: false,
-        authorId: "author2",
-        tags: ["Exercícios", "Fisioterapia"],
-        comments: []
-      },
-      {
-        id: "3",
-        title: "Minha Jornada de Superação",
-        subtitle: "Um relato pessoal",
-        description: "Compartilho aqui como consegui superar as dificuldades e melhorar minha qualidade de vida.",
-        subcontent: "Esta é uma história real de superação que pode inspirar outras pessoas que passam pelas mesmas dificuldades.",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 horas atrás
-        updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 12),
-        coverUrl: "https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=400&h=300&fit=crop",
-        images: [],
-        videos: [],
-        category: "4",
-        isFavorite: true,
-        authorId: "author3",
-        tags: ["Depoimento", "Superação"],
-        comments: []
+  getAll: async (
+    userId: string,
+    profileMode?: boolean
+  ): Promise<ContentSimpleDTO[]> => {
+    if (!profileMode) {
+      const cached = contentCache.getContents();
+      if (cached) {
+        return cached as unknown as ContentSimpleDTO[];
       }
-    ];
+    }
 
-    // Implementação real (comentada por enquanto)
-    // const response = await api.get('/contents');
-    // return response.data;
-    
-    return mockContents;
+    const headers: Record<string, string> = {
+      "x-user-id": userId,
+      ...(profileMode && { "x-profile": "true" }),
+    };
+
+    const response = await api.get(apiRoutes.content.all, { headers });
+
+    if (!profileMode) {
+      contentCache.setContents(response.data);
+    }
+
+    return response.data;
   },
 
   getCategories: async (): Promise<ContentCategory[]> => {
-    // Simulando delay da API
-    await new Promise(resolve => setTimeout(resolve, 300));
+    const cached = contentCache.getCategories();
+    if (cached) {
+      return cached;
+    }
 
-    // Implementação real
-    // const response = await api.get('/contents/categories');
-    // return response.data;
-    
-    return mockCategories;
+    const response = await api.get(apiRoutes.content.categories);
+    contentCache.setCategories(response.data);
+    return response.data;
   },
 
-  createContent: async (contentData: CreateContentRequest): Promise<Content> => {
-    // Simulando delay de upload
-    await new Promise(resolve => setTimeout(resolve, 2000));
+  createContent: async (
+    contentData: CreateContentRequest,
+    userId: string
+  ): Promise<Content> => {
+    const headers = {
+      "x-user-id": userId,
+    };
 
-    // Mock da resposta
-    const mockResponse: Content = {
-      id: `content_${Date.now()}`,
+    const response = await api.post(apiRoutes.content.create, contentData, {
+      headers,
+    });
+    contentCache.invalidateAll();
+
+    return response.data;
+  },
+
+  createContentWithFiles: async (
+    contentData: CreateContentWithFilesRequest,
+    userId: string
+  ): Promise<Content> => {
+    const headers = {
+      "x-user-id": userId,
+    };
+
+    let uploadedMedia: MediaDTO[] = [];
+
+    if (contentData.files && contentData.files.length > 0) {
+      const formData = new FormData();
+      contentData.files.forEach((file) => {
+        formData.append("files", file as any);
+      });
+
+      const uploadRes = await contentServices.uploadMedia(formData);
+      uploadedMedia = Array.isArray(uploadRes?.media)
+        ? uploadRes.media
+        : Array.isArray(uploadRes)
+        ? uploadRes
+        : [];
+    }
+
+    const mediaArray = uploadedMedia.map((m) => ({
+      url: m.url,
+      contentType: m.contentType || "application/octet-stream",
+      contentSize: m.contentSize || 0,
+      altText: m.altText || contentData.title,
+    }));
+
+    const createRequest = {
       title: contentData.title,
       description: contentData.description,
-      subtitle: contentData.subtitle || "",
-      subcontent: contentData.subcontent || "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      coverUrl: contentData.images[0] ? URL.createObjectURL(contentData.images[0]) : "",
-      images: contentData.images.map(img => URL.createObjectURL(img)),
-      videos: contentData.video ? [URL.createObjectURL(contentData.video)] : [],
-      category: contentData.categories[0] || "1",
-      isFavorite: false,
-      authorId: "current_user",
-      tags: [],
-      comments: []
+      subtitle: contentData.subtitle,
+      subcontent: contentData.subcontent,
+      categoryIds: contentData.categories,
+      authorId: parseInt(userId),
+      media: mediaArray,
     };
 
-    // Implementação
-    /*
-    const formData = new FormData();
-    
-    formData.append('title', contentData.title);
-    formData.append('description', contentData.description);
-    if (contentData.subtitle) formData.append('subtitle', contentData.subtitle);
-    if (contentData.subcontent) formData.append('subcontent', contentData.subcontent);
-    formData.append('categories', JSON.stringify(contentData.categories));
-
-    contentData.images.forEach((image, index) => {
-      formData.append('images', image);
+    const response = await api.post(apiRoutes.content.create, createRequest, {
+      headers,
     });
-
-    if (contentData.video) {
-      formData.append('video', contentData.video);
-    }
-
-    const response = await api.post('/contents', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    contentCache.invalidateAll();
 
     return response.data;
-    */
-
-    return mockResponse;
   },
 
-  updateContent: async (contentData: UpdateContentRequest): Promise<Content> => {
-    // Simulando delay de upload
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Mock da resposta
-    const mockResponse: Content = {
-      id: contentData.id,
-      title: contentData.title || "Título atualizado",
-      description: contentData.description || "Descrição atualizada",
-      subtitle: contentData.subtitle || "",
-      subcontent: contentData.subcontent || "",
-      createdAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hora atrás
-      updatedAt: new Date(),
-      coverUrl: contentData.images?.[0] ? URL.createObjectURL(contentData.images[0]) : "",
-      images: contentData.images?.map(img => URL.createObjectURL(img)) || [],
-      videos: contentData.video ? [URL.createObjectURL(contentData.video)] : [],
-      category: contentData.categories?.[0] || "1",
-      isFavorite: false,
-      authorId: "current_user",
-      tags: [],
-      comments: []
+  updateContent: async (
+    id: string,
+    contentData: UpdateContentRequest,
+    userId: string
+  ): Promise<Content> => {
+    const headers = {
+      "x-user-id": userId,
     };
 
-    // Implementação real (comentada por enquanto)
-    /*
-    const formData = new FormData();
-    
-    if (contentData.title) formData.append('title', contentData.title);
-    if (contentData.description) formData.append('description', contentData.description);
-    if (contentData.subtitle) formData.append('subtitle', contentData.subtitle);
-    if (contentData.subcontent) formData.append('subcontent', contentData.subcontent);
-    if (contentData.categories) formData.append('categories', JSON.stringify(contentData.categories));
+    const updateData = {
+      title: contentData.title,
+      description: contentData.description,
+      subtitle: contentData.subtitle,
+      subcontent: contentData.subcontent,
+      categoryId: contentData.categories
+        ? parseInt(contentData.categories[0])
+        : undefined,
+    };
 
-    if (contentData.images) {
-      contentData.images.forEach((image, index) => {
-        formData.append('images', image);
-      });
-    }
-
-    if (contentData.video) {
-      formData.append('video', contentData.video);
-    }
-
-    const response = await api.put(`/contents/${contentData.id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    const response = await api.put(apiRoutes.content.update(id), updateData, {
+      headers,
     });
+    contentCache.invalidateContent(id);
 
     return response.data;
-    */
-
-    return mockResponse;
   },
 
-  deleteContent: async (contentId: string): Promise<void> => {
-    // Simulando delay da API
-    await new Promise(resolve => setTimeout(resolve, 500));
+  deleteContent: async (id: string): Promise<void> => {
+    await api.delete(apiRoutes.content.delete(id));
+    contentCache.invalidateContent(id);
+  },
 
-    // Mock - em produção substituir pela chamada real
-    // await api.delete(`/contents/${contentId}`);
-    
-    console.log(`Content ${contentId} deleted`);
+  toggleLike: async (
+    id: string,
+    liked: boolean,
+    userId: string
+  ): Promise<void> => {
+    const toggleData: ToggleDTO = {
+      userId: parseInt(userId),
+      control: liked,
+    };
+    await api.patch(apiRoutes.content.like(id), toggleData);
+    updateCachedContent(id, (content) => {
+      const wasLiked = content.isLiked ?? false;
+      const currentLikes = content.likesCount ?? 0;
+      let likesCount = currentLikes;
+
+      if (liked && !wasLiked) {
+        likesCount = currentLikes + 1;
+      } else if (!liked && wasLiked) {
+        likesCount = Math.max(0, currentLikes - 1);
+      }
+
+      return {
+        ...content,
+        isLiked: liked,
+        likesCount,
+      };
+    });
+  },
+
+  toggleRepost: async (
+    id: string,
+    reposted: boolean,
+    userId: string
+  ): Promise<void> => {
+    const toggleData: ToggleDTO = {
+      userId: parseInt(userId),
+      control: reposted,
+    };
+    await api.patch(apiRoutes.content.repost(id), toggleData);
+  },
+
+  createComment: async (commentData: CommentCreatorDTO): Promise<void> => {
+    await api.post(apiRoutes.content.createComment, commentData);
+  },
+
+  reportContent: async (
+    contentId: string,
+    reason: string,
+    userId: string
+  ): Promise<void> => {
+    const reportData: ReportContentDTO = {
+      reporterId: parseInt(userId),
+      reason,
+    };
+    await api.post(apiRoutes.content.report(contentId), reportData);
+  },
+
+  getUserContent: async (userId: string): Promise<Content[]> => {
+    const response = await api.get(apiRoutes.content.user(userId));
+    return response.data;
+  },
+
+  getSavedContent: async (): Promise<Content[]> => {
+    const response = await api.get(apiRoutes.content.saved);
+    return response.data;
+  },
+
+  unsaveContent: async (contentId: string): Promise<void> => {
+    await api.patch(apiRoutes.content.save(contentId), { saved: false });
+  },
+
+  saveContent: async (contentId: string): Promise<void> => {
+    await api.patch(apiRoutes.content.save(contentId), { saved: true });
+  },
+
+  toggleSaveContent: async (
+    contentId: string,
+    userId: number,
+    control: boolean
+  ): Promise<void> => {
+    const toggleData: ToggleDTO = {
+      userId,
+      control,
+    };
+
+    await api.patch(apiRoutes.content.save(contentId), toggleData);
+    updateCachedContent(contentId, (content) => ({
+      ...content,
+      isSaved: control,
+    }));
+  },
+
+  getComments: async (
+    contentId: string,
+    userId: string,
+    page?: number,
+    size?: number
+  ): Promise<Comment[]> => {
+    const headers = {
+      "x-user-id": userId,
+    };
+    const response = await api.get(apiRoutes.content.comments(contentId), {
+      headers,
+      params: { page, size },
+    });
+    return response.data;
+  },
+
+  updateComment: async (
+    commentId: string,
+    text: string,
+    userId: string
+  ): Promise<Comment> => {
+    const headers = {
+      "x-user-id": userId,
+    };
+    const response = await api.put(
+      apiRoutes.content.comment(commentId),
+      { text },
+      { headers }
+    );
+    return response.data;
+  },
+
+  deleteComment: async (commentId: string): Promise<void> => {
+    await api.delete(apiRoutes.content.comment(commentId));
+  },
+
+  likeComment: async (
+    commentId: string,
+    userId: number,
+    liked: boolean
+  ): Promise<void> => {
+    const toggleData: ToggleDTO = {
+      userId,
+      control: liked,
+    };
+    await api.patch(apiRoutes.content.commentLike(commentId), toggleData);
+  },
+
+  getCommentReplies: async (
+    commentId: string,
+    userId: string,
+    page: number = 0,
+    size: number = 10
+  ): Promise<Comment[]> => {
+    const headers = {
+      "x-user-id": userId,
+    };
+    const response = await api.get(
+      apiRoutes.content.commentReplies(commentId),
+      {
+        headers,
+        params: { page, size },
+      }
+    );
+    return response.data;
+  },
+
+  uploadMedia: async (files: FormData): Promise<any> => {
+    const headers = {
+      "Content-Type": "multipart/form-data",
+    };
+    const response = await api.post(apiRoutes.media.upload, files, { headers });
+    return response.data;
   },
 };
 

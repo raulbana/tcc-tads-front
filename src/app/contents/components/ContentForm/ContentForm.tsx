@@ -1,19 +1,19 @@
 "use client";
-import React from 'react';
-import { Controller } from 'react-hook-form';
-import { useContentForm } from './useContentForm';
-import Input from '@/app/components/Input/Input';
-import Button from '@/app/components/Button/Button';
-import FileUpload from '../FileUpload/FileUpload';
-import CategorySelector from '../CategorySelector/CategorySelector';
-import { Content } from '@/app/types/content';
+import React from "react";
+import { Controller } from "react-hook-form";
+import { useContentForm } from "./useContentForm";
+import Input from "@/app/components/Input/Input";
+import Button from "@/app/components/Button/Button";
+import FileUpload from "../FileUpload/FileUpload";
+import CategorySelector from "../CategorySelector/CategorySelector";
+import { Content } from "@/app/types/content";
 
 interface ContentFormProps {
   onSuccess?: (contentId: string) => void;
   onError?: (error: string) => void;
   onCancel?: () => void;
   initialData?: Partial<Content>;
-  mode?: 'create' | 'edit';
+  mode?: "create" | "edit";
   contentId?: string;
 }
 
@@ -22,8 +22,8 @@ const ContentForm: React.FC<ContentFormProps> = ({
   onError,
   onCancel,
   initialData,
-  mode = 'create',
-  contentId
+  mode = "create",
+  contentId,
 }) => {
   const {
     control,
@@ -40,11 +40,11 @@ const ContentForm: React.FC<ContentFormProps> = ({
     onError,
     initialData,
     mode,
-    contentId
+    contentId,
   });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 pb-4">
       <div>
         <Controller
           control={control}
@@ -95,11 +95,16 @@ const ContentForm: React.FC<ContentFormProps> = ({
       </div>
 
       <CategorySelector
-        selectedCategories={watchedCategories}
+        selectedCategories={
+          watchedCategories?.map((category: any) => ({
+            ...category,
+            id: typeof category.id === 'string' ? parseInt(category.id, 10) : category.id,
+          })) ?? []
+        }
         onCategoriesChange={handleCategoriesChange}
         error={errors.categories?.message}
       />
-      </div>
+
       <div>
         <Controller
           control={control}
@@ -109,7 +114,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
               type="text"
               label="Subtópico"
               placeholder="Digite o subtópico do post (opcional)"
-              value={field.value ? field.value : ''}
+              value={field.value || ""}
               onChange={field.onChange}
               error={errors.subtitle?.message}
             />
@@ -126,7 +131,7 @@ const ContentForm: React.FC<ContentFormProps> = ({
               type="textarea"
               label="Conteúdo adicional"
               placeholder="Digite conteúdo adicional do post (opcional)"
-              value={field.value ? field.value : ''}
+              value={field.value || ""}
               onChange={field.onChange}
               error={errors.subcontent?.message}
             />
@@ -141,21 +146,23 @@ const ContentForm: React.FC<ContentFormProps> = ({
             text="Cancelar"
             onClick={onCancel}
             disabled={isSubmitting}
-            className=""
           />
         )}
 
         <Button
           type="PRIMARY"
-          text={isSubmitting
-            ? (mode === 'create' ? 'Publicando...' : 'Salvando...')
-            : (mode === 'create' ? 'Publicar Post' : 'Salvar Alterações')
+          text={
+            isSubmitting
+              ? mode === "create"
+                ? "Publicando..."
+                : "Salvando..."
+              : mode === "create"
+              ? "Publicar Post"
+              : "Salvar Alterações"
           }
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className=""
         />
-
       </div>
     </form>
   );

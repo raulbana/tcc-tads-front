@@ -3,25 +3,25 @@ import { useCallback, useMemo } from "react";
 interface UsePostActionsProps {
   contentId: string;
   isLiked: boolean;
-  isReposted: boolean;
+  isSaved: boolean;
   onToggleLike: (contentId: string) => void;
-  onToggleRepost: (contentId: string) => void;
+  onToggleSave: (contentId: string) => void;
 }
 
 export const usePostActions = ({
   contentId,
   isLiked,
-  isReposted,
+  isSaved,
   onToggleLike,
-  onToggleRepost
+  onToggleSave
 }: UsePostActionsProps) => {
   const handleLike = useCallback(() => {
     onToggleLike(contentId);
   }, [contentId, onToggleLike]);
 
-  const handleRepost = useCallback(() => {
-    onToggleRepost(contentId);
-  }, [contentId, onToggleRepost]);
+  const handleSave = useCallback(() => {
+    onToggleSave(contentId);
+  }, [contentId, onToggleSave]);
 
   const formatCount = useCallback((count: number) => {
     if (count >= 1000000) {
@@ -43,19 +43,19 @@ export const usePostActions = ({
     'aria-label': isLiked ? 'Descurtir conteúdo' : 'Curtir conteúdo'
   }), [handleLike, isLiked]);
 
-  const repostButtonProps = useMemo(() => ({
-    onClick: handleRepost,
+  const saveButtonProps = useMemo(() => ({
+    onClick: handleSave,
     className: `flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-      isReposted
-        ? 'text-purple-600 bg-purple-50 hover:bg-purple-100'
-        : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+      isSaved
+        ? 'text-yellow-600 bg-yellow-50 hover:bg-yellow-100'
+        : 'text-gray-600 hover:text-yellow-600 hover:bg-yellow-50'
     }`,
-    'aria-label': isReposted ? 'Desfazer compartilhamento' : 'Compartilhar conteúdo'
-  }), [handleRepost, isReposted]);
+    'aria-label': isSaved ? 'Remover dos salvos' : 'Salvar conteúdo'
+  }), [handleSave, isSaved]);
 
   return {
     likeButtonProps,
-    repostButtonProps,
+    saveButtonProps,
     formatCount
   };
 };

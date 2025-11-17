@@ -82,3 +82,12 @@
   border: 2px solid #5F3C6F;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE e Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari e Opera */
+}

@@ -18,10 +18,9 @@ interface PostDetailsProps {
 const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
   const {
     mediaItems,
-    formattedDate,
     hasMedia,
     handleToggleLike,
-    handleToggleRepost,
+    handleToggleSave,
     localContent
   } = usePostDetails(content);
 
@@ -36,18 +35,17 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <PostAuthor
-                    authorId={localContent.authorId}
-                    createdAt={formattedDate}
+                    author={localContent.author!}
+                    createdAt={localContent.createdAt}
                   />
                   
                   <PostActions
                     contentId={localContent.id}
                     isLiked={localContent.isLiked}
                     likesCount={localContent.likesCount}
-                    isReposted={localContent.isReposted}
-                    repostsCount={localContent.repostsCount}
+                    isSaved={localContent.isSaved}
                     onToggleLike={handleToggleLike}
-                    onToggleRepost={handleToggleRepost}
+                    onToggleSave={handleToggleSave}
                   />
                 </div>
                 
@@ -68,7 +66,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
               ) : (
                 <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden relative">
                   <Image
-                    src={localContent.coverUrl}
+                    src={localContent.media[0].url}
                     alt={localContent.title}
                     fill
                     className="object-cover"

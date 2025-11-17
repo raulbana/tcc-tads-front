@@ -49,7 +49,7 @@ export interface ReportDTO {
 export interface UrinationData {
   observation?: string;
   time: string;
-  amount: UrinationAmount;
+  amount: string;
   leakage: boolean;
   reason?: string;
   urgency?: boolean;
@@ -61,7 +61,7 @@ export interface CalendarDayData {
   eventsCount?: number;
   completedExercises?: number;
   notesPreview?: string;
-  urinationData?: UrinationData[];
+  urinationData: UrinationDataDTO[];
   dayTitle: string;
   dayNumber: number;
   isToday?: boolean;

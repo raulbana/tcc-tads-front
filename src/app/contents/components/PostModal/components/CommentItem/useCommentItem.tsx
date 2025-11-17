@@ -4,7 +4,11 @@ import { Comment } from "@/app/types/content";
 
 interface UseCommentItemProps {
   comment: Comment;
-  onToggleLike: (commentId: string, isReply?: boolean, parentId?: string) => void;
+  onToggleLike: (
+    commentId: string,
+    isReply?: boolean,
+    parentId?: string
+  ) => void;
   onAddReply: (parentCommentId: string, text: string) => void;
   onToggleReplies: (commentId: string) => void;
   onShowMoreReplies: (commentId: string) => void;
@@ -23,7 +27,7 @@ export const useCommentItem = ({
   isExpanded,
   visibleRepliesCount,
   isReply = false,
-  parentId
+  parentId,
 }: UseCommentItemProps) => {
   const [showReplyForm, setShowReplyForm] = useState(false);
 
@@ -32,6 +36,10 @@ export const useCommentItem = ({
   }, []);
 
   const handleLike = useCallback(() => {
+    if (!comment.id || comment.id === "undefined") {
+      console.warn("Invalid comment id for like:", comment.id);
+      return;
+    }
     onToggleLike(comment.id, isReply, parentId);
   }, [comment.id, isReply, parentId, onToggleLike]);
 
@@ -39,10 +47,13 @@ export const useCommentItem = ({
     setShowReplyForm(true);
   }, []);
 
-  const handleSubmitReply = useCallback((text: string) => {
-    onAddReply(isReply ? parentId! : comment.id, text);
-    setShowReplyForm(false);
-  }, [isReply, parentId, comment.id, onAddReply]);
+  const handleSubmitReply = useCallback(
+    (text: string) => {
+      onAddReply(isReply ? parentId! : comment.id, text);
+      setShowReplyForm(false);
+    },
+    [isReply, parentId, comment.id, onAddReply]
+  );
 
   const handleCancelReply = useCallback(() => {
     setShowReplyForm(false);
@@ -56,46 +67,58 @@ export const useCommentItem = ({
     onShowMoreReplies(comment.id);
   }, [comment.id, onShowMoreReplies]);
 
-  const visibleReplies = useMemo(() =>
-    comment.replies?.slice(0, visibleRepliesCount) || [],
+  const visibleReplies = useMemo(
+    () => comment.replies?.slice(0, visibleRepliesCount) || [],
     [comment.replies, visibleRepliesCount]
   );
 
-  const hasMoreReplies = useMemo(() =>
-    (comment.replies?.length || 0) > visibleRepliesCount,
+  const hasMoreReplies = useMemo(
+    () => (comment.replies?.length || 0) > visibleRepliesCount,
     [comment.replies, visibleRepliesCount]
   );
 
-  const formattedDate = useMemo(() =>
-    formatDate(comment.createdAt),
+  const formattedDate = useMemo(
+    () => formatDate(new Date(comment.createdAt)),
     [comment.createdAt, formatDate]
   );
 
-  const remainingRepliesCount = useMemo(() =>
-    Math.min(5, (comment.replies?.length || 0) - visibleRepliesCount),
+  const remainingRepliesCount = useMemo(
+    () => Math.min(5, (comment.replies?.length || 0) - visibleRepliesCount),
     [comment.replies, visibleRepliesCount]
   );
 
-  const likeButtonProps = useMemo(() => ({
-    onClick: handleLike,
-    className: `flex items-center gap-1 text-xs transition-colors ${comment.isLikedByCurrentUser
-        ? 'text-purple-04 hover:text-purple-03'
-        : 'text-gray-07 hover:text-purple-03'
+  const likeButtonProps = useMemo(
+    () => ({
+      onClick: handleLike,
+      className: `flex items-center gap-1 text-xs transition-colors ${
+        comment.isLiked
+          ? "text-purple-04 hover:text-purple-03"
+          : "text-gray-07 hover:text-purple-03"
       }`,
-    'aria-label': `${comment.isLikedByCurrentUser ? 'Descurtir' : 'Curtir'} comentário`
-  }), [comment.isLikedByCurrentUser, handleLike]);
+      "aria-label": `${comment.isLiked ? "Descurtir" : "Curtir"} comentário`,
+    }),
+    [comment.isLiked, handleLike]
+  );
 
-  const replyButtonProps = useMemo(() => ({
-    onClick: handleReply,
-    className: 'flex items-center gap-1 text-xs transition-colors text-gray-07 hover:text-purple-03',
-    'aria-label': 'Responder comentário'
-  }), [handleReply]);
+  const replyButtonProps = useMemo(
+    () => ({
+      onClick: handleReply,
+      className:
+        "flex items-center gap-1 text-xs transition-colors text-gray-07 hover:text-purple-03",
+      "aria-label": "Responder comentário",
+    }),
+    [handleReply]
+  );
 
-  const toggleRepliesButtonProps = useMemo(() => ({
-    onClick: handleToggleRepliesClick,
-    className: 'flex items-center gap-1 text-xs transition-colors text-gray-07 hover:text-purple-03',
-    'aria-label': isExpanded ? 'Ocultar respostas' : 'Ver respostas'
-  }), [handleToggleRepliesClick, isExpanded]);
+  const toggleRepliesButtonProps = useMemo(
+    () => ({
+      onClick: handleToggleRepliesClick,
+      className:
+        "flex items-center gap-1 text-xs transition-colors text-gray-07 hover:text-purple-03",
+      "aria-label": isExpanded ? "Ocultar respostas" : "Ver respostas",
+    }),
+    [handleToggleRepliesClick, isExpanded]
+  );
 
   return {
     showReplyForm,
@@ -108,6 +131,6 @@ export const useCommentItem = ({
     toggleRepliesButtonProps,
     handleSubmitReply,
     handleCancelReply,
-    handleShowMoreRepliesClick
+    handleShowMoreRepliesClick,
   };
 };

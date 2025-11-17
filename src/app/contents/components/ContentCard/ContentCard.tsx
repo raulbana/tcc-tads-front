@@ -1,53 +1,70 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { Content } from "@/app/types/content";
+import { ContentSimpleDTO } from "@/app/types/content";
+import moment from "moment";
+import AnonymousUserIcon from "@/app/assets/illustrations/anonymous_user.svg";
 
 interface ContentCardProps {
-  content: Content;
-  onContentClick?: (content: Content) => void;
+  content: ContentSimpleDTO;
+  onClick?: () => void;
 }
 
-const ContentCard: React.FC<ContentCardProps> = ({ content, onContentClick }) => {
-  const displayTags = content.tags?.slice(0, 3) || [];
+const ContentCard: React.FC<ContentCardProps> = ({ content, onClick }) => {
+  const [imageError, setImageError] = useState(false);
+  const formattedDate = moment(content.createdAt).format("DD/MM/YYYY");
+
+  const hasValidMedia = content.cover?.url && !imageError;
+  const isVideo = content.cover?.contentType?.startsWith("video/");
 
   return (
     <div
-      className="relative w-80 h-48 rounded-lg overflow-hidden cursor-pointer group flex-shrink-0"
-      onClick={() => onContentClick?.(content)}
+      onClick={onClick}
+      className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
     >
-      <Image
-        src={content.coverUrl}
-        alt={content.title}
-        fill
-        sizes="(max-width: 768px) 100vw, 320px"
-        className="object-cover transition-transform group-hover:scale-105"
-      />
-      
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-      {displayTags.length > 0 && (
-        <div className="absolute top-3 left-3 flex gap-2">
-          {displayTags.map((tag, index) => (
-            <span
-              key={index}
-              className="px-3 py-1 text-xs font-medium rounded-lg bg-purple-02 text-purple-04"
-            >
-              {tag}
+      <div className="relative h-48 w-full bg-gray-100 flex items-center justify-center">
+        {hasValidMedia ? (
+          isVideo ? (
+            <video
+              src={content.cover.url}
+              className="w-full h-full object-cover"
+              muted
+              playsInline
+              aria-label={content.cover.altText || content.title}
+            />
+          ) : (
+            <Image
+              src={content.cover.url}
+              alt={content.cover.altText || content.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              onError={() => setImageError(true)}
+            />
+          )
+        ) : (
+          <div className="w-24 h-24 text-gray-400">
+            <AnonymousUserIcon className="w-full h-full" />
+          </div>
+        )}
+      </div>
+      <div className="p-4">
+        <div className="mb-2">
+          {content.categories && content.categories.length > 0 && (
+            <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+              {content.categories[0]}
             </span>
-          ))}
+          )}
         </div>
-      )}
-      
-      <div className="absolute bottom-4 left-4 right-4 text-white">
-        <h3 className="text-lg font-semibold mb-1 line-clamp-2">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
           {content.title}
         </h3>
-        {content.subtitle && (
-          <p className="text-sm text-gray-200 line-clamp-2">
-            {content.subtitle}
-          </p>
-        )}
+        <div className="flex items-center justify-between text-sm text-gray-600">
+          <span className="flex items-center gap-1">
+            <span className="font-medium">{content.author.name}</span>
+          </span>
+          <span>{formattedDate}</span>
+        </div>
       </div>
     </div>
   );
