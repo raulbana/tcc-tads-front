@@ -92,7 +92,8 @@ export interface Content {
 export interface ContentSimpleDTO {
   id: number;
   title: string;
-  category: string;
+  categories: string[];
+  section?: string[];
   author: AuthorDTO;
   cover: MediaDTO;
   isReposted: boolean;

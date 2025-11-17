@@ -13,7 +13,7 @@ interface ContentCardProps {
 const ContentCard: React.FC<ContentCardProps> = ({ content, onClick }) => {
   const [imageError, setImageError] = useState(false);
   const formattedDate = moment(content.createdAt).format("DD/MM/YYYY");
-  
+
   const hasValidImage = content.cover?.url && !imageError;
 
   return (
@@ -39,9 +39,11 @@ const ContentCard: React.FC<ContentCardProps> = ({ content, onClick }) => {
       </div>
       <div className="p-4">
         <div className="mb-2">
-          <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
-            {content.category}
-          </span>
+          {content.categories && content.categories.length > 0 && (
+            <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+              {content.categories[0]}
+            </span>
+          )}
         </div>
         <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
           {content.title}

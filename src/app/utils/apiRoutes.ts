@@ -25,6 +25,7 @@ const apiRoutes = {
     saved: '/content/saved',
     comments: (contentId: string) => `/content/comments/${contentId}`,
     comment: (commentId: string) => `/content/comments/${commentId}`,
+    createComment: '/content/comments',
     commentLike: (commentId: string) => `/content/comments/${commentId}`,
     commentReplies: (commentId: string) => `/content/comments/${commentId}/replies`,
   },

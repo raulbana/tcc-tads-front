@@ -13,7 +13,9 @@ import {
   UpdateContentRequest,
   Comment,
   ContentSimpleDTO,
+  MediaDTO,
 } from '@/app/types/content';
+import { contentCache } from './contentCache';
 
 export const ContentQueryFactory = (baseKey: QueryKey) => {
   const queryClient = useQueryClient();
@@ -92,6 +94,7 @@ export const ContentQueryFactory = (baseKey: QueryKey) => {
         onSuccess: (_, { id }) => {
           queryClient.invalidateQueries({
             queryKey: [...baseKey, 'contentDetails', id],
+            exact: false,
           });
           queryClient.invalidateQueries({
             queryKey: [...baseKey, 'contentList'],
@@ -119,6 +122,7 @@ export const ContentQueryFactory = (baseKey: QueryKey) => {
         onSuccess: (_, { id }) => {
           queryClient.invalidateQueries({
             queryKey: [...baseKey, 'contentDetails', id],
+            exact: false,
           });
           queryClient.invalidateQueries({
             queryKey: [...baseKey, 'contentList'],
@@ -134,6 +138,7 @@ export const ContentQueryFactory = (baseKey: QueryKey) => {
           onSuccess: (_, { id }) => {
             queryClient.invalidateQueries({
               queryKey: [...baseKey, 'contentDetails', id],
+              exact: false,
             });
             queryClient.invalidateQueries({
               queryKey: [...baseKey, 'contentList'],
@@ -157,7 +162,9 @@ export const ContentQueryFactory = (baseKey: QueryKey) => {
         onSuccess: (_, { contentId }) => {
           queryClient.invalidateQueries({
             queryKey: [...baseKey, 'contentDetails', contentId.toString()],
+            exact: false,
           });
+          contentCache.invalidateContent(contentId.toString());
         },
       }),
 
@@ -175,16 +182,23 @@ export const ContentQueryFactory = (baseKey: QueryKey) => {
       useMutation<
         void,
         Error,
-        { contentId: string; userId: string; control: boolean }
+        { contentId: string; userId: number; control: boolean }
       >({
         mutationFn: ({ contentId, userId, control }) =>
           contentServices.toggleSaveContent(contentId, userId, control),
-        onSuccess: (_, { contentId }) => {
-          queryClient.invalidateQueries({
-            queryKey: [...baseKey, 'contentDetails', contentId],
-          });
+        onSuccess: (_, { contentId, userId, control }) => {
+          queryClient.setQueryData<Content>(
+            [...baseKey, 'contentDetails', contentId, userId.toString()],
+            previous => (previous ? {...previous, isSaved: control} : previous),
+          );
+
           queryClient.invalidateQueries({
             queryKey: [...baseKey, 'contentList'],
+            exact: false,
+          });
+
+          queryClient.invalidateQueries({
+            queryKey: [...baseKey, 'savedContent'],
           });
         },
       }),
@@ -197,19 +211,94 @@ export const ContentQueryFactory = (baseKey: QueryKey) => {
         gcTime: 1000 * 60 * 5,
       }),
 
-    useLikeComment: () =>
-      useMutation<void, Error, string>({
-        mutationFn: (commentId) => contentServices.likeComment(commentId),
-      }),
-
-    useGetCommentReplies: (commentId: string, page: number = 0, size: number = 10) =>
+    useGetComments: (
+      contentId: string,
+      userId: string,
+      page?: number,
+      size?: number
+    ) =>
       useQuery<Comment[]>({
-        queryKey: [...baseKey, 'commentReplies', commentId, page, size],
-        queryFn: () => contentServices.getCommentReplies(commentId, page, size),
+        queryKey: [...baseKey, 'comments', contentId, userId, page, size],
+        queryFn: () => contentServices.getComments(contentId, userId, page, size),
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 5,
         retry: 1,
-        enabled: !!commentId,
+        enabled: !!contentId && !!userId,
+      }),
+
+    useUpdateComment: () =>
+      useMutation<
+        Comment,
+        Error,
+        { commentId: string; text: string; userId: string }
+      >({
+        mutationFn: ({ commentId, text, userId }) =>
+          contentServices.updateComment(commentId, text, userId),
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: [...baseKey, 'comments'],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [...baseKey, 'contentDetails'],
+            exact: false,
+          });
+        },
+      }),
+
+    useDeleteComment: () =>
+      useMutation<void, Error, string>({
+        mutationFn: (commentId) => contentServices.deleteComment(commentId),
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: [...baseKey, 'comments'],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [...baseKey, 'contentDetails'],
+            exact: false,
+          });
+        },
+      }),
+
+    useLikeComment: () =>
+      useMutation<
+        void,
+        Error,
+        { commentId: string; userId: number; liked: boolean }
+      >({
+        mutationFn: ({ commentId, userId, liked }) =>
+          contentServices.likeComment(commentId, userId, liked),
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: [...baseKey, 'comments'],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [...baseKey, 'commentReplies'],
+            exact: false,
+          });
+        },
+      }),
+
+    useGetCommentReplies: (
+      commentId: string,
+      userId: string,
+      page: number = 0,
+      size: number = 10
+    ) =>
+      useQuery<Comment[]>({
+        queryKey: [
+          ...baseKey,
+          'commentReplies',
+          commentId,
+          userId,
+          page,
+          size,
+        ],
+        queryFn: () =>
+          contentServices.getCommentReplies(commentId, userId, page, size),
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 5,
+        retry: 1,
+        enabled: !!commentId && !!userId,
       }),
 
     useUploadMedia: () =>

@@ -20,7 +20,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
     mediaItems,
     hasMedia,
     handleToggleLike,
-    handleToggleRepost,
+    handleToggleSave,
     localContent
   } = usePostDetails(content);
 
@@ -43,10 +43,9 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
                     contentId={localContent.id}
                     isLiked={localContent.isLiked}
                     likesCount={localContent.likesCount}
-                    isReposted={localContent.isReposted}
-                    repostsCount={localContent.repostsCount}
+                    isSaved={localContent.isSaved}
                     onToggleLike={handleToggleLike}
-                    onToggleRepost={handleToggleRepost}
+                    onToggleSave={handleToggleSave}
                   />
                 </div>
                 

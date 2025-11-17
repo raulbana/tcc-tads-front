@@ -19,14 +19,23 @@ const ContentCarousel: React.FC<ContentCarouselProps> = ({
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">{title}</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {contents.map((content) => (
-          <ContentCard
-            key={content.id}
-            content={content}
-            onClick={() => onContentClick(content)}
-          />
-        ))}
+      <div 
+        className="overflow-x-auto pb-4 scrollbar-hide scroll-smooth"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
+        <div className="flex gap-6 min-w-max px-1">
+          {contents.map((content) => (
+            <div key={content.id} className="w-64 sm:w-72 flex-shrink-0">
+              <ContentCard
+                content={content}
+                onClick={() => onContentClick(content)}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

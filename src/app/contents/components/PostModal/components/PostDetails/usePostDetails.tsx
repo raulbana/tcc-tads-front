@@ -1,44 +1,59 @@
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState, useEffect } from "react";
 import { Content } from "@/app/types/content";
 import useContentQueries from "@/app/contents/services/contentQueryFactory";
 import { useAuth } from "@/app/contexts/AuthContext";
 
 export interface MediaItem {
-  type: 'image' | 'video';
+  type: "image" | "video";
   url: string;
   alt?: string;
 }
 
 export const usePostDetails = (content: Content) => {
   const { user } = useAuth();
-  const [localContent, setLocalContent] = useState(content);
-  const contentQueries = useContentQueries(['content']);
+  const [localContent, setLocalContent] = useState<Content>({
+    ...content,
+    isSaved: content.isSaved ?? false,
+  });
+  const contentQueries = useContentQueries(["content"]);
   const toggleLikeMutation = contentQueries.useToggleLike();
-  const toggleRepostMutation = contentQueries.useToggleRepost();
+  const toggleSaveMutation = contentQueries.useToggleSaveContent();
+
+  useEffect(() => {
+    setLocalContent({
+      ...content,
+      isSaved: content.isSaved ?? false,
+    });
+  }, [content]);
 
   const getAllMedia = useCallback((content: Content): MediaItem[] => {
     const media: MediaItem[] = [];
-    
+
     if (content.cover?.url) {
       media.push({
-        type: content.cover.contentType.startsWith('video/') ? 'video' : 'image',
+        type: content.cover.contentType.startsWith("video/")
+          ? "video"
+          : "image",
         url: content.cover.url,
-        alt: content.title
+        alt: content.title,
       });
     }
 
     content.media?.forEach((mediaItem) => {
       media.push({
-        type: mediaItem.contentType.startsWith('video/') ? 'video' : 'image',
+        type: mediaItem.contentType.startsWith("video/") ? "video" : "image",
         url: mediaItem.url,
-        alt: mediaItem.altText || content.title
+        alt: mediaItem.altText || content.title,
       });
     });
 
     return media;
   }, []);
 
-  const mediaItems = useMemo(() => getAllMedia(localContent), [localContent, getAllMedia]);
+  const mediaItems = useMemo(
+    () => getAllMedia(localContent),
+    [localContent, getAllMedia]
+  );
   const hasMedia = useMemo(() => mediaItems.length > 0, [mediaItems]);
 
   const handleToggleLike = useCallback(async () => {
@@ -49,7 +64,7 @@ export const usePostDetails = (content: Content) => {
       ? (localContent.likesCount || 0) + 1
       : Math.max((localContent.likesCount || 0) - 1, 0);
 
-    setLocalContent(prev => ({
+    setLocalContent((prev) => ({
       ...prev,
       isLiked: newLikedState,
       likesCount: newLikesCount,
@@ -62,50 +77,45 @@ export const usePostDetails = (content: Content) => {
         userId: user.id.toString(),
       });
     } catch (error) {
-      setLocalContent(prev => ({
+      setLocalContent((prev) => ({
         ...prev,
         isLiked: !newLikedState,
         likesCount: localContent.likesCount || 0,
       }));
-      console.error('Error toggling like:', error);
+      console.error("Error toggling like:", error);
     }
   }, [localContent, toggleLikeMutation, user]);
 
-  const handleToggleRepost = useCallback(async () => {
+  const handleToggleSave = useCallback(async () => {
     if (!user) return;
 
-    const newRepostedState = !localContent.isReposted;
-    const newRepostsCount = newRepostedState
-      ? (localContent.repostsCount || 0) + 1
-      : Math.max((localContent.repostsCount || 0) - 1, 0);
+    const newSavedState = !localContent.isSaved;
 
-    setLocalContent(prev => ({
+    setLocalContent((prev) => ({
       ...prev,
-      isReposted: newRepostedState,
-      repostsCount: newRepostsCount,
+      isSaved: newSavedState,
     }));
 
     try {
-      await toggleRepostMutation.mutateAsync({
-        id: localContent.id,
-        reposted: newRepostedState,
-        userId: user.id.toString(),
+      await toggleSaveMutation.mutateAsync({
+        contentId: localContent.id,
+        userId: user.id,
+        control: newSavedState,
       });
     } catch (error) {
-      setLocalContent(prev => ({
+      setLocalContent((prev) => ({
         ...prev,
-        isReposted: !newRepostedState,
-        repostsCount: localContent.repostsCount || 0,
+        isSaved: !newSavedState,
       }));
-      console.error('Error toggling repost:', error);
+      console.error("Error toggling save:", error);
     }
-  }, [localContent, toggleRepostMutation, user]);
+  }, [localContent, toggleSaveMutation, user]);
 
   return {
     mediaItems,
     hasMedia,
     handleToggleLike,
-    handleToggleRepost,
-    localContent
+    handleToggleSave,
+    localContent,
   };
 };

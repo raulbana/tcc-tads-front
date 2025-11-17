@@ -4,13 +4,13 @@ import { ContentCategory } from "@/app/types/content";
 
 interface CategoryChipsProps {
   categories: ContentCategory[];
-  selectedCategory: ContentCategory | null;
+  selectedCategories: Set<string>;
   onCategorySelect: (categoryId: string | null) => void;
 }
 
 const CategoryChips: React.FC<CategoryChipsProps> = ({
   categories,
-  selectedCategory,
+  selectedCategories,
   onCategorySelect,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -20,7 +20,7 @@ const CategoryChips: React.FC<CategoryChipsProps> = ({
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     if (!scrollContainerRef.current) return;
-    
+
     setIsDragging(true);
     setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
     setScrollLeft(scrollContainerRef.current.scrollLeft);
@@ -36,10 +36,10 @@ const CategoryChips: React.FC<CategoryChipsProps> = ({
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!isDragging || !scrollContainerRef.current) return;
-    
+
     e.preventDefault();
     const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Multiplicador para controlar a velocidade do scroll
+    const walk = (x - startX) * 2;
     scrollContainerRef.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -57,27 +57,30 @@ const CategoryChips: React.FC<CategoryChipsProps> = ({
     >
       <button
         onClick={() => onCategorySelect(null)}
-        className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-          !selectedCategory
+        className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors cursor-pointer ${
+          selectedCategories.size === 0
             ? "bg-purple-04 text-white"
             : "bg-gray-200 text-gray-700 hover:bg-gray-300"
         }`}
       >
         Todos
       </button>
-      {categories.map((category) => (
-        <button
-          key={category.id}
-          onClick={() => onCategorySelect(category.id.toString())}
-          className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-            selectedCategory?.id === category.id
-              ? "bg-purple-04 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          {category.name}
-        </button>
-      ))}
+      {categories.map((category) => {
+        const isSelected = selectedCategories.has(category.id.toString());
+        return (
+          <button
+            key={category.id}
+            onClick={() => onCategorySelect(category.id.toString())}
+            className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+              isSelected
+                ? "bg-purple-04 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            {category.name}
+          </button>
+        );
+      })}
     </div>
   );
 };
