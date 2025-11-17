@@ -39,6 +39,10 @@ const apiRoutes = {
     report: "/report",
   },
   contact: "/contact/support",
+  accessibility: {
+    get: "/preferences/accessibility",
+    update: "/preferences/accessibility",
+  },
   admin: {
     listUsers: "/admin/users",
     setUserRole: "/admin/users/role",
