@@ -4,7 +4,6 @@ import "./globals.css";
 import ReactQueryProvider from "./providers/ReactQueryProvider/ReactQueryProvider";
 import ClientNavbarWrapper from "./components/Navbar/components/ClientNavbarWrapper";
 import { UploadProvider } from "./contexts/UploadContext";
-import UploadProgress from "./contents/components/UploadProgress/UploadProgress";
 import { AuthProvider } from "./contexts/AuthContext";
 import { DiaryProvider } from "./contexts/DiaryContext";
 
@@ -25,11 +24,6 @@ export default function RootLayout({
 }>) {
   return (
     <ReactQueryProvider>
-
-      
-
-
-
       <AuthProvider>
          <UploadProvider>
           <DiaryProvider>
@@ -41,7 +35,6 @@ export default function RootLayout({
           </DiaryProvider>
         </UploadProvider>
       </AuthProvider>
-
     </ReactQueryProvider>
   );
 }
