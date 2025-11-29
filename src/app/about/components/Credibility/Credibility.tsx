@@ -1,6 +1,4 @@
 import React from 'react';
-/* import Image from 'next/image'; */
-
 const Credibility = () => {
   return (
     <section className="py-16 md:py-24 bg-purple-50">
