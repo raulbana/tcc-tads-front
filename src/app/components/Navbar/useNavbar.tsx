@@ -25,7 +25,6 @@ export const useNavbar = () => {
       { name: "Diário", link: "/diary", enabled: true },
       { name: "Exercícios", link: "/exercises", enabled: true },
       { name: "Conteúdos", link: "/contents", enabled: true },
-      { name: "Sobre", link: "/about", enabled: true },
       { name: "Contato", link: "/support/talkToUs", enabled: true },
       { name: "Administração", link: "/administration", enabled: true },
     ],
@@ -34,7 +33,7 @@ export const useNavbar = () => {
 
   const publicNavItems: NavItem[] = useMemo(
     () => [
-      { name: "Sobre", link: "/about", enabled: true },
+      { name: "Início", link: "/", enabled: true },
       { name: "Contato", link: "/support/talkToUs", enabled: true },
     ],
     []

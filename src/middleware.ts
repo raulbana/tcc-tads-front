@@ -4,7 +4,6 @@ import type { NextRequest } from 'next/server';
 const publicRoutes = [
   '/authentication/login',
   '/authentication/register',
-  '/about',
   '/support/talkToUs',
   '/',
 ];
