@@ -1,9 +1,4 @@
 import React, { useMemo } from "react";
-import {
-  UserCheckIcon,
-  ProhibitIcon,
-  IdentificationCardIcon,
-} from "@phosphor-icons/react/dist/ssr";
 import { useUsersTable } from "./useUsersTable";
 import { Status } from "../../schema/usersSchema";
 import { userRoles } from "@/app/types/auth";
@@ -35,6 +30,8 @@ const UsersTable = () => {
     modalOperation,
     error,
     clearError,
+    success,
+    clearSuccess,
   } = useUsersTable();
 
   const pageNumbers = useMemo(() => {
@@ -113,14 +110,14 @@ const UsersTable = () => {
               ))}
             </select>
           </div>
-          <button
-            onClick={resetFilters}
-            className="self-end px-4 py-2 text-sm font-medium text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-xl transition cursor-pointer"
-          >
-            Limpar filtros
-          </button>
         </div>
       </div>
+      <button
+        onClick={resetFilters}
+        className="self-end px-4 py-2 text-sm font-medium text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-xl transition cursor-pointer"
+      >
+        Limpar filtros
+      </button>
 
       <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-gray-600">
         <div className="flex flex-wrap gap-2 items-center"></div>
@@ -187,9 +184,16 @@ const UsersTable = () => {
                       {user.status}
                     </span>
                   </td>
-                  <td className="p-3 text-center">
+                  <td className="p-3 text-center flex justify-end gap-2">
                     <button
-                      className="p-2 rounded-xl bg-purple-100 hover:bg-purple-200 transition cursor-pointer"
+                      className="px-3 py-2 min-w-[90px] text-xs font-medium text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-lg transition cursor-pointer"
+                      title="Gerenciar perfil"
+                      onClick={() => handleOpenModal("setRole", user)}
+                    >
+                      Perfil
+                    </button>
+                    <button
+                      className="px-3 py-2 min-w-[90px] text-xs font-medium text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-lg transition cursor-pointer"
                       title={
                         user.status === "Ativo"
                           ? "Bloquear usuário"
@@ -198,20 +202,10 @@ const UsersTable = () => {
                       onClick={() => handleOpenModal("setStatus", user)}
                     >
                       {user.status === "Ativo" ? (
-                        <ProhibitIcon size={18} className="text-purple-600" />
+                        "Bloquear"
                       ) : (
-                        <UserCheckIcon size={18} className="text-purple-600" />
+                        "Desbloquear"
                       )}
-                    </button>
-                    <button
-                      className="p-2 rounded-xl bg-purple-100 hover:bg-purple-200 transition cursor-pointer"
-                      title="Gerenciar perfil"
-                      onClick={() => handleOpenModal("setRole", user)}
-                    >
-                      <IdentificationCardIcon
-                        size={18}
-                        className="text-purple-600"
-                      />
                     </button>
                   </td>
                 </tr>
@@ -361,6 +355,15 @@ const UsersTable = () => {
             message={error}
             isOpen={!!error}
             onClose={clearError}
+            duration={5000}
+          />
+        )}
+      {success && (
+          <Toast
+            type="SUCCESS"
+            message={success}
+            isOpen={!!success}
+            onClose={clearSuccess}
             duration={5000}
           />
         )}

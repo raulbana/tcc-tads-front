@@ -17,6 +17,7 @@ export const useUsersTable = () => {
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [modalOperation, setModalOperation] = useState<'setStatus' | 'setRole' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   // Buscar usuários do service
   const fetchUsers = useCallback(async () => {
@@ -54,6 +55,10 @@ export const useUsersTable = () => {
     setError(null);
   }, []);
 
+  const clearSuccess = useCallback(() => {
+    setSuccess(null);
+  }, []);
+
   // Salvar alterações do usuário
   const handleSaveUser = useCallback(
     async (user: User) => {
@@ -69,6 +74,7 @@ export const useUsersTable = () => {
           await setUserRole(user);
         }
 
+        setSuccess("Alterações salvas com sucesso.");
         await fetchUsers();
         handleCloseModal();
       } catch (error: unknown) {
@@ -149,5 +155,7 @@ export const useUsersTable = () => {
     modalOperation,
     error,
     clearError,
+    success,
+    clearSuccess,
   };
 };
