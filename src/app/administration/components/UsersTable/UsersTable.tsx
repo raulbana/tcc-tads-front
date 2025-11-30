@@ -1,14 +1,19 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import React, { useMemo } from "react";
+import {
+  UserCheckIcon,
+  ProhibitIcon,
+  IdentificationCardIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import { useUsersTable } from "./useUsersTable";
-import { Perfil, Status } from "../../schema/usersSchema";
+import { Status } from "../../schema/usersSchema";
+import { userRoles } from "@/app/types/auth";
+import Toast from "@/app/components/Toast/Toast";
 
 const pageSizeOptions = [5, 8, 12, 20];
 
 const UsersTable = () => {
   const {
     users,
-    totalFiltered,
     totalPages,
     currentPage,
     pageSize,
@@ -16,27 +21,21 @@ const UsersTable = () => {
     goToPage,
     search,
     setSearch,
-    perfilFilter,
-    setPerfilFilter,
+    roleFilter,
+    setRoleFilter,
     statusFilter,
     setStatusFilter,
     resetFilters,
     isModalOpen,
     selectedUser,
+    setSelectedUser,
     handleOpenModal,
     handleCloseModal,
     handleSaveUser,
+    modalOperation,
+    error,
+    clearError,
   } = useUsersTable();
-
-  const [editPerfil, setEditPerfil] = useState<Perfil>("Usuário");
-  const [editStatus, setEditStatus] = useState<Status>("Ativo");
-
-  useEffect(() => {
-    if (selectedUser) {
-      setEditPerfil(selectedUser.perfil);
-      setEditStatus(selectedUser.status);
-    }
-  }, [selectedUser]);
 
   const pageNumbers = useMemo(() => {
     const range: number[] = [];
@@ -74,14 +73,14 @@ const UsersTable = () => {
               Perfil
             </label>
             <select
-              value={perfilFilter}
-              onChange={(e) => setPerfilFilter(e.target.value as Perfil | "")}
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(+e.target.value || "")}
               className="p-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 w-40"
             >
               <option value="">Todos</option>
-              <option value="Usuário">Usuário</option>
-              <option value="Saúde">Saúde</option>
-              <option value="Admin">Admin</option>
+              <option value={userRoles.USER.permissionLevel}>{userRoles.USER.description}</option>
+              <option value={userRoles.PROFESSIONAL.permissionLevel}>{userRoles.PROFESSIONAL.description}</option>
+              <option value={userRoles.ADMIN.permissionLevel}>{userRoles.ADMIN.description}</option>
             </select>
           </div>
           <div className="space-y-1">
@@ -124,27 +123,7 @@ const UsersTable = () => {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-gray-600">
-        <div className="flex flex-wrap gap-2 items-center">
-          <span>
-            Mostrando {users.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} -
-            {Math.min(currentPage * pageSize, totalFiltered)} de {totalFiltered}
-          </span>
-          {perfilFilter && (
-            <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-              Perfil: {perfilFilter}
-            </span>
-          )}
-          {statusFilter && (
-            <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-              Status: {statusFilter}
-            </span>
-          )}
-          {search.trim() && (
-            <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-              Busca: "{search.trim()}"
-            </span>
-          )}
-        </div>
+        <div className="flex flex-wrap gap-2 items-center"></div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => goToPage(currentPage - 1)}
@@ -194,9 +173,9 @@ const UsersTable = () => {
                   key={user.id}
                   className="border-t hover:bg-purple-50 transition"
                 >
-                  <td className="p-3">{user.nome}</td>
+                  <td className="p-3">{user.name}</td>
                   <td className="p-3">{user.email}</td>
-                  <td className="p-3">{user.perfil}</td>
+                  <td className="p-3">{user.role.description}</td>
                   <td className="p-3">
                     <span
                       className={`px-2 py-1 rounded-lg text-sm font-medium ${
@@ -211,10 +190,28 @@ const UsersTable = () => {
                   <td className="p-3 text-center">
                     <button
                       className="p-2 rounded-xl bg-purple-100 hover:bg-purple-200 transition cursor-pointer"
-                      title="Editar usuário"
-                      onClick={() => handleOpenModal(user)}
+                      title={
+                        user.status === "Ativo"
+                          ? "Bloquear usuário"
+                          : "Desbloquear usuário"
+                      }
+                      onClick={() => handleOpenModal("setStatus", user)}
                     >
-                      <PencilSimpleIcon size={18} className="text-purple-600" />
+                      {user.status === "Ativo" ? (
+                        <ProhibitIcon size={18} className="text-purple-600" />
+                      ) : (
+                        <UserCheckIcon size={18} className="text-purple-600" />
+                      )}
+                    </button>
+                    <button
+                      className="p-2 rounded-xl bg-purple-100 hover:bg-purple-200 transition cursor-pointer"
+                      title="Gerenciar perfil"
+                      onClick={() => handleOpenModal("setRole", user)}
+                    >
+                      <IdentificationCardIcon
+                        size={18}
+                        className="text-purple-600"
+                      />
                     </button>
                   </td>
                 </tr>
@@ -234,39 +231,111 @@ const UsersTable = () => {
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg space-y-4">
             <h2 className="text-xl font-bold text-gray-800">Editar Usuário</h2>
-            <p className="text-gray-600">{selectedUser.nome}</p>
-            <p className="text-gray-600">{selectedUser.email}</p>
 
-            <div className="flex flex-col gap-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Perfil
-                </label>
-                <select
-                  value={editPerfil}
-                  onChange={(e) => setEditPerfil(e.target.value as Perfil)}
-                  className="w-full p-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
-                >
-                  <option value="Usuário">Usuário</option>
-                  <option value="Saúde">Saúde</option>
-                  <option value="Admin">Admin</option>
-                </select>
+            {modalOperation === "setStatus" && (
+              <div className="p-4">
+                <p>
+                  Deseja{" "}
+                  {selectedUser.status === "Ativo" ? "bloquear" : "desbloquear"}{" "}
+                  o usuário {`"${selectedUser.name}"`}?
+                </p>
               </div>
+            )}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Status
-                </label>
-                <select
-                  value={editStatus}
-                  onChange={(e) => setEditStatus(e.target.value as Status)}
-                  className="w-full p-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
-                >
-                  <option value="Ativo">Ativo</option>
-                  <option value="Bloqueado">Bloqueado</option>
-                </select>
+            {modalOperation === "setRole" && (
+              <div className="flex flex-col gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Perfil
+                  </label>
+                  <select
+                    value={selectedUser.role.permissionLevel}
+                    onChange={(e) => setSelectedUser({
+                      ...selectedUser,
+                      role: {
+                        ...selectedUser.role,
+                        permissionLevel: Number(e.target.value),
+                      },
+                    })}
+                    className="w-full p-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  >
+                    <option value={userRoles.USER.permissionLevel}>{userRoles.USER.description}</option>
+                    <option value={userRoles.PROFESSIONAL.permissionLevel}>{userRoles.PROFESSIONAL.description}</option>
+                    <option value={userRoles.ADMIN.permissionLevel}>{userRoles.ADMIN.description}</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Motivo
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Motivo da alteração de perfil"
+                    value={selectedUser.role.reason}
+                    onChange={(e) => {
+                      if (selectedUser) {
+                        setSelectedUser({
+                          ...selectedUser,
+                          role: {
+                            ...selectedUser.role,
+                            reason: e.target.value,
+                          },
+                        });
+                      }
+                    }}
+                    className="w-full p-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Tipo do documento <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: CREFITO, CRM..."
+                    value={selectedUser.role.documentType || ""}
+                    onChange={(e) => {
+                      if (selectedUser) {
+                        setSelectedUser({
+                          ...selectedUser,
+                          role: {
+                            ...selectedUser.role,
+                            documentType: e.target.value.toUpperCase(),
+                          },
+                        });
+                      }
+                    }}
+                    className="w-full p-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Documento <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Informe o número do documento..."
+                    value={selectedUser.role.documentValue || ""}
+                    onChange={(e) => {
+                      if (selectedUser) {
+                        setSelectedUser({
+                          ...selectedUser,
+                          role: {
+                            ...selectedUser.role,
+                            documentValue: e.target.value,
+                          },
+                        });
+                      }
+                    }}
+                    className="w-full p-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="flex justify-end gap-3 mt-4">
               <button
@@ -276,7 +345,8 @@ const UsersTable = () => {
                 Cancelar
               </button>
               <button
-                onClick={() => handleSaveUser(editPerfil, editStatus)}
+                type="submit"
+                onClick={() => handleSaveUser(selectedUser)}
                 className="px-4 py-2 rounded-xl bg-purple-600 text-white hover:bg-purple-700 transition cursor-pointer"
               >
                 Salvar
@@ -285,6 +355,15 @@ const UsersTable = () => {
           </div>
         </div>
       )}
+      {error && (
+          <Toast
+            type="ERROR"
+            message={error}
+            isOpen={!!error}
+            onClose={clearError}
+            duration={5000}
+          />
+        )}
     </div>
   );
 };
