@@ -43,6 +43,12 @@ const Administration = () => {
               Plano de Treino
             </button>
           </Link>
+
+          <Link href="/administration/adminContentCategories">
+            <button className="w-64 p-4 bg-purple-500 text-white rounded-2xl hover:bg-purple-700 transition">
+              Categorias de Publicação
+            </button>
+          </Link>
         </div>
       </div>
     </AdminRoute>

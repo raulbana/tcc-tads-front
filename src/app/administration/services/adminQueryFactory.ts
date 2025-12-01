@@ -12,10 +12,16 @@ import exercisesService, {
 } from "./exercisesService";
 import workoutsService from "./workoutsService";
 import workoutPlansService from "./workoutPlansService";
+import contentCategoriesService, {
+  type ContentCategory,
+} from "./contentCategoriesService";
 import { ContentAdmin, ReportToggle } from "../schema/complaintsSchema";
 import { ExerciseAdmin, ExerciseCreator } from "../schema/exercisesSchema";
 import { WorkoutPlanAdmin } from "../schema/workoutPlansSchema";
 import { WorkoutAdmin } from "../schema/workoutsSchema";
+import {
+  type ContentCategoryCreator,
+} from "../schema/contentCategoriesSchema";
 
 const staleTime = 5 * 60 * 1000;
 const gcTime = 10 * 60 * 1000;
@@ -286,6 +292,47 @@ const useAdministrationQueries = (key: string[] = ["administration"]) => {
       onSuccess: () => invalidate(["workoutPlans"]),
     });
 
+  const useContentCategories = (): UseQueryResult<ContentCategory[], Error> =>
+    useQuery({
+      queryKey: [...key, "contentCategories"],
+      queryFn: () => contentCategoriesService.listCategories(),
+      staleTime,
+      gcTime,
+      retry,
+      refetchOnWindowFocus: false,
+    });
+
+  const useCreateContentCategory = (): UseMutationResult<
+    ContentCategory,
+    Error,
+    ContentCategoryCreator
+  > =>
+    useMutation({
+      mutationFn: (payload) => contentCategoriesService.createCategory(payload),
+      onSuccess: () => invalidate(["contentCategories"]),
+    });
+
+  const useUpdateContentCategory = (): UseMutationResult<
+    ContentCategory,
+    Error,
+    { id: number; data: ContentCategoryCreator }
+  > =>
+    useMutation({
+      mutationFn: ({ id, data }) =>
+        contentCategoriesService.updateCategory(id, data),
+      onSuccess: () => invalidate(["contentCategories"]),
+    });
+
+  const useDeleteContentCategory = (): UseMutationResult<
+    void,
+    Error,
+    number
+  > =>
+    useMutation({
+      mutationFn: (id) => contentCategoriesService.deleteCategory(id),
+      onSuccess: () => invalidate(["contentCategories"]),
+    });
+
   return {
     useComplaints,
     useValidateComplaint,
@@ -310,6 +357,10 @@ const useAdministrationQueries = (key: string[] = ["administration"]) => {
     useCreateWorkoutPlan,
     useUpdateWorkoutPlan,
     useDeleteWorkoutPlan,
+    useContentCategories,
+    useCreateContentCategory,
+    useUpdateContentCategory,
+    useDeleteContentCategory,
   };
 };
 
