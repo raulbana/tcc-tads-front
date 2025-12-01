@@ -10,7 +10,7 @@ const AdminUsers = () => {
           <h1 className="text-3xl font-bold text-gray-800">
             Administração de Usuários
           </h1>
-          <p className="text-gray-600 mt-2">Gerencie os usuários do DailyUI</p>
+          <p className="text-gray-600 mt-2">Gerencie os usuários do DailyIU</p>
         </div>
 
         <UsersTable />
