@@ -67,7 +67,10 @@ const ProfilePage = () => {
               />
 
               <div className="mt-8 bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
-                <ContentTabs activeTab={activeTab} onTabChange={handleTabChange} />
+                <ContentTabs
+                  activeTab={activeTab}
+                  onTabChange={handleTabChange}
+                />
 
                 <div className="mt-6">
                   {activeTab === "saved" ? (
@@ -162,4 +165,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-

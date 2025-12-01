@@ -44,15 +44,42 @@ export interface loginResponse {
   user: User;
 }
 
+export interface PatientProfileDTO {
+  birthDate: string;
+  gender: string;
+  iciq3answer: number;
+  iciq4answer: number;
+  iciq5answer: number;
+  iciqScore: number;
+  urinationLoss: string;
+}
+
+export interface UserWorkoutPlanCreatorDTO {
+  planId: number;
+  startDate: string;
+  endDate?: string;
+  totalProgress: number;
+  weekProgress: number;
+  currentWeek: number;
+  completed: boolean;
+}
+
 export interface registerRequest {
   name: string;
   email: string;
   password: string;
+  profile?: PatientProfileDTO;
+  workoutPlan?: UserWorkoutPlanCreatorDTO;
 }
 
 export interface registerResponse {
-  message: string;
-  status: string;
+  id: number;
+  name: string;
+  email: string;
+  profilePictureUrl?: string;
+  role?: string;
+  profile: PatientProfile;
+  preferences: Preferences;
 }
 
 export interface forgotPasswordRequestRequest {
