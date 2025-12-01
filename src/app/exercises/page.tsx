@@ -2,7 +2,6 @@
 import React from "react";
 import useExerciseHome from "./useExerciseHome";
 import WorkoutCard from "./components/WorkoutCard/WorkoutCard";
-import { WorkoutDifficultyLabels } from "@/app/types/exercise";
 
 const ExercisesPage = () => {
   const { workouts, handleWorkoutClick, isLoading, error } = useExerciseHome();
@@ -49,15 +48,15 @@ const ExercisesPage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {workouts.map((workout) => (
+            {workouts.map((exercise) => (
               <WorkoutCard
-                key={workout.id}
-                title={workout.name}
-                duration={workout.duration}
-                category={workout.category}
-                difficulty={WorkoutDifficultyLabels[workout.difficulty]}
-                description={workout.description}
-                onClick={() => handleWorkoutClick(workout)}
+                key={exercise.id}
+                title={exercise.title}
+                duration={exercise.duration}
+                category={exercise.category}
+                difficulty=""
+                description={exercise.description}
+                onClick={() => handleWorkoutClick(exercise.id)}
               />
             ))}
           </div>

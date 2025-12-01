@@ -1,26 +1,13 @@
-import { useQuery, useMutation, UseQueryResult, UseMutationResult } from "@tanstack/react-query";
+import { useQuery, useMutation, UseQueryResult, UseMutationResult, QueryKey } from "@tanstack/react-query";
 import { exerciseServices } from "./exerciseServices";
 import {
   Exercise,
-  Workout,
-  WorkoutPlan,
   UserWorkoutPlanDTO,
   ExerciseFeedbackCreatorDTO,
   WorkoutCompletionDTO,
 } from "@/app/types/exercise";
 
-const useExerciseQueries = (queryKey: string[]) => {
-  const useListExercises = (): UseQueryResult<Exercise[], Error> => {
-    return useQuery({
-      queryKey: [...queryKey, 'exercises'],
-      queryFn: () => exerciseServices.listExercises(),
-      staleTime: 5 * 60 * 1000,
-      gcTime: 5 * 60 * 1000,
-      retry: 1,
-      refetchOnWindowFocus: false,
-    });
-  };
-
+const useExerciseQueries = (queryKey: QueryKey, isLoggedIn?: boolean) => {
   const useGetExerciseById = (id: string): UseQueryResult<Exercise, Error> => {
     return useQuery({
       queryKey: [...queryKey, 'exercise', id],
@@ -33,44 +20,11 @@ const useExerciseQueries = (queryKey: string[]) => {
     });
   };
 
-  const useListWorkouts = (): UseQueryResult<Workout[], Error> => {
-    return useQuery({
-      queryKey: [...queryKey, 'workouts'],
-      queryFn: () => exerciseServices.listWorkouts(),
-      staleTime: 5 * 60 * 1000,
-      gcTime: 5 * 60 * 1000,
-      retry: 1,
-      refetchOnWindowFocus: false,
-    });
-  };
-
-  const useListWorkoutPlans = (): UseQueryResult<WorkoutPlan[], Error> => {
-    return useQuery({
-      queryKey: [...queryKey, 'workoutPlans'],
-      queryFn: () => exerciseServices.listWorkoutPlans(),
-      staleTime: 5 * 60 * 1000,
-      gcTime: 5 * 60 * 1000,
-      retry: 1,
-      refetchOnWindowFocus: false,
-    });
-  };
-
-  const useGetWorkoutPlanById = (id: string): UseQueryResult<WorkoutPlan, Error> => {
-    return useQuery({
-      queryKey: [...queryKey, 'workoutPlan', id],
-      queryFn: () => exerciseServices.getWorkoutPlanById(id),
-      enabled: !!id,
-      staleTime: 5 * 60 * 1000,
-      gcTime: 5 * 60 * 1000,
-      retry: 1,
-      refetchOnWindowFocus: false,
-    });
-  };
-
   const useGetUserWorkoutPlan = (): UseQueryResult<UserWorkoutPlanDTO | null, Error> => {
     return useQuery({
       queryKey: [...queryKey, 'userWorkoutPlan'],
       queryFn: () => exerciseServices.getUserWorkoutPlan(),
+      enabled: isLoggedIn ?? false,
       staleTime: 5 * 60 * 1000,
       gcTime: 5 * 60 * 1000,
       retry: 1,
@@ -93,11 +47,7 @@ const useExerciseQueries = (queryKey: string[]) => {
   };
 
   return {
-    useListExercises,
     useGetExerciseById,
-    useListWorkouts,
-    useListWorkoutPlans,
-    useGetWorkoutPlanById,
     useGetUserWorkoutPlan,
     useSubmitWorkoutFeedback,
     useSubmitWorkoutCompletion,

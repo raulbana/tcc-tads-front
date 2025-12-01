@@ -127,7 +127,6 @@ const useOnboardingQuestionnaire = () => {
           saveOnboardingData(result.profile, result.workoutPlan);
 
           if (!user) {
-          if (!user) {
             router.push("/authentication/register");
           } else {
             router.push("/");

@@ -2,28 +2,40 @@
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import useExerciseQueries from "./services/exerciseQueryFactory";
-import { Workout } from "@/app/types/exercise";
+import { Exercise, Workout } from "@/app/types/exercise";
 import { saveWorkoutToSession } from "./utils/workoutStorage";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 const useExerciseHome = () => {
   const router = useRouter();
-  const queries = useExerciseQueries(["exercises"]);
+  const { isAuthenticated } = useAuth();
+  const queries = useExerciseQueries(["exercises"], isAuthenticated);
   const {
-    data: workoutsApi = [],
+    data: userWorkoutPlan = null,
     isLoading,
     error,
-  } = queries.useListWorkouts();
+  } = queries.useGetUserWorkoutPlan();
 
-  const workouts = useMemo<Workout[]>(() => {
-    return workoutsApi || [];
-  }, [workoutsApi]);
+  const workouts = useMemo<Exercise[]>(() => {
+    if (userWorkoutPlan?.workouts) {
+      return userWorkoutPlan.workouts.flatMap(
+        (w): Exercise[] => w.exercises || []
+      );
+    }
+    return [];
+  }, [userWorkoutPlan]);
 
   const handleWorkoutClick = useCallback(
-    (workout: Workout) => {
-      saveWorkoutToSession(workout);
-      router.push(`/exercises/${workout.id}`);
+    (exerciseId: string) => {
+      const workout = userWorkoutPlan?.workouts.find((w: Workout) =>
+        w.exercises.some((e: Exercise) => e.id === exerciseId)
+      );
+      if (workout) {
+        saveWorkoutToSession(workout);
+        router.push(`/exercises/${workout.id}`);
+      }
     },
-    [router]
+    [router, userWorkoutPlan]
   );
 
   return {
