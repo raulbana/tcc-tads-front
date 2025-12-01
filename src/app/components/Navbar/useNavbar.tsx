@@ -19,6 +19,12 @@ export const useNavbar = () => {
 
   const toggle = () => setIsOpen(!isOpen);
 
+  const isAdmin = useMemo(() => {
+    if (!user?.role) return false;
+    const normalized = user.role.toString().toUpperCase();
+    return normalized.includes("ADMIN");
+  }, [user?.role]);
+
   const authenticatedNavItems: NavItem[] = useMemo(
     () => [
       { name: "Início", link: "/", enabled: true },
@@ -26,9 +32,13 @@ export const useNavbar = () => {
       { name: "Exercícios", link: "/exercises", enabled: true },
       { name: "Conteúdos", link: "/contents", enabled: true },
       { name: "Contato", link: "/support/talkToUs", enabled: true },
-      { name: "Administração", link: "/administration", enabled: true },
+      {
+        name: "Administração",
+        link: "/administration",
+        enabled: isAdmin,
+      },
     ],
-    []
+    [isAdmin]
   );
 
   const publicNavItems: NavItem[] = useMemo(

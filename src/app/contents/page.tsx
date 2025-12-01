@@ -6,6 +6,7 @@ import ContentGrid from "./components/ContentGrid/ContentGrid";
 import PostModal from "./components/PostModal/PostModal";
 import ContentModal from "./components/ContentModal/ContentModal";
 import Button from "../components/Button/Button";
+import Toast from "../components/Toast/Toast";
 import useContents from "./useContents";
 
 const ContentsPage = () => {
@@ -24,9 +25,20 @@ const ContentsPage = () => {
   } = useContents();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [toast, setToast] = useState<{
+    isOpen: boolean;
+    message: string;
+  }>({
+    isOpen: false,
+    message: "",
+  });
 
   const handleCreateSuccess = (contentId: string) => {
     refreshContents?.();
+    setToast({
+      isOpen: true,
+      message: "Publicação realizada com sucesso.",
+    });
   };
 
   return (
@@ -89,6 +101,13 @@ const ContentsPage = () => {
           onClose={() => setIsCreateModalOpen(false)}
           onSuccess={handleCreateSuccess}
           mode="create"
+        />
+
+        <Toast
+          type="SUCCESS"
+          message={toast.message}
+          isOpen={toast.isOpen}
+          onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
         />
       </div>
     </div>

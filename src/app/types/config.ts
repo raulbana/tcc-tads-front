@@ -7,6 +7,7 @@ export interface ContactRequest {
 export interface AccessibilityPreferences {
   isBigFont: boolean;
   isHighContrast: boolean;
+  isDarkMode: boolean;
 }
 
 export interface ContactResponse {

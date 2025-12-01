@@ -21,6 +21,7 @@ export interface PatientProfile {
 export interface Preferences {
   highContrast: boolean;
   bigFont: boolean;
+  darkMode: boolean;
   reminderCalendar: boolean;
   reminderCalendarSchedule?: string;
   reminderWorkout: boolean;

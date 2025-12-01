@@ -15,9 +15,9 @@ const useButton = () => {
         return "text-purple-04 bg-purple-02 hover:bg-purple-03";
       case "TERTIARY":
         if (disabled) {
-          return "text-gray-04 border-gray-04 border-1 bg-white hover:cursor-not-allowed";
+          return "text-gray-04 border-gray-04 border-1 bg-gray-01 hover:cursor-not-allowed";
         }
-        return "text-gray-08 border-gray-08 border-1 bg-white hover:bg-gray-06";
+        return "text-gray-08 border-gray-08 border-1 bg-gray-01 hover:bg-gray-06";
       default:
         if (disabled) {
           return "text-white bg-purple-03 hover:cursor-not-allowed";

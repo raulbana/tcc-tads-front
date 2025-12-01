@@ -6,6 +6,7 @@ import { usePostDetails } from "./usePostDetails";
 import MediaCarousel from "../MediaCarousel/MediaCarousel";
 import PostAuthor from "../PostAuthor/PostAuthor";
 import PostActions from "../PostActions/PostActions";
+import ReportContentButton from "../ReportContentButton/ReportContentButton";
 import CommentsSection from "../CommentsSection/CommentsSection";
 import moment from "moment";
 
@@ -33,20 +34,23 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
             
             <div className="space-y-4">
               <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4">
                   <PostAuthor
                     author={localContent.author!}
                     createdAt={localContent.createdAt}
                   />
                   
-                  <PostActions
-                    contentId={localContent.id}
-                    isLiked={localContent.isLiked}
-                    likesCount={localContent.likesCount}
-                    isSaved={localContent.isSaved}
-                    onToggleLike={handleToggleLike}
-                    onToggleSave={handleToggleSave}
-                  />
+                  <div className="flex items-center gap-3">
+                    <ReportContentButton contentId={localContent.id} />
+                    <PostActions
+                      contentId={localContent.id}
+                      isLiked={localContent.isLiked}
+                      likesCount={localContent.likesCount}
+                      isSaved={localContent.isSaved}
+                      onToggleLike={handleToggleLike}
+                      onToggleSave={handleToggleSave}
+                    />
+                  </div>
                 </div>
                 
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800 leading-tight">

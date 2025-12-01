@@ -52,6 +52,286 @@
   --text-h5: 18px;
 }
 
+/* Alto contraste: cores de accessibleColors do mobile */
+:root[data-high-contrast="true"] {
+  --color-purple-01: #000000;
+  --color-purple-02: #1A1A1A;
+  --color-purple-03: #8B008B;
+  --color-purple-04: #FFFFFF;
+
+  --color-gray-01: #000000;
+  --color-gray-02: #1A1A1A;
+  --color-gray-03: #2D2D2D;
+  --color-gray-04: #404040;
+  --color-gray-05: #808080;
+  --color-gray-06: #C0C0C0;
+  --color-gray-07: #E0E0E0;
+  --color-gray-08: #FFFFFF;
+}
+
+/* Sobrescrever classes de fundo branco no alto contraste */
+:root[data-high-contrast="true"] .bg-white,
+:root[data-high-contrast="true"] .bg-gray-01 {
+  background-color: var(--color-gray-01) !important;
+}
+
+:root[data-high-contrast="true"] .bg-gray-02 {
+  background-color: var(--color-gray-02) !important;
+}
+
+:root[data-high-contrast="true"] .bg-gray-03 {
+  background-color: var(--color-gray-03) !important;
+}
+
+:root[data-high-contrast="true"] .bg-gray-50 {
+  background-color: var(--color-gray-02) !important;
+}
+
+:root[data-high-contrast="true"] .text-gray-08,
+:root[data-high-contrast="true"] .text-gray-800,
+:root[data-high-contrast="true"] .text-gray-700,
+:root[data-high-contrast="true"] .text-gray-600 {
+  color: var(--color-gray-08) !important;
+}
+
+/* Botões e badges no alto contraste - ajustar contraste de texto */
+/* Botões PRIMARY: bg-purple-04 (branco no alto contraste) precisa de texto preto */
+:root[data-high-contrast="true"] button.bg-purple-04,
+:root[data-high-contrast="true"] button.bg-purple-04.text-white,
+:root[data-high-contrast="true"] .bg-purple-04 button,
+:root[data-high-contrast="true"] .bg-purple-04 button.text-white,
+:root[data-high-contrast="true"] .bg-purple-04 .text-white,
+:root[data-high-contrast="true"] .bg-purple-04 span.text-white {
+  color: var(--color-gray-01) !important;
+}
+
+/* Botões SECONDARY: bg-purple-02 (preto no alto contraste) precisa de texto branco */
+:root[data-high-contrast="true"] button.bg-purple-02,
+:root[data-high-contrast="true"] button.bg-purple-02.text-purple-04,
+:root[data-high-contrast="true"] .bg-purple-02 button,
+:root[data-high-contrast="true"] .bg-purple-02 button.text-purple-04,
+:root[data-high-contrast="true"] .bg-purple-02 .text-purple-04,
+:root[data-high-contrast="true"] .bg-purple-02 span.text-purple-04 {
+  color: var(--color-gray-08) !important;
+}
+
+/* Botões com bg-purple-03 (roxo escuro no alto contraste) precisa de texto branco */
+:root[data-high-contrast="true"] button.bg-purple-03,
+:root[data-high-contrast="true"] button.bg-purple-03.text-white,
+:root[data-high-contrast="true"] .bg-purple-03 button,
+:root[data-high-contrast="true"] .bg-purple-03 button.text-white,
+:root[data-high-contrast="true"] .bg-purple-03 .text-white,
+:root[data-high-contrast="true"] .bg-purple-03 span.text-white {
+  color: var(--color-gray-08) !important;
+}
+
+/* Badges e spans com bg-purple-02 e text-purple-04 */
+:root[data-high-contrast="true"] span.bg-purple-02,
+:root[data-high-contrast="true"] span.bg-purple-02.text-purple-04,
+:root[data-high-contrast="true"] .bg-purple-02 span.text-purple-04 {
+  color: var(--color-gray-08) !important;
+}
+
+/* Outros elementos com text-white em fundos claros */
+:root[data-high-contrast="true"] .bg-purple-500.text-white,
+:root[data-high-contrast="true"] .bg-purple-500 button.text-white,
+:root[data-high-contrast="true"] .bg-purple-700.text-white,
+:root[data-high-contrast="true"] .bg-purple-700 button.text-white {
+  color: var(--color-gray-08) !important;
+}
+
+/* Botões vermelhos e outros */
+:root[data-high-contrast="true"] .bg-red-600.text-white,
+:root[data-high-contrast="true"] .bg-red-600 button.text-white,
+:root[data-high-contrast="true"] .bg-red-700.text-white,
+:root[data-high-contrast="true"] .bg-red-700 button.text-white {
+  color: var(--color-gray-08) !important;
+}
+
+/* CategoryChips - chips selecionados com bg-purple-04 precisam de texto preto */
+:root[data-high-contrast="true"] button.bg-purple-04.text-white,
+:root[data-high-contrast="true"] .bg-purple-04.text-white button {
+  color: var(--color-gray-01) !important;
+}
+
+/* CategoryChips - chips não selecionados com bg-gray-200 */
+:root[data-high-contrast="true"] button.bg-gray-200,
+:root[data-high-contrast="true"] .bg-gray-200 button {
+  background-color: var(--color-gray-02) !important;
+  border: 1px solid var(--color-gray-06) !important;
+}
+
+:root[data-high-contrast="true"] button.bg-gray-200.text-gray-700,
+:root[data-high-contrast="true"] .bg-gray-200.text-gray-700 button,
+:root[data-high-contrast="true"] button.bg-gray-200 .text-gray-700 {
+  color: var(--color-gray-08) !important;
+}
+
+:root[data-high-contrast="true"] button.bg-gray-200:hover,
+:root[data-high-contrast="true"] .bg-gray-200:hover button,
+:root[data-high-contrast="true"] button.bg-gray-300 {
+  background-color: var(--color-gray-03) !important;
+  border-color: var(--color-gray-07) !important;
+}
+
+/* Regra geral para text-white em elementos que não são botões com fundo claro */
+:root[data-high-contrast="true"] p.text-white,
+:root[data-high-contrast="true"] span.text-white:not(.bg-purple-04):not(.bg-purple-02),
+:root[data-high-contrast="true"] div.text-white:not(.bg-purple-04):not(.bg-purple-02),
+:root[data-high-contrast="true"] h1.text-white,
+:root[data-high-contrast="true"] h2.text-white,
+:root[data-high-contrast="true"] h3.text-white,
+:root[data-high-contrast="true"] h4.text-white,
+:root[data-high-contrast="true"] h5.text-white,
+:root[data-high-contrast="true"] h6.text-white {
+  color: var(--color-gray-08) !important;
+}
+
+:root[data-high-contrast="true"] .border-gray-200,
+:root[data-high-contrast="true"] .border-gray-300,
+:root[data-high-contrast="true"] .border-gray-100 {
+  border-color: var(--color-gray-06) !important;
+}
+
+:root[data-high-contrast="true"] .bg-gray-08 {
+  background-color: var(--color-gray-08) !important;
+}
+
+:root[data-high-contrast="true"] .bg-purple-01 {
+  background-color: var(--color-purple-01) !important;
+}
+
+:root[data-high-contrast="true"] .bg-purple-02 {
+  background-color: var(--color-purple-02) !important;
+}
+
+:root[data-high-contrast="true"] .bg-purple-04 {
+  background-color: var(--color-purple-04) !important;
+}
+
+:root[data-high-contrast="true"] .text-purple-04,
+:root[data-high-contrast="true"] .text-purple-600,
+:root[data-high-contrast="true"] .text-purple-700 {
+  color: var(--color-purple-04) !important;
+}
+
+:root[data-high-contrast="true"] body {
+  background-color: var(--color-gray-01) !important;
+  color: var(--color-gray-08) !important;
+}
+
+:root[data-high-contrast="true"] .bg-gray-50,
+:root[data-high-contrast="true"] .bg-gray-100 {
+  background-color: var(--color-gray-02) !important;
+}
+
+:root[data-high-contrast="true"] .text-gray-500,
+:root[data-high-contrast="true"] .text-gray-400 {
+  color: var(--color-gray-06) !important;
+}
+
+:root[data-high-contrast="true"] .text-gray-900 {
+  color: var(--color-gray-08) !important;
+}
+
+:root[data-high-contrast="true"] .bg-purple-100,
+:root[data-high-contrast="true"] .bg-purple-50 {
+  background-color: var(--color-purple-02) !important;
+}
+
+:root[data-high-contrast="true"] .text-purple-100,
+:root[data-high-contrast="true"] .text-purple-50 {
+  color: var(--color-purple-02) !important;
+}
+
+:root[data-high-contrast="true"] .bg-red-50,
+:root[data-high-contrast="true"] .bg-red-100 {
+  background-color: var(--color-gray-02) !important;
+}
+
+:root[data-high-contrast="true"] .bg-green-50,
+:root[data-high-contrast="true"] .bg-green-100 {
+  background-color: var(--color-gray-02) !important;
+}
+
+:root[data-high-contrast="true"] .bg-yellow-50,
+:root[data-high-contrast="true"] .bg-yellow-100 {
+  background-color: var(--color-gray-02) !important;
+}
+
+:root[data-high-contrast="true"] .bg-blue-50,
+:root[data-high-contrast="true"] .bg-blue-100 {
+  background-color: var(--color-gray-02) !important;
+}
+
+:root[data-high-contrast="true"] nav,
+:root[data-high-contrast="true"] .bg-white,
+:root[data-high-contrast="true"] main {
+  background-color: var(--color-gray-01) !important;
+}
+
+:root[data-high-contrast="true"] .shadow-lg,
+:root[data-high-contrast="true"] .shadow-md,
+:root[data-high-contrast="true"] .shadow-sm {
+  box-shadow: 0 0 0 1px var(--color-gray-06) !important;
+}
+
+/* Modo escuro: cores de darkColors do mobile */
+:root[data-theme="dark"][data-high-contrast="false"] {
+  --color-purple-01: #1A0D1F;
+  --color-purple-02: #2D1A33;
+  --color-purple-03: #AC85BE;
+  --color-purple-04: #D4B3E8;
+
+  --color-gray-01: #1A0D1F;
+  --color-gray-02: #2D1A33;
+  --color-gray-03: #3D2A47;
+  --color-gray-04: #4D3A57;
+  --color-gray-05: #6D5A77;
+  --color-gray-06: #B8A5C2;
+  --color-gray-07: #D1C0DC;
+  --color-gray-08: #E5D5ED;
+}
+
+/* Fonte grande: aumenta a escala tipográfica mantendo proporções */
+:root[data-big-font="true"] {
+  --text-sm1: 14px;
+  --text-sm2: 16px;
+  --text-sm3: 18px;
+  --text-sm4: 20px;
+  --text-sm5: 22px;
+
+  --text-r1: 14px;
+  --text-r2: 16px;
+  --text-r3: 18px;
+  --text-r4: 20px;
+  --text-r5: 22px;
+
+  --text-sb1: 14px;
+  --text-sb2: 16px;
+  --text-sb3: 18px;
+  --text-sb4: 20px;
+  --text-sb5: 22px;
+
+  --text-b1: 14px;
+  --text-b2: 16px;
+  --text-b3: 18px;
+  --text-b4: 20px;
+  --text-b5: 22px;
+
+  --text-m1: 14px;
+  --text-m2: 16px;
+  --text-m3: 18px;
+  --text-m4: 20px;
+  --text-m5: 22px;
+
+  --text-h1: 34px;
+  --text-h2: 30px;
+  --text-h3: 26px;
+  --text-h4: 22px;
+  --text-h5: 20px;
+}
+
 .slider-thumb::-webkit-slider-thumb {
   appearance: none;
   height: 20px;

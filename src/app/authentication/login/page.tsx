@@ -14,6 +14,14 @@ const Login = () => {
           <div className="text-2xl font-semibold mt-2">Entrar na sua conta</div>
         </div>
         <LoginForm />
+        <div className="mt-3 text-right">
+          <Link
+            href="/authentication/forgot-password"
+            className="text-sm text-purple-600 hover:underline"
+          >
+            Esqueceu sua senha?
+          </Link>
+        </div>
         <div className="my-6 flex items-center gap-2">
           <div className="h-px flex-1 bg-gray-200" />
           <span className="text-gray-400 text-sm">ou</span>
