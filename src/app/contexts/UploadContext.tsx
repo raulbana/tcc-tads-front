@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useCallback, ReactNode, use
 import contentServices from '@/app/contents/services/contentServices';
 import { ContentFormData } from '@/app/contents/schemas/contentSchema';
 import { useAuth } from './AuthContext';
+import useContentQueries from '@/app/contents/services/contentQueryFactory';
 
 export interface UploadProgress {
   id: string;
@@ -17,7 +18,7 @@ export interface UploadProgress {
 interface UploadContextType {
   uploads: UploadProgress[];
   createContent: (data: ContentFormData) => Promise<string>;
-  updateContent: (contentId: string, data: ContentFormData) => Promise<string>;
+  updateContent: (contentId: string, data: ContentFormData, existingMedia?: any[], removedMediaUrls?: string[]) => Promise<string>;
   removeUpload: (id: string) => void;
 }
 
@@ -31,6 +32,15 @@ export const useUpload = () => {
   return context;
 };
 
+const convertCategoryNamesToIds = (categoryNames: string[], allCategories: any[]): number[] => {
+  return categoryNames
+    .map((name) => {
+      const category = allCategories.find((c) => c.name === name);
+      return category ? category.id : null;
+    })
+    .filter((id): id is number => id !== null);
+};
+
 const generateUploadId = () => `upload_${Date.now()}_${Math.random()}`;
 
 const UPLOAD_STORAGE_KEY = 'daily_iu_uploads';
@@ -42,8 +52,9 @@ interface UploadProviderProps {
 export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const [uploads, setUploads] = useState<UploadProgress[]>([]);
+  const contentQueries = useContentQueries(['upload']);
+  const { data: allCategories = [] } = contentQueries.useGetCategories();
 
-  // Restaurar uploads do localStorage ao montar
   useEffect(() => {
     const storedUploads = localStorage.getItem(UPLOAD_STORAGE_KEY);
     if (storedUploads) {
@@ -56,7 +67,6 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // Persistir uploads no localStorage sempre que mudarem
   useEffect(() => {
     if (uploads.length > 0) {
       localStorage.setItem(UPLOAD_STORAGE_KEY, JSON.stringify(uploads));
@@ -95,7 +105,6 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
     try {
       updateUploadProgress(uploadId, { status: 'uploading', progress: 10 });
 
-      // Converter Files para UploadFile
       const files: File[] = [];
       
       if (data.images && data.images.length > 0) {
@@ -108,14 +117,13 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
 
       updateUploadProgress(uploadId, { progress: 30 });
 
-      // Criar conteúdo com arquivos
       const result = await contentServices.createContentWithFiles(
         {
           title: data.title,
           description: data.description,
           subtitle: data.subtitle,
           subcontent: data.subcontent,
-          categories: data.categories.map(c => typeof c.id === 'string' ? parseInt(c.id, 10) : c.id),
+          categories: convertCategoryNamesToIds(data.categories, allCategories),
           files: files,
         },
         user.id.toString()
@@ -127,7 +135,6 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
         contentId: result.id
       });
 
-      // Remove upload após 3 segundos
       setTimeout(() => {
         removeUpload(uploadId);
       }, 3000);
@@ -142,9 +149,9 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
       });
       throw error;
     }
-  }, [user, updateUploadProgress, removeUpload]);
+  }, [user, updateUploadProgress, removeUpload, allCategories]);
 
-  const updateContent = useCallback(async (contentId: string, data: ContentFormData): Promise<string> => {
+  const updateContent = useCallback(async (contentId: string, data: ContentFormData, existingMedia?: any[], removedMediaUrls?: string[]): Promise<string> => {
     if (!user) {
       throw new Error('Usuário não autenticado');
     }
@@ -165,6 +172,55 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
     try {
       updateUploadProgress(uploadId, { status: 'uploading', progress: 20 });
 
+      const newFiles: File[] = [];
+      
+      if (data.images && data.images.length > 0) {
+        const newImages = data.images.filter(img => img instanceof File) as File[];
+        newFiles.push(...newImages);
+      }
+      
+      if (data.video && data.video instanceof File) {
+        newFiles.push(data.video);
+      }
+
+      let uploadedMediaUrls: string[] = [];
+
+      if (newFiles.length > 0) {
+        updateUploadProgress(uploadId, { progress: 40 });
+        
+        const formData = new FormData();
+        newFiles.forEach((file) => {
+          formData.append('files', file);
+        });
+
+        const uploadRes = await contentServices.uploadMedia(formData);
+        const uploadedMedia = Array.isArray(uploadRes?.media)
+          ? uploadRes.media
+          : Array.isArray(uploadRes)
+          ? uploadRes
+          : [];
+        
+        uploadedMediaUrls = uploadedMedia.map((m: any) => m.url);
+        updateUploadProgress(uploadId, { progress: 70 });
+      }
+
+      const keptExistingMedia = (existingMedia || []).filter(
+        m => !(removedMediaUrls || []).includes(m.url)
+      );
+      const existingImageUrls = keptExistingMedia
+        .filter(m => m.contentType?.startsWith('image/'))
+        .map(m => m.url);
+      const newImageUrls = uploadedMediaUrls.filter((url: string) => {
+        return !url.includes('.mp4') && !url.includes('.webm') && !url.includes('.mov');
+      });
+      const allImageUrls = [...existingImageUrls, ...newImageUrls];
+
+      const existingVideo = keptExistingMedia.find(m => m.contentType?.startsWith('video/'));
+      const newVideoUrl = uploadedMediaUrls.find((url: string) => {
+        return url.includes('.mp4') || url.includes('.webm') || url.includes('.mov');
+      });
+      const videoUrl = existingVideo?.url || newVideoUrl || undefined;
+
       const result = await contentServices.updateContent(
         contentId,
         {
@@ -172,7 +228,9 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
           description: data.description,
           subtitle: data.subtitle,
           subcontent: data.subcontent,
-          categories: data.categories.map(c => c.id.toString()),
+          categories: convertCategoryNamesToIds(data.categories, allCategories).map(id => id.toString()),
+          images: allImageUrls,
+          video: videoUrl,
         },
         user.id.toString()
       );
@@ -182,7 +240,6 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
         progress: 100 
       });
 
-      // Remove upload após 3 segundos
       setTimeout(() => {
         removeUpload(uploadId);
       }, 3000);
@@ -197,7 +254,7 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
       });
       throw error;
     }
-  }, [user, updateUploadProgress, removeUpload]);
+  }, [user, updateUploadProgress, removeUpload, allCategories]);
 
   const value: UploadContextType = {
     uploads,

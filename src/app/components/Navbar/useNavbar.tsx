@@ -31,6 +31,7 @@ export const useNavbar = () => {
       { name: "Diário", link: "/diary", enabled: true },
       { name: "Exercícios", link: "/exercises", enabled: true },
       { name: "Conteúdos", link: "/contents", enabled: true },
+      { name: "Perfil", link: "/profile", enabled: true },
       { name: "Contato", link: "/support/talkToUs", enabled: true },
       {
         name: "Administração",

@@ -15,7 +15,6 @@ export const useUsersTable = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
-  // Buscar usuários do service
   const fetchUsers = useCallback(async () => {
     const data = await getUsers();
     setUsers(data);
@@ -25,32 +24,28 @@ export const useUsersTable = () => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Abrir modal com usuário selecionado
   const handleOpenModal = useCallback((user: User) => {
     setSelectedUser(user);
     setIsModalOpen(true);
   }, []);
 
-  // Fechar modal
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedUser(null);
   }, []);
 
-  // Salvar alterações do usuário
   const handleSaveUser = useCallback(
     async (perfil: Perfil, status: Status) => {
       if (!selectedUser) return;
 
       const updatedUser = { ...selectedUser, perfil, status };
-      await setUser(updatedUser); // Atualiza mock global
-      await fetchUsers(); // Atualiza lista local
+      await setUser(updatedUser);
+      await fetchUsers();
       handleCloseModal();
     },
     [selectedUser, fetchUsers, handleCloseModal]
   );
 
-  // Filtrar usuários
   const filteredUsers = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
     return users.filter((user) => {

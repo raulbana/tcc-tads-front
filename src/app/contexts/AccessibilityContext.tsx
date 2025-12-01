@@ -162,8 +162,6 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
             darkMode: preferences.isDarkMode,
           };
 
-          // Atualizar somente no storage local (AuthContext) via recarregamento de usuário,
-          // o backend continuará sendo fonte de verdade.
           try {
             await configServices.updateAccessibilityPreferences(
               String(user.id),

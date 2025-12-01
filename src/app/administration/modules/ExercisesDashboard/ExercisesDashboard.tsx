@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import useAdministrationQueries from "../../services/adminQueryFactory";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
+import useDialogModal from "@/app/components/DialogModal/useDialogModal";
 import contentServices from "@/app/contents/services/contentServices";
 import MediaManager from "./components/MediaManager/MediaManager";
 import { ExerciseAdmin } from "../../schema/exercisesSchema";
@@ -79,6 +80,8 @@ const ExercisesDashboard = () => {
     null
   );
   const [exerciseImages, setExerciseImages] = useState<File[]>([]);
+
+  const { showDialog, DialogPortal } = useDialogModal();
   const [exerciseVideo, setExerciseVideo] = useState<File | undefined>(
     undefined
   );
@@ -351,17 +354,29 @@ const ExercisesDashboard = () => {
 
   const handleDeleteExercise = async (exercise: ExerciseAdmin) => {
     if (!exercise.id) return;
-    const confirmation = confirm(
-      `Deseja realmente excluir o exercício "${exercise.title}"?`
-    );
-    if (!confirmation) return;
-
+    
+    showDialog({
+      title: "Excluir Exercício",
+      description: `Deseja realmente excluir o exercício "${exercise.title}"? Esta ação não pode ser desfeita.`,
+      secondaryButton: {
+        label: "Cancelar",
+        onPress: () => {},
+      },
+      primaryButton: {
+        label: "Excluir",
+        onPress: async () => {
     try {
       await deleteExercise.mutateAsync(Number(exercise.id));
       showToast("Exercício removido com sucesso.");
     } catch (error) {
       showToast("Não foi possível excluir o exercício.", "ERROR");
     }
+        },
+        type: "PRIMARY",
+        autoClose: true,
+      },
+      dismissOnBackdropPress: false,
+    });
   };
 
   const onCategorySubmit = async (values: CategoryFormValues) => {
@@ -398,14 +413,28 @@ const ExercisesDashboard = () => {
   };
 
   const handleDeleteCategory = async (id: number) => {
-    const confirmation = confirm("Deseja remover esta categoria?");
-    if (!confirmation) return;
+    showDialog({
+      title: "Remover Categoria",
+      description: "Deseja remover esta categoria? Esta ação não pode ser desfeita.",
+      secondaryButton: {
+        label: "Cancelar",
+        onPress: () => {},
+      },
+      primaryButton: {
+        label: "Remover",
+        onPress: async () => {
     try {
       await deleteCategory.mutateAsync(id);
       showToast("Categoria removida com sucesso.");
     } catch (error) {
       showToast("Não foi possível excluir a categoria.", "ERROR");
     }
+        },
+        type: "PRIMARY",
+        autoClose: true,
+      },
+      dismissOnBackdropPress: false,
+    });
   };
 
   const onAttributeSubmit = async (values: AttributeFormValues) => {
@@ -445,14 +474,28 @@ const ExercisesDashboard = () => {
   };
 
   const handleDeleteAttribute = async (id: number) => {
-    const confirmation = confirm("Deseja remover este atributo?");
-    if (!confirmation) return;
+    showDialog({
+      title: "Remover Atributo",
+      description: "Deseja remover este atributo? Esta ação não pode ser desfeita.",
+      secondaryButton: {
+        label: "Cancelar",
+        onPress: () => {},
+      },
+      primaryButton: {
+        label: "Remover",
+        onPress: async () => {
     try {
       await deleteAttribute.mutateAsync(id);
       showToast("Atributo removido com sucesso.");
     } catch (error) {
       showToast("Não foi possível excluir o atributo.", "ERROR");
     }
+        },
+        type: "PRIMARY",
+        autoClose: true,
+      },
+      dismissOnBackdropPress: false,
+    });
   };
 
   const isExerciseListEmpty = useMemo(
@@ -1132,6 +1175,7 @@ const ExercisesDashboard = () => {
         isOpen={toast.isOpen}
         onClose={() => setToast((state) => ({ ...state, isOpen: false }))}
       />
+      {DialogPortal}
     </div>
   );
 };

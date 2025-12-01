@@ -39,7 +39,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Links úteis */}
           <div>
             <h3 className="font-semibold text-lg mb-4">Links Úteis</h3>
             <ul className="space-y-2">
@@ -66,7 +65,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal */}
           <div>
             <h3 className="font-semibold text-lg mb-4">Legal</h3>
             <ul className="space-y-2">
@@ -84,7 +82,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Divider */}
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm text-center md:text-left">

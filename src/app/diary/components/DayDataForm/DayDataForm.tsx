@@ -32,7 +32,6 @@ const DayDataForm: React.FC<DayDataFormProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Campo de Horário */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Horário *
@@ -54,7 +53,6 @@ const DayDataForm: React.FC<DayDataFormProps> = ({
         />
       </div>
 
-      {/* Campo de Volume */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Volume *
@@ -91,7 +89,6 @@ const DayDataForm: React.FC<DayDataFormProps> = ({
         )}
       </div>
 
-      {/* Campo de Urgência */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Urgência *
@@ -128,7 +125,6 @@ const DayDataForm: React.FC<DayDataFormProps> = ({
         )}
       </div>
 
-      {/* Campo de Perda */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Perda *
@@ -165,7 +161,6 @@ const DayDataForm: React.FC<DayDataFormProps> = ({
         )}
       </div>
 
-      {/* Campo de Motivo */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Motivo
@@ -185,7 +180,6 @@ const DayDataForm: React.FC<DayDataFormProps> = ({
         />
       </div>
 
-      {/* Botões */}
       <div className="flex gap-3 pt-4">
         {onCancel && (
           <Button

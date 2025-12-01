@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useAdministrationQueries from "../../services/adminQueryFactory";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
+import useDialogModal from "@/app/components/DialogModal/useDialogModal";
 
 type CategoryFormValues = {
   name: string;
@@ -33,6 +34,8 @@ const ContentCategoriesDashboard = () => {
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(
     null
   );
+
+  const { showDialog, DialogPortal } = useDialogModal();
 
   const categoryForm = useForm<CategoryFormValues>({
     defaultValues: {
@@ -86,16 +89,29 @@ const ContentCategoriesDashboard = () => {
 
   const handleDeleteCategory = async (id: number) => {
     const category = categories.find((item) => item.id === id);
-    const confirmation = confirm(
-      `Deseja realmente excluir a categoria "${category?.name}"?`
-    );
-    if (!confirmation) return;
-    try {
-      await deleteCategory.mutateAsync(id);
-      showToast("Categoria removida com sucesso.");
-    } catch (error) {
-      showToast("Não foi possível excluir a categoria.", "ERROR");
-    }
+
+    showDialog({
+      title: "Excluir Categoria",
+      description: `Deseja realmente excluir a categoria "${category?.name}"? Esta ação não pode ser desfeita.`,
+      secondaryButton: {
+        label: "Cancelar",
+        onPress: () => {},
+      },
+      primaryButton: {
+        label: "Excluir",
+        onPress: async () => {
+          try {
+            await deleteCategory.mutateAsync(id);
+            showToast("Categoria removida com sucesso.");
+          } catch (error) {
+            showToast("Não foi possível excluir a categoria.", "ERROR");
+          }
+        },
+        type: "PRIMARY",
+        autoClose: true,
+      },
+      dismissOnBackdropPress: false,
+    });
   };
 
   return (
@@ -182,9 +198,7 @@ const ContentCategoriesDashboard = () => {
               <button
                 type="submit"
                 className="px-4 py-2 text-sm text-white bg-purple-600 hover:bg-purple-700 rounded-xl transition cursor-pointer whitespace-nowrap"
-                disabled={
-                  createCategory.isPending || updateCategory.isPending
-                }
+                disabled={createCategory.isPending || updateCategory.isPending}
               >
                 {editingCategoryId ? "Atualizar" : "Adicionar"}
               </button>
@@ -256,9 +270,9 @@ const ContentCategoriesDashboard = () => {
         isOpen={toast.isOpen}
         onClose={() => setToast((state) => ({ ...state, isOpen: false }))}
       />
+      {DialogPortal}
     </div>
   );
 };
 
 export default ContentCategoriesDashboard;
-

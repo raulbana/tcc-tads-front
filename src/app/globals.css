@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @layer utilities {
-  /* Regras do tema dark com alta especificidade */
+  
 }
 
 @theme{
@@ -56,7 +56,6 @@
   --text-h5: 18px;
 }
 
-/* Alto contraste: cores de accessibleColors do mobile */
 :root[data-high-contrast="true"] {
   --color-purple-01: #000000;
   --color-purple-02: #1A1A1A;
@@ -73,7 +72,6 @@
   --color-gray-08: #FFFFFF;
 }
 
-/* Sobrescrever classes de fundo branco no alto contraste */
 :root[data-high-contrast="true"] .bg-white,
 :root[data-high-contrast="true"] .bg-gray-01 {
   background-color: var(--color-gray-01) !important;
@@ -98,8 +96,6 @@
   color: var(--color-gray-08) !important;
 }
 
-/* Botões e badges no alto contraste - ajustar contraste de texto */
-/* Botões PRIMARY: bg-purple-04 (branco no alto contraste) precisa de texto preto */
 :root[data-high-contrast="true"] button.bg-purple-04,
 :root[data-high-contrast="true"] button.bg-purple-04.text-white,
 :root[data-high-contrast="true"] .bg-purple-04 button,
@@ -109,7 +105,6 @@
   color: var(--color-gray-01) !important;
 }
 
-/* Botões SECONDARY: bg-purple-02 (preto no alto contraste) precisa de texto branco */
 :root[data-high-contrast="true"] button.bg-purple-02,
 :root[data-high-contrast="true"] button.bg-purple-02.text-purple-04,
 :root[data-high-contrast="true"] .bg-purple-02 button,
@@ -119,7 +114,6 @@
   color: var(--color-gray-08) !important;
 }
 
-/* Botões com bg-purple-03 (roxo escuro no alto contraste) precisa de texto branco */
 :root[data-high-contrast="true"] button.bg-purple-03,
 :root[data-high-contrast="true"] button.bg-purple-03.text-white,
 :root[data-high-contrast="true"] .bg-purple-03 button,
@@ -129,14 +123,12 @@
   color: var(--color-gray-08) !important;
 }
 
-/* Badges e spans com bg-purple-02 e text-purple-04 */
 :root[data-high-contrast="true"] span.bg-purple-02,
 :root[data-high-contrast="true"] span.bg-purple-02.text-purple-04,
 :root[data-high-contrast="true"] .bg-purple-02 span.text-purple-04 {
   color: var(--color-gray-08) !important;
 }
 
-/* Outros elementos com text-white em fundos claros */
 :root[data-high-contrast="true"] .bg-purple-500.text-white,
 :root[data-high-contrast="true"] .bg-purple-500 button.text-white,
 :root[data-high-contrast="true"] .bg-purple-700.text-white,
@@ -144,7 +136,6 @@
   color: var(--color-gray-08) !important;
 }
 
-/* Botões vermelhos e outros */
 :root[data-high-contrast="true"] .bg-red-600.text-white,
 :root[data-high-contrast="true"] .bg-red-600 button.text-white,
 :root[data-high-contrast="true"] .bg-red-700.text-white,
@@ -152,13 +143,11 @@
   color: var(--color-gray-08) !important;
 }
 
-/* CategoryChips - chips selecionados com bg-purple-04 precisam de texto preto */
 :root[data-high-contrast="true"] button.bg-purple-04.text-white,
 :root[data-high-contrast="true"] .bg-purple-04.text-white button {
   color: var(--color-gray-01) !important;
 }
 
-/* CategoryChips - chips não selecionados com bg-gray-200 */
 :root[data-high-contrast="true"] button.bg-gray-200,
 :root[data-high-contrast="true"] .bg-gray-200 button {
   background-color: var(--color-gray-02) !important;
@@ -178,7 +167,6 @@
   border-color: var(--color-gray-07) !important;
 }
 
-/* Regra geral para text-white em elementos que não são botões com fundo claro */
 :root[data-high-contrast="true"] p.text-white,
 :root[data-high-contrast="true"] span.text-white:not(.bg-purple-04):not(.bg-purple-02),
 :root[data-high-contrast="true"] div.text-white:not(.bg-purple-04):not(.bg-purple-02),
@@ -280,7 +268,6 @@
   box-shadow: 0 0 0 1px var(--color-gray-06) !important;
 }
 
-/* Modo escuro: cores de darkColors do mobile */
 :root[data-theme="dark"][data-high-contrast="false"],
 html[data-theme="dark"][data-high-contrast="false"] {
   --color-purple-01: #1A0D1F;
@@ -298,7 +285,6 @@ html[data-theme="dark"][data-high-contrast="false"] {
   --color-gray-08: #E5D5ED;
 }
 
-/* Sobrescrever classes de fundo branco no tema dark - regras com alta especificidade */
 :root[data-theme="dark"][data-high-contrast="false"] .bg-white,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-gray-01,
 :root[data-theme="dark"][data-high-contrast="false"] * .bg-white,
@@ -338,8 +324,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   color: var(--color-gray-08) !important;
 }
 
-/* Botões e badges no tema dark - ajustar contraste de texto */
-/* Botões PRIMARY: bg-purple-04 (roxo claro no tema dark) precisa de texto escuro */
 :root[data-theme="dark"][data-high-contrast="false"] button.bg-purple-04,
 :root[data-theme="dark"][data-high-contrast="false"] button.bg-purple-04.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-purple-04 button,
@@ -349,7 +333,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   color: var(--color-gray-01) !important;
 }
 
-/* Botões SECONDARY: bg-purple-02 (roxo médio no tema dark) precisa de texto claro */
 :root[data-theme="dark"][data-high-contrast="false"] button.bg-purple-02,
 :root[data-theme="dark"][data-high-contrast="false"] button.bg-purple-02.text-purple-04,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-purple-02 button,
@@ -359,7 +342,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   color: var(--color-gray-08) !important;
 }
 
-/* Botões com bg-purple-03 (roxo médio no tema dark) precisa de texto claro */
 :root[data-theme="dark"][data-high-contrast="false"] button.bg-purple-03,
 :root[data-theme="dark"][data-high-contrast="false"] button.bg-purple-03.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-purple-03 button,
@@ -369,14 +351,12 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   color: var(--color-gray-08) !important;
 }
 
-/* Badges e spans com bg-purple-02 e text-purple-04 */
 :root[data-theme="dark"][data-high-contrast="false"] span.bg-purple-02,
 :root[data-theme="dark"][data-high-contrast="false"] span.bg-purple-02.text-purple-04,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-purple-02 span.text-purple-04 {
   color: var(--color-gray-08) !important;
 }
 
-/* Outros elementos com text-white em fundos escuros */
 :root[data-theme="dark"][data-high-contrast="false"] .bg-purple-500.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-purple-500 button.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-purple-600.text-white,
@@ -386,7 +366,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   color: var(--color-gray-08) !important;
 }
 
-/* Botões vermelhos e outros */
 :root[data-theme="dark"][data-high-contrast="false"] .bg-red-600.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-red-600 button.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-red-700.text-white,
@@ -394,13 +373,11 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   color: var(--color-gray-08) !important;
 }
 
-/* CategoryChips - chips selecionados com bg-purple-04 precisam de texto escuro */
 :root[data-theme="dark"][data-high-contrast="false"] button.bg-purple-04.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-purple-04.text-white button {
   color: var(--color-gray-01) !important;
 }
 
-/* CategoryChips - chips não selecionados com bg-gray-200 */
 :root[data-theme="dark"][data-high-contrast="false"] button.bg-gray-200,
 :root[data-theme="dark"][data-high-contrast="false"] .bg-gray-200 button {
   background-color: var(--color-gray-04) !important;
@@ -420,7 +397,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   border-color: var(--color-gray-07) !important;
 }
 
-/* Regra geral para text-white em elementos que não são botões com fundo escuro */
 :root[data-theme="dark"][data-high-contrast="false"] p.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] span.text-white:not(.bg-purple-04):not(.bg-purple-02),
 :root[data-theme="dark"][data-high-contrast="false"] div.text-white:not(.bg-purple-04):not(.bg-purple-02),
@@ -467,7 +443,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   color: var(--color-gray-08) !important;
 }
 
-/* Garantir que o fundo da página seja roxo escuro */
 :root[data-theme="dark"][data-high-contrast="false"] #__next,
 :root[data-theme="dark"][data-high-contrast="false"] [id="__next"] {
   background-color: var(--color-gray-01) !important;
@@ -535,7 +510,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   box-shadow: 0 0 0 1px var(--color-gray-06) !important;
 }
 
-/* Regras adicionais para elementos que podem ter cores brancas */
 :root[data-theme="dark"][data-high-contrast="false"] article,
 :root[data-theme="dark"][data-high-contrast="false"] aside,
 :root[data-theme="dark"][data-high-contrast="false"] header,
@@ -543,14 +517,12 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   background-color: var(--color-gray-01) !important;
 }
 
-/* Cards e containers */
 :root[data-theme="dark"][data-high-contrast="false"] .card,
 :root[data-theme="dark"][data-high-contrast="false"] [class*="card"],
 :root[data-theme="dark"][data-high-contrast="false"] [class*="Card"] {
   background-color: var(--color-gray-01) !important;
 }
 
-/* Modais e dialogs */
 :root[data-theme="dark"][data-high-contrast="false"] [role="dialog"],
 :root[data-theme="dark"][data-high-contrast="false"] dialog,
 :root[data-theme="dark"][data-high-contrast="false"] [class*="modal"],
@@ -558,7 +530,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   background-color: var(--color-gray-01) !important;
 }
 
-/* Overlays e backdrops */
 :root[data-theme="dark"][data-high-contrast="false"] [class*="overlay"],
 :root[data-theme="dark"][data-high-contrast="false"] [class*="backdrop"],
 :root[data-theme="dark"][data-high-contrast="false"] [class*="Overlay"],
@@ -566,7 +537,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   background-color: rgba(26, 13, 31, 0.6) !important;
 }
 
-/* Inputs, textareas e selects - garantir que fundos brancos sejam substituídos */
 :root[data-theme="dark"][data-high-contrast="false"] input[type="text"],
 :root[data-theme="dark"][data-high-contrast="false"] input[type="email"],
 :root[data-theme="dark"][data-high-contrast="false"] input[type="password"],
@@ -587,19 +557,16 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   border-color: var(--color-gray-04) !important;
 }
 
-/* Links e elementos interativos */
 :root[data-theme="dark"][data-high-contrast="false"] a.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] a[class*="text-white"] {
   color: var(--color-gray-08) !important;
 }
 
-/* Labels e textos em formulários */
 :root[data-theme="dark"][data-high-contrast="false"] label.text-white,
 :root[data-theme="dark"][data-high-contrast="false"] label[class*="text-white"] {
   color: var(--color-gray-08) !important;
 }
 
-/* Listas */
 :root[data-theme="dark"][data-high-contrast="false"] ul,
 :root[data-theme="dark"][data-high-contrast="false"] ol,
 :root[data-theme="dark"][data-high-contrast="false"] li {
@@ -611,7 +578,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   background-color: var(--color-gray-01) !important;
 }
 
-/* Tabelas - garantir que células brancas sejam substituídas */
 :root[data-theme="dark"][data-high-contrast="false"] td.bg-white,
 :root[data-theme="dark"][data-high-contrast="false"] th.bg-white,
 :root[data-theme="dark"][data-high-contrast="false"] td[class*="bg-white"],
@@ -619,7 +585,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   background-color: var(--color-gray-01) !important;
 }
 
-/* Divs e containers genéricos com bg-white */
 :root[data-theme="dark"][data-high-contrast="false"] div.bg-white,
 :root[data-theme="dark"][data-high-contrast="false"] div[class*="bg-white"],
 :root[data-theme="dark"][data-high-contrast="false"] [class*="container"].bg-white,
@@ -627,7 +592,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   background-color: var(--color-gray-01) !important;
 }
 
-/* Elementos com estilo inline ou background-color branco */
 :root[data-theme="dark"][data-high-contrast="false"] [style*="background-color: white"],
 :root[data-theme="dark"][data-high-contrast="false"] [style*="background-color: #fff"],
 :root[data-theme="dark"][data-high-contrast="false"] [style*="background-color: #ffffff"],
@@ -635,7 +599,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   background-color: var(--color-gray-01) !important;
 }
 
-/* Textos brancos em qualquer elemento */
 :root[data-theme="dark"][data-high-contrast="false"] [style*="color: white"],
 :root[data-theme="dark"][data-high-contrast="false"] [style*="color: #fff"],
 :root[data-theme="dark"][data-high-contrast="false"] [style*="color: #ffffff"],
@@ -643,7 +606,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   color: var(--color-gray-08) !important;
 }
 
-/* Garantir que elementos com classes do Tailwind que podem ter branco sejam substituídos */
 :root[data-theme="dark"][data-high-contrast="false"] [class*="bg-white"],
 :root[data-theme="dark"][data-high-contrast="false"] div[class*="bg-white"],
 :root[data-theme="dark"][data-high-contrast="false"] section[class*="bg-white"],
@@ -656,12 +618,10 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   background-color: var(--color-gray-01) !important;
 }
 
-/* Regra mais específica para garantir que funcione mesmo com múltiplas classes */
 :root[data-theme="dark"][data-high-contrast="false"] *[class~="bg-white"] {
   background-color: var(--color-gray-01) !important;
 }
 
-/* Específico para elementos que podem ter fundo branco por padrão */
 :root[data-theme="dark"][data-high-contrast="false"] svg[fill="white"],
 :root[data-theme="dark"][data-high-contrast="false"] svg[fill="#fff"],
 :root[data-theme="dark"][data-high-contrast="false"] svg[fill="#ffffff"] {
@@ -674,7 +634,6 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
   stroke: var(--color-gray-08) !important;
 }
 
-/* Fonte grande: aumenta a escala tipográfica mantendo proporções */
 :root[data-big-font="true"] {
   --text-sm1: 14px;
   --text-sm2: 16px;
@@ -745,10 +704,10 @@ html[data-theme="dark"][data-high-contrast="false"] article.bg-white {
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE e Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari e Opera */
+  display: none;  
 }

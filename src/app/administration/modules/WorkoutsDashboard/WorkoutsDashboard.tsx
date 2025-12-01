@@ -9,6 +9,7 @@ import type {
 } from "../../schema/workoutsSchema";
 import type { ExerciseAdmin } from "../../services/exercisesService";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
+import useDialogModal from "@/app/components/DialogModal/useDialogModal";
 
 type WorkoutFormValues = {
   name: string;
@@ -56,6 +57,8 @@ const WorkoutsDashboard = () => {
   const [selectedExercises, setSelectedExercises] = useState<
     SelectedExercise[]
   >([]);
+
+  const { showDialog, DialogPortal } = useDialogModal();
 
   const form = useForm<WorkoutFormValues>({
     defaultValues: {
@@ -192,16 +195,29 @@ const WorkoutsDashboard = () => {
 
   const handleDelete = async (workout: WorkoutAdmin) => {
     if (!workout.id) return;
-    const confirmation = confirm(
-      `Deseja remover o treino "${workout.name}"? Esta ação é irreversível.`
-    );
-    if (!confirmation) return;
+    
+    showDialog({
+      title: "Remover Treino",
+      description: `Deseja remover o treino "${workout.name}"? Esta ação é irreversível.`,
+      secondaryButton: {
+        label: "Cancelar",
+        onPress: () => {},
+      },
+      primaryButton: {
+        label: "Remover",
+        onPress: async () => {
     try {
       await deleteWorkout.mutateAsync(Number(workout.id));
       showToast("Treino removido com sucesso.");
     } catch (error) {
       showToast("Não foi possível excluir o treino.", "ERROR");
     }
+        },
+        type: "PRIMARY",
+        autoClose: true,
+      },
+      dismissOnBackdropPress: false,
+    });
   };
 
   const resolvedWorkouts = workoutsQuery.data ?? [];
@@ -548,6 +564,7 @@ const WorkoutsDashboard = () => {
         isOpen={toast.isOpen}
         onClose={() => setToast((state) => ({ ...state, isOpen: false }))}
       />
+      {DialogPortal}
     </div>
   );
 };

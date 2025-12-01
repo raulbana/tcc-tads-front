@@ -8,6 +8,7 @@ import type {
   WorkoutPlanEntry,
 } from "../../schema/workoutPlansSchema";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
+import useDialogModal from "@/app/components/DialogModal/useDialogModal";
 
 type PlanFormValues = {
   name: string;
@@ -203,16 +204,29 @@ const WorkoutPlansDashboard = () => {
 
   const handleDelete = async (plan: WorkoutPlanAdmin) => {
     if (!plan.id) return;
-    const confirmation = confirm(
-      `Deseja remover o plano "${plan.name}"? Esta ação não pode ser desfeita.`
-    );
-    if (!confirmation) return;
+    
+    showDialog({
+      title: "Remover Plano de Treino",
+      description: `Deseja remover o plano "${plan.name}"? Esta ação não pode ser desfeita.`,
+      secondaryButton: {
+        label: "Cancelar",
+        onPress: () => {},
+      },
+      primaryButton: {
+        label: "Remover",
+        onPress: async () => {
     try {
       await deletePlan.mutateAsync(Number(plan.id));
       showToast("Plano de treino removido com sucesso.");
     } catch (error) {
       showToast("Não foi possível excluir o plano de treino.", "ERROR");
     }
+        },
+        type: "PRIMARY",
+        autoClose: true,
+      },
+      dismissOnBackdropPress: false,
+    });
   };
 
   const resolvedPlans = plansQuery.data ?? [];
@@ -608,6 +622,7 @@ const WorkoutPlansDashboard = () => {
         isOpen={toast.isOpen}
         onClose={() => setToast((state) => ({ ...state, isOpen: false }))}
       />
+      {DialogPortal}
     </div>
   );
 };
