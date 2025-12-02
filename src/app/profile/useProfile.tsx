@@ -12,7 +12,7 @@ import useConfigQueries from "@/app/services/configQueryFactory";
 import useContentQueries from "@/app/contents/services/contentQueryFactory";
 import { profileFormSchema, ProfileFormData } from "./schema/profileSchema";
 import { User } from "@/app/types/auth";
-import Toast, { ToastType } from "@/app/components/Toast/Toast";
+import { ToastType } from "@/app/components/Toast/Toast";
 import useDialogModal from "@/app/components/DialogModal/useDialogModal";
 
 const useProfile = () => {

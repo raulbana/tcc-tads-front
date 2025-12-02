@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import { useForm, Controller } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import Input from "@/app/components/Input/Input";
 import Button from "@/app/components/Button/Button";
-import { ProfileFormData } from "../../schema/profileSchema";
 
 export interface ProfileFormProps {
   errors: any;

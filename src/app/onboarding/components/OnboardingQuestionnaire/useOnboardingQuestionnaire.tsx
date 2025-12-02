@@ -35,7 +35,7 @@ const useOnboardingQuestionnaire = () => {
     getValues,
     trigger,
     setValue,
-    formState: { isValid, errors },
+    formState: { errors },
   } = useForm<ICIQAnswers>({
     resolver: zodResolver(iciqSchema),
     mode: "onChange",

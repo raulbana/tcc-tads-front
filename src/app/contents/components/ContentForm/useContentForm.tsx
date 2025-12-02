@@ -5,7 +5,6 @@ import { z } from "zod";
 import { ContentFormData, contentSchema } from "@/app/contents/schemas/contentSchema";
 import { useUpload } from "@/app/contexts/UploadContext";
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
-import React from "react";
 import { Content, MediaDTO } from "@/app/types/content";
 import useContentQueries from "@/app/contents/services/contentQueryFactory";
 
@@ -32,7 +31,6 @@ export const useContentForm = ({
   const prevInitialContentIdRef = useRef<string>('');
   
   const contentQueries = useContentQueries(["content"]);
-  const { data: allCategories = [] } = contentQueries.useGetCategories();
 
   const dynamicSchema = useMemo(() => {
     if (mode === 'edit') {

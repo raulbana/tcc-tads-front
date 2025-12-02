@@ -8,7 +8,6 @@ import type {
   WorkoutPlanEntry,
 } from "../../schema/workoutPlansSchema";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
-import useDialogModal from "@/app/components/DialogModal/useDialogModal";
 
 type PlanFormValues = {
   name: string;

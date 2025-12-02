@@ -3,7 +3,6 @@ import apiRoutes from "@/app/utils/apiRoutes";
 import { API_BASE_URL } from "@/app/config/env";
 import {
   contentCategorySchema,
-  contentCategoryCreatorSchema,
   type ContentCategory,
   type ContentCategoryCreator,
 } from "../schema/contentCategoriesSchema";

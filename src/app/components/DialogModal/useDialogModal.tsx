@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import DialogModal, {
   DialogModalButton,
-  DialogModalProps,
 } from "./DialogModal";
 
 export interface DialogConfig {

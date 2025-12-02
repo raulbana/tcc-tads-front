@@ -34,7 +34,6 @@ const ProfilePage = () => {
     handleUnsaveContent,
     handleContentClick,
     handleTabChange,
-    handleRefresh,
     handleEditContent,
     handleCloseEditModal,
     handleEditContentSuccess,
