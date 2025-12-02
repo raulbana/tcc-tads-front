@@ -8,6 +8,32 @@ export interface User {
   preferences: Preferences;
 }
 
+export interface UserRole {
+  description: string;
+  permissionLevel: number;
+  reason: string;
+  hasDocument: boolean;
+  documentType: string | null;
+  documentValue: string | null;
+  conceivedBy: string | null;
+  conceivedAt: string;
+}
+
+export const userRoles: Record<string, { permissionLevel: number; description: string }> = {
+  USER: {
+    permissionLevel: 1,
+    description: 'Usuário comum',
+  },
+  PROFESSIONAL: {
+    permissionLevel: 2,
+    description: 'Profissional',
+  },
+  ADMIN: {
+    permissionLevel: 3,
+    description: 'Administrador',
+  }
+};
+
 export interface PatientProfile {
   id: string;
   birthDate: string;

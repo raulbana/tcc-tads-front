@@ -1,40 +1,33 @@
 import apiFactory from "@/app/services/apiFactory";
 import { API_BASE_URL } from "@/app/config/env";
-import apiRoutes from "@/app/utils/apiRoutes";
-import { User } from "../schema/usersSchema";
+import { apiRoutes } from "@/app/utils/apiRoutes";
+import { User, Role, Status } from "../schema/usersSchema";
 
-const api = apiFactory(API_BASE_URL ?? "");
+const apiInstance = apiFactory(API_BASE_URL);
 
 export const getUsers = async (): Promise<User[]> => {
-  const response = await api.get(apiRoutes.admin.listUsers);
-  const data = Array.isArray(response.data) ? response.data : [];
-
-  return data.map((raw: any): User => ({
-    id: Number(raw.id),
-    nome: raw.name || raw.nome || "",
-    email: raw.email || "",
-    perfil:
-      raw.role === "ADMIN" || raw.role === "ROLE_ADMIN"
-        ? "Admin"
-        : raw.role === "HEALTH" || raw.role === "ROLE_HEALTH"
-        ? "Saúde"
-        : "Usuário",
-    status: raw.blocked ? "Bloqueado" : "Ativo",
-  }));
+  const { data } = await apiInstance.get<User[]>(apiRoutes.admin.listUsers);
+  return data;
 };
 
-export const setUser = async (updatedUser: User): Promise<User> => {
-  const payload = {
-    userId: updatedUser.id,
-    role:
-      updatedUser.perfil === "Admin"
-        ? "ADMIN"
-        : updatedUser.perfil === "Saúde"
-        ? "HEALTH"
-        : "USER",
-    blocked: updatedUser.status === "Bloqueado",
-  };
+export const setUserRole = async (
+  userId: number,
+  role: Role
+): Promise<User> => {
+  const { data } = await apiInstance.put<User>(apiRoutes.admin.setUserRole, {
+    userId,
+    role,
+  });
+  return data;
+};
 
-  await api.post(apiRoutes.admin.setUserRole, payload);
-  return updatedUser;
+export const setUserStatus = async (
+  userId: number,
+  status: Status
+): Promise<User> => {
+  const { data } = await apiInstance.put<User>(apiRoutes.admin.setUserStatus, {
+    userId,
+    status,
+  });
+  return data;
 };

@@ -69,6 +69,7 @@ const apiRoutes = {
   admin: {
     listUsers: "/admin/users",
     setUserRole: "/admin/users/role",
+    setUserStatus: "/admin/users/status",
     listReports: "/admin/reports",
     validateReport: "/admin/reports/validate",
     applyStrike: "/admin/reports/strike",
