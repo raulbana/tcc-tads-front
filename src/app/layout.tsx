@@ -6,6 +6,7 @@ import ClientNavbarWrapper from "./components/Navbar/components/ClientNavbarWrap
 import { UploadProvider } from "./contexts/UploadContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { DiaryProvider } from "./contexts/DiaryContext";
+import { AccessibilityProvider } from "./contexts/AccessibilityContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,15 +26,17 @@ export default function RootLayout({
   return (
     <ReactQueryProvider>
       <AuthProvider>
-         <UploadProvider>
-          <DiaryProvider>
-            <html lang="en">
-              <body className={`${inter.variable} antialiased`}>
-                <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
-              </body>
-            </html>
-          </DiaryProvider>
-        </UploadProvider>
+        <AccessibilityProvider>
+          <UploadProvider>
+            <DiaryProvider>
+              <html lang="en">
+                <body className={`${inter.variable} antialiased`}>
+                  <ClientNavbarWrapper>{children}</ClientNavbarWrapper>
+                </body>
+              </html>
+            </DiaryProvider>
+          </UploadProvider>
+        </AccessibilityProvider>
       </AuthProvider>
     </ReactQueryProvider>
   );

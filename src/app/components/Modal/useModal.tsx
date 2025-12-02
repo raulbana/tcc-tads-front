@@ -6,7 +6,7 @@ const useModal = (onClose?: () => void) => {
 
   const getModalStyle = (size?: "small" | "medium" | "large" | "full") => {
     const baseStyle =
-      "bg-white rounded-2xl shadow-lg relative max-h-[90vh] overflow-hidden flex flex-col";
+      "bg-gray-01 rounded-2xl shadow-lg relative max-h-[90vh] overflow-hidden flex flex-col";
 
     switch (size) {
       case "small":

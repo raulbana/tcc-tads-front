@@ -21,7 +21,6 @@ const getStoredUserId = (): string | undefined => {
     const parsed = JSON.parse(stored);
     return parsed?.id ? String(parsed.id) : undefined;
   } catch (error) {
-    console.warn("Não foi possível recuperar o usuário armazenado", error);
     return undefined;
   }
 };
@@ -124,65 +123,9 @@ function mapWorkoutDTO(raw: any): Workout {
 }
 
 export const exerciseServices = {
-  listExercises: async (): Promise<Exercise[]> => {
-    const res = await api.get(apiRoutes.exercises.listExercises);
-    const arr = Array.isArray(res.data) ? res.data : [];
-    return arr.map(mapExerciseDTO);
-  },
-
   getExerciseById: async (id: string): Promise<Exercise> => {
     const res = await api.get(apiRoutes.exercises.getExerciseById(id));
     return mapExerciseDTO(res.data);
-  },
-
-  listWorkouts: async (): Promise<Workout[]> => {
-    const res = await api.get(apiRoutes.exercises.listWorkouts);
-    const arr = Array.isArray(res.data) ? res.data : [];
-    return arr.map(mapWorkoutDTO);
-  },
-
-  listWorkoutPlans: async (): Promise<WorkoutPlan[]> => {
-    const res = await api.get(apiRoutes.exercises.listWorkoutPlans);
-    const arr = Array.isArray(res.data) ? res.data : [];
-    return arr.map((raw: any): WorkoutPlan => {
-      const workoutsSource = raw.workouts;
-      const workoutsArray: any[] = Array.isArray(workoutsSource)
-        ? workoutsSource
-        : workoutsSource && typeof workoutsSource === "object"
-        ? Object.values(workoutsSource)
-        : [];
-
-      return {
-        id: String(raw.id),
-        name: raw.name || raw.title || "",
-        description: raw.description || "",
-        difficulty: mapDifficultyLevel(raw.difficultyLevel || raw.difficulty),
-        workouts: workoutsArray.map(mapWorkoutDTO),
-        createdAt: new Date(raw.createdAt || Date.now()),
-        updatedAt: new Date(raw.updatedAt || Date.now()),
-      };
-    });
-  },
-
-  getWorkoutPlanById: async (id: string): Promise<WorkoutPlan> => {
-    const res = await api.get(apiRoutes.exercises.getWorkoutPlanById(id));
-    const raw = res.data;
-    const workoutsSource = raw.workouts;
-    const workoutsArray: any[] = Array.isArray(workoutsSource)
-      ? workoutsSource
-      : workoutsSource && typeof workoutsSource === "object"
-      ? Object.values(workoutsSource)
-      : [];
-
-    return {
-      id: String(raw.id),
-      name: raw.name || raw.title || "",
-      description: raw.description || "",
-      difficulty: mapDifficultyLevel(raw.difficultyLevel || raw.difficulty),
-      workouts: workoutsArray.map(mapWorkoutDTO),
-      createdAt: new Date(raw.createdAt || Date.now()),
-      updatedAt: new Date(raw.updatedAt || Date.now()),
-    };
   },
 
   submitWorkoutFeedback: async (
@@ -231,6 +174,7 @@ export const exerciseServices = {
       return {
         id: raw.id,
         plan: mappedPlan,
+        workouts: workoutsArray.map(mapWorkoutDTO),
         startDate: raw.startDate,
         endDate: raw.endDate,
         totalProgress: raw.totalProgress,

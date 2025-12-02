@@ -84,7 +84,6 @@ export const useCommentsSection = (content: Content) => {
         setLocalComments((prev) =>
           prev.filter((c) => c.id !== optimisticComment.id)
         );
-        console.error("Error adding comment:", error);
       }
     },
     [user, content.id, createCommentMutation]
@@ -148,7 +147,6 @@ export const useCommentsSection = (content: Content) => {
             return comment;
           })
         );
-        console.error("Error adding reply:", error);
       }
     },
     [user, content.id, createCommentMutation]
@@ -228,7 +226,6 @@ export const useCommentsSection = (content: Content) => {
         commentId === "undefined" ||
         commentId.startsWith("temp-")
       ) {
-        console.warn("Invalid commentId for like:", commentId);
         return;
       }
 
@@ -239,7 +236,6 @@ export const useCommentsSection = (content: Content) => {
         parentId
       );
       if (!comment) {
-        console.warn("Comment not found:", commentId);
         return;
       }
 
@@ -259,7 +255,6 @@ export const useCommentsSection = (content: Content) => {
         setLocalComments((prev) =>
           updateCommentLike(prev, commentId, isReply || false, parentId)
         );
-        console.error("Error toggling comment like:", error);
       }
     },
     [user, localComments, likeCommentMutation, findComment, updateCommentLike]
@@ -339,7 +334,6 @@ export const useCommentsSection = (content: Content) => {
 
           setExpandedReplies((prev) => new Set(prev).add(commentId));
         } catch (error) {
-          console.error("Error loading replies:", error);
         }
       } else {
         setExpandedReplies((prev) => new Set(prev).add(commentId));

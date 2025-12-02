@@ -1,6 +1,7 @@
 import { Question } from '@/app/types/question';
+import { OnboardSubmitDTO, OnboardCompleteDTO } from '@/app/types/onboarding';
 import onboardingServices from '../services/onboardingServices';
-import { useQuery, QueryKey } from '@tanstack/react-query';
+import { useQuery, useMutation, QueryKey } from '@tanstack/react-query';
 
 const useOnboardingQueries = (queryKey: QueryKey) => {
   const getQuestions = useQuery<Question[]>({
@@ -15,8 +16,13 @@ const useOnboardingQueries = (queryKey: QueryKey) => {
     })),
   });
 
+  const submitAnswers = useMutation<OnboardCompleteDTO, Error, OnboardSubmitDTO>({
+    mutationFn: (data: OnboardSubmitDTO) => onboardingServices.submitAnswers(data),
+  });
+
   return {
     getQuestions,
+    submitAnswers,
   };
 };
 

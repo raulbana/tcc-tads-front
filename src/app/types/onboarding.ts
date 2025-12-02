@@ -1,4 +1,4 @@
-import {PatientProfile} from './auth';
+import {PatientProfileDTO} from './auth';
 
 export interface OnboardSubmitDTO {
   userId?: number;
@@ -27,6 +27,6 @@ export interface WorkoutPlanDTO {
 }
 
 export interface OnboardCompleteDTO {
-  profile: PatientProfile;
+  profile: PatientProfileDTO;
   workoutPlan?: UserWorkoutPlanDTO;
 }

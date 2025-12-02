@@ -67,24 +67,32 @@ const QuestionSection: React.FC<QuestionProps> = ({
 
         {type === "radio" && (
           <div className="space-y-3">
-            {options?.map((option) => (
-              <label
-                key={String(option.value)}
-                className="flex items-center gap-3 cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  value={String(option.value)}
-                  checked={localValue === option.value}
-                  onChange={() => handleRadioChange(String(option.value))}
-                  className="w-4 h-4 text-purple-04 border-gray-300 focus:ring-purple-04 focus:ring-2 focus:ring-offset-2"
-                  style={{
-                    accentColor: "#5F3C6F",
-                  }}
-                />
-                <span className="text-gray-700">{option.label}</span>
-              </label>
-            ))}
+            {options?.map((option) => {
+              const optionValue = typeof option.value === 'number' ? option.value : Number(option.value);
+              const currentValue = typeof localValue === 'number' ? localValue : Number(localValue);
+              const isChecked = !isNaN(optionValue) && !isNaN(currentValue) 
+                ? optionValue === currentValue 
+                : localValue === option.value;
+              
+              return (
+                <label
+                  key={String(option.value)}
+                  className="flex items-center gap-3 cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    value={String(option.value)}
+                    checked={isChecked}
+                    onChange={() => handleRadioChange(String(option.value))}
+                    className="w-4 h-4 text-purple-04 border-gray-300 focus:ring-purple-04 focus:ring-2 focus:ring-offset-2"
+                    style={{
+                      accentColor: "#5F3C6F",
+                    }}
+                  />
+                  <span className="text-gray-700">{option.label}</span>
+                </label>
+              );
+            })}
             {fieldError && (
               <p className="text-red-500 text-sm mt-2">{fieldError.message}</p>
             )}

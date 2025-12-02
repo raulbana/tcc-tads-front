@@ -137,6 +137,7 @@ export interface UserWorkoutCompletionDTO {
 export interface UserWorkoutPlanDTO {
   id: number;
   plan: WorkoutPlan;
+  workouts: Workout[];
   startDate: string;
   endDate?: string;
   totalProgress: number;

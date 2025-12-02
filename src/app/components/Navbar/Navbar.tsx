@@ -48,7 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
   );
 
   const renderAuthenticatedUserInfo = () => (
-    <div className="hidden md:flex items-center gap-4">
+    <Link href="/profile" className="hidden md:flex items-center gap-4 hover:opacity-80 transition-opacity">
       <div className="flex flex-col items-end">
         <span className="text-sm text-gray-08 font-medium">
           Olá, {authState.username}!
@@ -60,7 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
           {authState.username?.charAt(0) || "U"}
         </span>
       </div>
-    </div>
+    </Link>
   );
 
   const renderPublicAuthButtons = () => (
@@ -83,7 +83,7 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
   const renderSidebarHeader = () => (
     <div className="flex items-center justify-between p-4 border-b border-gray-03">
       {authState.isLogged ? (
-        <div className="flex items-center gap-3">
+        <Link href="/profile" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
           <div className="w-10 h-10 bg-purple-04 rounded-full flex items-center justify-center">
             <span className="text-white font-medium">
               {authState.username?.charAt(0) || "U"}
@@ -95,7 +95,7 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
             </span>
             <span className="text-sm text-gray-06">Bem-vinda ao DailyIU</span>
           </div>
-        </div>
+        </Link>
       ) : (
         <Link href="/" className="flex items-center gap-3">
           <div className="w-10 h-10">
@@ -169,14 +169,16 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
         <div className="flex items-center gap-4">
         {!isOpen && renderDesktopNavItems()}
 
-          <Button
-            className="w-8 h-8"
-            onClick={() => setAccessibilityOpen(true)}
-            size="SMALL"
-            aria-label="Abrir configurações de acessibilidade"
-            icon={<PersonArmsSpreadIcon weight="fill" className="text-white" />}
-            iconPosition="CENTER"
-          />
+          {authState.isLogged && (
+            <Button
+              className="w-8 h-8"
+              onClick={() => setAccessibilityOpen(true)}
+              size="SMALL"
+              aria-label="Abrir configurações de acessibilidade"
+              icon={<PersonArmsSpreadIcon weight="fill" className="text-white" />}
+              iconPosition="CENTER"
+            />
+          )}
         </div>
 
         {!isOpen &&

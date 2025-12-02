@@ -26,7 +26,7 @@ const Switch: React.FC<SwitchProps> = ({
   const { getSwitchColor, getSwitchSize, getTextSize } = useSwitch();
 
   const baseStyle =
-    "relative inline-flex items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+    "relative inline-flex items-center rounded-full transition-colors focus:outline-none focus:ring-2";
 
   return (
     <label className="flex items-center gap-2 cursor-pointer">
@@ -44,8 +44,8 @@ const Switch: React.FC<SwitchProps> = ({
       >
         <span
           className={`
-            inline-block rounded-full bg-white shadow-md transform transition-transform
-            ${checked ? "translate-x-5" : "translate-x-1"}
+            inline-block rounded-full bg-gray-08 shadow-md transform transition-transform
+            ${checked ? "translate-x-7" : "translate-x-1"}
             ${getSwitchSize(size, true)}
           `}
         />

@@ -1,45 +1,33 @@
-import { User, userSchema } from "../schema/usersSchema";
-import { API_BASE_URL } from "@/app/config/env";
 import apiFactory from "@/app/services/apiFactory";
-import { userRoles } from "@/app/types/auth";
+import { API_BASE_URL } from "@/app/config/env";
 import { apiRoutes } from "@/app/utils/apiRoutes";
+import { User, Role, Status } from "../schema/usersSchema";
 
-const api = apiFactory(API_BASE_URL ?? "");
+const apiInstance = apiFactory(API_BASE_URL);
 
 export const getUsers = async (): Promise<User[]> => {
-  const response = await api.get(apiRoutes.admin.listUsers);
-  return userSchema.array().parse(response.data);
+  const { data } = await apiInstance.get<User[]>(apiRoutes.admin.listUsers);
+  return data;
 };
 
-export const setUserStatus = async (userId: number, status: string) => {
-  const statusUpdater = {
-    targetUserId: userId,
-    blocked: status === "Bloqueado",
-  };
-  await api.patch(
-    apiRoutes.admin.setUserStatus,
-    statusUpdater
-  );
+export const setUserRole = async (
+  userId: number,
+  role: Role
+): Promise<User> => {
+  const { data } = await apiInstance.put<User>(apiRoutes.admin.setUserRole, {
+    userId,
+    role,
+  });
+  return data;
 };
 
-export const setUserRole = async (updatedUser: User): Promise<User> => {
-    const userRoleDescription = Object.values(userRoles).find(
-      (role) => role.permissionLevel === updatedUser.role.permissionLevel
-    )?.description;
-  
-    const roleAssigner = {
-      targetUserId: updatedUser.id,
-      description: userRoleDescription,
-      permissionLevel: updatedUser.role.permissionLevel,
-      reason: updatedUser.role.reason,
-      hasDocument: updatedUser.role.documentValue ? true : false,
-      documentType: updatedUser.role.documentType,
-      documentValue: updatedUser.role.documentValue
-    }
-  
-    const response = await api.post(
-      apiRoutes.admin.setUserRole,
-      roleAssigner
-    );
-    return userSchema.parse(response.data);
+export const setUserStatus = async (
+  userId: number,
+  status: Status
+): Promise<User> => {
+  const { data } = await apiInstance.put<User>(apiRoutes.admin.setUserStatus, {
+    userId,
+    status,
+  });
+  return data;
 };

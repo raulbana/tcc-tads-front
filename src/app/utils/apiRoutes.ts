@@ -8,29 +8,32 @@ const apiRoutes = {
   onboarding: {
     questions: {
       onboarding: "/questions/onboard",
+      submit: "/questions/onboard",
     },
   },
   content: {
-    all: '/content',
+    all: "/content",
     byId: (contentId: string) => `/content/${contentId}`,
-    create: '/content',
+    create: "/content",
     update: (contentId: string) => `/content/${contentId}`,
     delete: (contentId: string) => `/content/${contentId}`,
     like: (contentId: string) => `/content/${contentId}`,
     repost: (contentId: string) => `/content/repost/${contentId}`,
     report: (contentId: string) => `/content/${contentId}/report`,
     save: (contentId: string) => `/content/${contentId}/save`,
-    categories: '/content/category',
+    categories: "/content/category",
+    categoryById: (id: string) => `/content/category/${id}`,
     user: (userId: string) => `/content?userId=${userId}`,
-    saved: '/content/saved',
+    saved: "/content/saved",
     comments: (contentId: string) => `/content/comments/${contentId}`,
     comment: (commentId: string) => `/content/comments/${commentId}`,
-    createComment: '/content/comments',
+    createComment: "/content/comments",
     commentLike: (commentId: string) => `/content/comments/${commentId}`,
-    commentReplies: (commentId: string) => `/content/comments/${commentId}/replies`,
+    commentReplies: (commentId: string) =>
+      `/content/comments/${contentId}/replies`,
   },
   media: {
-    upload: '/media/upload',
+    upload: "/media/upload",
   },
   exercises: {
     listExercises: "/exercise",
@@ -59,6 +62,9 @@ const apiRoutes = {
   accessibility: {
     get: "/preferences/accessibility",
     update: "/preferences/accessibility",
+  },
+  profile: {
+    edit: (userId: number) => `/users/${userId}`,
   },
   admin: {
     listUsers: "/admin/users",

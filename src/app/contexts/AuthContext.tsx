@@ -1,7 +1,25 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, loginRequest, loginResponse, registerRequest, registerResponse } from '@/app/types/auth';
-import { authService } from '@/app/services/authServices';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import {
+  User,
+  loginRequest,
+  loginResponse,
+  registerRequest,
+  registerResponse,
+  PatientProfileDTO,
+  UserWorkoutPlanCreatorDTO,
+} from "@/app/types/auth";
+import { UserWorkoutPlanDTO } from "@/app/types/onboarding";
+import { authService } from "@/app/services/authServices";
+
+const ONBOARDING_PROFILE_KEY = "dailyiu_onboarding_profile";
+const ONBOARDING_WORKOUT_PLAN_KEY = "dailyiu_onboarding_workout_plan";
 
 interface AuthContextData {
   user: User | null;
@@ -10,6 +28,16 @@ interface AuthContextData {
   login: (credentials: loginRequest) => Promise<void>;
   register: (userData: registerRequest) => Promise<void>;
   logout: () => void;
+  saveOnboardingData: (
+    profile: PatientProfileDTO,
+    workoutPlan?: UserWorkoutPlanDTO
+  ) => void;
+  getOnboardingData: () => {
+    profile: PatientProfileDTO | null;
+    workoutPlan: UserWorkoutPlanDTO | null;
+  };
+  clearOnboardingData: () => void;
+  hasOnboardingData: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -18,8 +46,8 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-const TOKEN_KEY = 'dailyiu_token';
-const USER_KEY = 'dailyiu_user';
+const TOKEN_KEY = "dailyiu_token";
+const USER_KEY = "dailyiu_user";
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -39,10 +67,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (storedToken && storedUser) {
         const userData = JSON.parse(storedUser);
         setUser(userData);
-        document.cookie = `${TOKEN_KEY}=${storedToken}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 dias
+        document.cookie = `${TOKEN_KEY}=${storedToken}; path=/; max-age=${
+          60 * 60 * 24 * 7
+        }`;
       }
     } catch (error) {
-      console.error('Erro ao carregar dados de autenticação:', error);
       clearStoredAuth();
     } finally {
       setIsLoading(false);
@@ -52,7 +81,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const storeAuth = (token: string, userData: User) => {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(USER_KEY, JSON.stringify(userData));
-    document.cookie = `${TOKEN_KEY}=${token}; path=/; max-age=${60 * 60 * 24 * 7}`;
+    document.cookie = `${TOKEN_KEY}=${token}; path=/; max-age=${
+      60 * 60 * 24 * 7
+    }`;
     setUser(userData);
   };
 
@@ -66,33 +97,106 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: loginRequest): Promise<void> => {
     try {
       setIsLoading(true);
-      
+
       const response: loginResponse = await authService.login(credentials);
       storeAuth(response.token, response.user);
     } catch (error) {
-      console.error('Erro no login:', error);
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
+  const saveOnboardingData = (
+    profile: PatientProfileDTO,
+    workoutPlan?: UserWorkoutPlanDTO
+  ): void => {
+    try {
+      localStorage.setItem(ONBOARDING_PROFILE_KEY, JSON.stringify(profile));
+      if (workoutPlan) {
+        localStorage.setItem(
+          ONBOARDING_WORKOUT_PLAN_KEY,
+          JSON.stringify(workoutPlan)
+        );
+      }
+    } catch (error) {}
+  };
+
+  const getOnboardingData = (): {
+    profile: PatientProfileDTO | null;
+    workoutPlan: UserWorkoutPlanDTO | null;
+  } => {
+    try {
+      const profileStr = localStorage.getItem(ONBOARDING_PROFILE_KEY);
+      const workoutPlanStr = localStorage.getItem(ONBOARDING_WORKOUT_PLAN_KEY);
+
+      const profile = profileStr
+        ? (JSON.parse(profileStr) as PatientProfileDTO)
+        : null;
+      const workoutPlan = workoutPlanStr ? JSON.parse(workoutPlanStr) : null;
+
+      return { profile, workoutPlan };
+    } catch (error) {
+      return { profile: null, workoutPlan: null };
+    }
+  };
+
+  const clearOnboardingData = (): void => {
+    try {
+      localStorage.removeItem(ONBOARDING_PROFILE_KEY);
+      localStorage.removeItem(ONBOARDING_WORKOUT_PLAN_KEY);
+    } catch (error) {}
+  };
+
+  const hasOnboardingData = (): boolean => {
+    try {
+      const profileStr = localStorage.getItem(ONBOARDING_PROFILE_KEY);
+      return !!profileStr;
+    } catch (error) {
+      return false;
+    }
+  };
+
   const register = async (userData: registerRequest): Promise<void> => {
     try {
       setIsLoading(true);
-      
-      const response: registerResponse = await authService.register(userData);
-      
-      if (response.status === 'success') {
+
+      const onboardingData = getOnboardingData();
+
+      if (onboardingData.profile && !userData.profile) {
+        userData.profile = onboardingData.profile;
+      }
+
+      if (onboardingData.workoutPlan && !userData.workoutPlan) {
+        if (
+          onboardingData.workoutPlan.plan &&
+          onboardingData.workoutPlan.plan.id
+        ) {
+          userData.workoutPlan = {
+            planId: onboardingData.workoutPlan.plan.id,
+            startDate: onboardingData.workoutPlan.startDate,
+            endDate: onboardingData.workoutPlan.endDate,
+            totalProgress: onboardingData.workoutPlan.totalProgress,
+            weekProgress: onboardingData.workoutPlan.weekProgress,
+            currentWeek: onboardingData.workoutPlan.currentWeek,
+            completed: onboardingData.workoutPlan.completed,
+          };
+        }
+      }
+
+      const response = await authService.register(userData);
+
+      if (response && response.id) {
+        clearOnboardingData();
+
         await login({
           email: userData.email,
           password: userData.password,
         });
       } else {
-        throw new Error(response.message || 'Erro no registro');
+        throw new Error("Erro no registro: resposta inválida do servidor");
       }
     } catch (error) {
-      console.error('Erro no registro:', error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -112,6 +216,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         login,
         register,
         logout,
+        saveOnboardingData,
+        getOnboardingData,
+        clearOnboardingData,
+        hasOnboardingData,
       }}
     >
       {children}
@@ -122,7 +230,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = (): AuthContextData => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth deve ser usado dentro de AuthProvider');
+    throw new Error("useAuth deve ser usado dentro de AuthProvider");
   }
   return context;
 };

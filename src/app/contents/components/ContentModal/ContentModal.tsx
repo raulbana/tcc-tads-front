@@ -27,7 +27,6 @@ const ContentModal: React.FC<ContentModalProps> = ({
   };
 
   const handleError = (error: string) => {
-    console.error("Erro no formulário:", error);
   };
 
   return (

@@ -174,6 +174,35 @@ const contentServices = {
       "x-user-id": userId,
     };
 
+    const mediaArray: Array<{
+      url: string;
+      contentType: string;
+      contentSize: number;
+      altText?: string;
+    }> = [];
+
+    if (contentData.images && contentData.images.length > 0) {
+      contentData.images.forEach((url) => {
+        const isVideo =
+          url.includes(".mp4") || url.includes(".webm") || url.includes(".mov");
+        mediaArray.push({
+          url,
+          contentType: isVideo ? "video/mp4" : "image/jpeg",
+          contentSize: 0,
+          altText: contentData.title || "",
+        });
+      });
+    }
+
+    if (contentData.video) {
+      mediaArray.push({
+        url: contentData.video,
+        contentType: "video/mp4",
+        contentSize: 0,
+        altText: contentData.title || "",
+      });
+    }
+
     const updateData = {
       title: contentData.title,
       description: contentData.description,
@@ -182,6 +211,7 @@ const contentServices = {
       categoryId: contentData.categories
         ? parseInt(contentData.categories[0])
         : undefined,
+      media: mediaArray,
     };
 
     const response = await api.put(apiRoutes.content.update(id), updateData, {

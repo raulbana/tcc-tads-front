@@ -34,7 +34,9 @@ const ContentForm: React.FC<ContentFormProps> = ({
     watchedCategories,
     handleSubmit,
     handleFilesChange,
+    handleRemoveFile,
     handleCategoriesChange,
+    hasValidImages,
   } = useContentForm({
     onSuccess,
     onError,
@@ -90,17 +92,17 @@ const ContentForm: React.FC<ContentFormProps> = ({
           images={watchedImages}
           video={watchedVideo}
           onFilesChange={handleFilesChange}
-          error={errors.images?.message || errors.video?.message}
+          onRemoveFile={handleRemoveFile}
+          error={
+            mode === "edit" && !hasValidImages
+              ? "No mínimo 1 imagem é obrigatória"
+              : errors.video?.message
+          }
         />
       </div>
 
       <CategorySelector
-        selectedCategories={
-          watchedCategories?.map((category: any) => ({
-            ...category,
-            id: typeof category.id === 'string' ? parseInt(category.id, 10) : category.id,
-          })) ?? []
-        }
+        selectedCategories={watchedCategories || []}
         onCategoriesChange={handleCategoriesChange}
         error={errors.categories?.message}
       />
@@ -149,20 +151,19 @@ const ContentForm: React.FC<ContentFormProps> = ({
           />
         )}
 
-        <Button
-          type="PRIMARY"
-          text={
-            isSubmitting
-              ? mode === "create"
-                ? "Publicando..."
-                : "Salvando..."
-              : mode === "create"
-              ? "Publicar Post"
-              : "Salvar Alterações"
-          }
-          onClick={handleSubmit}
+        <button
+          type="submit"
           disabled={isSubmitting}
-        />
+          className="px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {isSubmitting
+            ? mode === "create"
+              ? "Publicando..."
+              : "Salvando..."
+            : mode === "create"
+            ? "Publicar Post"
+            : "Salvar Alterações"}
+        </button>
       </div>
     </form>
   );

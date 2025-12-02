@@ -5,8 +5,8 @@ import contentServices from "../../services/contentServices";
 import { useAuth } from "@/app/contexts/AuthContext";
 
 interface CategorySelectorProps {
-  selectedCategories: ContentCategory[];
-  onCategoriesChange: (categories: ContentCategory[]) => void;
+  selectedCategories: string[];
+  onCategoriesChange: (categories: string[]) => void;
   error?: string;
 }
 
@@ -25,7 +25,6 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
         const data = await contentServices.getCategories();
         setCategories(data);
       } catch (error) {
-        console.error("Erro ao carregar categorias:", error);
       } finally {
         setLoading(false);
       }
@@ -46,14 +45,15 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
   }, [categories, user?.role]);
 
   const toggleCategory = (category: ContentCategory) => {
-    const isSelected = selectedCategories.some((c) => c.id === category.id);
+    const categoryName = category.name;
+    const isSelected = selectedCategories.includes(categoryName);
 
     if (isSelected) {
       onCategoriesChange(
-        selectedCategories.filter((c) => c.id !== category.id)
+        selectedCategories.filter((c) => c !== categoryName)
       );
     } else {
-      onCategoriesChange([...selectedCategories, category]);
+      onCategoriesChange([...selectedCategories, categoryName]);
     }
   };
 
@@ -83,9 +83,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
       </label>
       <div className="flex flex-wrap gap-2">
         {filteredCategories.map((category) => {
-          const isSelected = selectedCategories.some(
-            (c) => c.id === category.id
-          );
+          const isSelected = selectedCategories.includes(category.name);
           return (
             <button
               key={category.id}

@@ -43,13 +43,7 @@ export const contentSchema = z.object({
       "Apenas vídeos MP4, WebM ou OGG são aceitos"
     ),
   categories: z
-    .array(
-      z.object({
-        id: z.union([z.string(), z.number()]),
-        name: z.string(),
-        auditable: z.boolean(),
-      })
-    )
+    .array(z.string())
     .min(1, "Pelo menos uma categoria é obrigatória"),
 });
 

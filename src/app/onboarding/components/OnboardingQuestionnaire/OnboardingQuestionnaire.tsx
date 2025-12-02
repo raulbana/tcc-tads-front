@@ -11,6 +11,8 @@ const OnboardingQuestionnaire = () => {
     questionInputs,
     currentQuestionIndex,
     isLoading,
+    errorMessage,
+    clearError,
     navigateBack,
   } = useOnboardingQuestionnaire();
 
@@ -45,6 +47,19 @@ const OnboardingQuestionnaire = () => {
             step={currentQuestionIndex + 1}
             totalSteps={questionInputs.length}
           />
+
+          {errorMessage && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+              {errorMessage}
+              <button
+                type="button"
+                onClick={clearError}
+                className="ml-2 text-red-800 hover:text-red-900"
+              >
+                ×
+              </button>
+            </div>
+          )}
 
           {questionInputs[currentQuestionIndex] && (
             <QuestionSection

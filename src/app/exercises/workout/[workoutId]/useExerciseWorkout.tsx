@@ -17,6 +17,23 @@ const formatLocalDateTime = (date: Date): string => {
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 };
 
+const extractErrorMessage = (error: unknown): string => {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "response" in error &&
+    (error as any).response?.data?.message
+  ) {
+    return (error as any).response.data.message as string;
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return "Ocorreu um erro inesperado. Tente novamente.";
+};
+
 const useExerciseWorkout = (workoutId: string | undefined) => {
   const router = useRouter();
   const queries = useExerciseQueries(["exercises", "workout", workoutId || ""]);
@@ -77,12 +94,10 @@ const useExerciseWorkout = (workoutId: string | undefined) => {
       setCurrentExercise({ ...first, status: "IN_PROGRESS" });
       setWorkout({ ...workout, status: "IN_PROGRESS" });
     } catch (error: unknown) {
-      console.error("Erro ao verificar plano de treino:", error);
-      const errorMsg =
-        error instanceof Error
-          ? error.message
-          : "Você precisa ter um plano de treino ativo para iniciar um treino. Por favor, complete o onboarding.";
-      setErrorMessage(errorMsg);
+      const backendMessage = extractErrorMessage(error);
+      const fallbackMessage =
+        "Você precisa ter um plano de treino ativo para iniciar um treino. Por favor, complete o onboarding.";
+      setErrorMessage(backendMessage || fallbackMessage);
       setIsToastOpen(true);
       return;
     }
@@ -145,16 +160,12 @@ const useExerciseWorkout = (workoutId: string | undefined) => {
               },
             ]);
           } catch (error: unknown) {
-            console.error("Erro ao enviar completion do treino:", error);
-            const errorMsg =
-              error instanceof Error
-                ? error.message
-                : "Não foi possível registrar a conclusão do treino. Verifique se você possui um plano de treino ativo.";
-            setErrorMessage(errorMsg);
+            const backendMessage = extractErrorMessage(error);
+            const fallbackMessage =
+              "Não foi possível registrar a conclusão do treino. Verifique se você possui um plano de treino ativo.";
+            setErrorMessage(backendMessage || fallbackMessage);
             setIsToastOpen(true);
           }
-        } else {
-          console.error("Workout ID inválido:", workout.id);
         }
       }
       setStep("EVALUATE");

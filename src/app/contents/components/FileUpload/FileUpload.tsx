@@ -29,9 +29,10 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 interface FileUploadProps {
-  images: File[];
-  video?: File;
-  onFilesChange: (images: File[], video?: File) => void;
+  images: (File | { name: string; size: number; type: string; url: string; isExisting?: boolean })[];
+  video?: File | { name: string; size: number; type: string; url: string; isExisting?: boolean };
+  onFilesChange: (images: (File | { name: string; size: number; type: string; url: string; isExisting?: boolean })[], video?: File | { name: string; size: number; type: string; url: string; isExisting?: boolean }) => void;
+  onRemoveFile?: (fileName: string) => void;
   error?: string;
 }
 
@@ -39,6 +40,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   images,
   video,
   onFilesChange,
+  onRemoveFile,
   error,
 }) => {
   const [previews, setPreviews] = useState<Record<string, string>>({});
@@ -47,21 +49,52 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const MAX_FILE_SIZE = 50 * 1024 * 1024;
   const MAX_TOTAL_SIZE = 500 * 1024 * 1024;
 
+  const imagesKey = useMemo(() => {
+    return images.map(img => {
+      if ((img as any).isExisting) {
+        return (img as any).url || (img as any).originalUrl || img.name;
+      }
+      return img.name;
+    }).join(',');
+  }, [images]);
+
+  const videoKey = useMemo(() => {
+    if (!video) return '';
+    if ((video as any).isExisting) {
+      return (video as any).url || (video as any).originalUrl || video.name;
+    }
+    return video.name;
+  }, [video]);
+
   useEffect(() => {
     setPreviews((prev) => {
       const newPreviews: Record<string, string> = { ...prev };
       let hasNewPreviews = false;
 
       images.forEach((file) => {
-        if (!newPreviews[file.name]) {
-          newPreviews[file.name] = URL.createObjectURL(file);
-          hasNewPreviews = true;
+        const fileName = file.name;
+        if (!newPreviews[fileName]) {
+          if ((file as any).isExisting && (file as any).url) {
+            newPreviews[fileName] = (file as any).url;
+            hasNewPreviews = true;
+          } else if (file instanceof File) {
+            newPreviews[fileName] = URL.createObjectURL(file);
+            hasNewPreviews = true;
+          }
         }
       });
 
-      if (video && !newPreviews[video.name]) {
-        newPreviews[video.name] = URL.createObjectURL(video);
-        hasNewPreviews = true;
+      if (video) {
+        const videoName = video.name;
+        if (!newPreviews[videoName]) {
+          if ((video as any).isExisting && (video as any).url) {
+            newPreviews[videoName] = (video as any).url;
+            hasNewPreviews = true;
+          } else if (video instanceof File) {
+            newPreviews[videoName] = URL.createObjectURL(video);
+            hasNewPreviews = true;
+          }
+        }
       }
 
       const currentFileNames = new Set([
@@ -71,14 +104,16 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       Object.keys(newPreviews).forEach((fileName) => {
         if (!currentFileNames.has(fileName)) {
-          URL.revokeObjectURL(newPreviews[fileName]);
+          if (newPreviews[fileName].startsWith('blob:')) {
+            URL.revokeObjectURL(newPreviews[fileName]);
+          }
           delete newPreviews[fileName];
         }
       });
 
       return newPreviews;
     });
-  }, [images, video]);
+  }, [imagesKey, videoKey]);
 
   const calculateTotalSize = useCallback((files: File[]) => {
     return files.reduce((total, file) => total + file.size, 0);
@@ -89,7 +124,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
       setLocalError("");
 
       const newImages: File[] = [];
-      let newVideo: File | undefined = video;
+      const currentVideo = video && !(video as any).isExisting ? video as File : undefined;
+      let newVideo: File | undefined = currentVideo;
 
       acceptedFiles.forEach((file) => {
         if (file.size > MAX_FILE_SIZE) {
@@ -110,7 +146,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
         }
       });
 
-      const allFiles = [...images, ...newImages];
+      const newFilesOnly = images.filter(img => img instanceof File) as File[];
+      const allFiles = [...newFilesOnly, ...newImages];
       if (newVideo) {
         allFiles.push(newVideo);
       }
@@ -124,7 +161,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
         return;
       }
 
-      onFilesChange([...images, ...newImages], newVideo);
+      const existingImages = images.filter(img => (img as any).isExisting);
+      onFilesChange([...existingImages, ...newImages], newVideo);
     },
     [images, video, onFilesChange, calculateTotalSize]
   );
@@ -140,27 +178,30 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
   const removeFile = useCallback(
     (fileName: string) => {
-      if (video?.name === fileName) {
-        onFilesChange(images, undefined);
+      if (onRemoveFile) {
+        onRemoveFile(fileName);
       } else {
-        onFilesChange(
-          images.filter((img) => img.name !== fileName),
-          video
-        );
+        if (video?.name === fileName) {
+          onFilesChange(images.filter(img => img instanceof File) as File[], undefined);
+        } else {
+          const newImages = images.filter((img) => img.name !== fileName && img instanceof File) as File[];
+          const newVideo = video && video.name !== fileName && !(video as any).isExisting ? video as File : undefined;
+          onFilesChange(newImages, newVideo);
+        }
       }
 
-      if (previews[fileName]) {
+      if (previews[fileName] && previews[fileName].startsWith('blob:')) {
         URL.revokeObjectURL(previews[fileName]);
+      }
         setPreviews((prev) => {
           const newPreviews = { ...prev };
           delete newPreviews[fileName];
           return newPreviews;
         });
-      }
 
       setLocalError("");
     },
-    [images, video, onFilesChange, previews]
+    [images, video, onFilesChange, onRemoveFile, previews]
   );
 
   const sensors = useSensors(
@@ -178,7 +219,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       const newIndex = images.findIndex((img) => img.name === over.id);
 
       const newImages = arrayMove(images, oldIndex, newIndex);
-      onFilesChange(newImages, video);
+      onFilesChange(newImages as any, video as any);
     }
   };
 
@@ -188,8 +229,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const displayError = error || localError;
 
   const totalSize = useMemo(() => {
-    const allFiles = [...images];
-    if (video) allFiles.push(video);
+    const newFiles = images.filter(img => img instanceof File) as File[];
+    const allFiles = [...newFiles];
+    if (video && video instanceof File) allFiles.push(video);
     return calculateTotalSize(allFiles);
   }, [images, video, calculateTotalSize]);
 
@@ -255,10 +297,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
               {images.map((file, index) => (
                 <SortableImageItem
                   key={file.name}
-                  file={file}
+                  file={file instanceof File ? file : file as any}
                   index={index}
-                  previewUrl={previews[file.name]}
+                  previewUrl={previews[file.name] || ((file as any).url)}
                   onRemove={removeFile}
+                  isExisting={(file as any).isExisting}
                 />
               ))}
             </SortableContext>
@@ -298,10 +341,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
 };
 
 interface SortableImageItemProps {
-  file: File;
+  file: File | { name: string; size: number; type: string; url?: string; isExisting?: boolean };
   index: number;
   previewUrl?: string;
   onRemove: (fileName: string) => void;
+  isExisting?: boolean;
 }
 
 const SortableImageItem: React.FC<SortableImageItemProps> = ({
@@ -309,6 +353,7 @@ const SortableImageItem: React.FC<SortableImageItemProps> = ({
   index,
   previewUrl,
   onRemove,
+  isExisting,
 }) => {
   const {
     attributes,
@@ -348,15 +393,21 @@ const SortableImageItem: React.FC<SortableImageItemProps> = ({
       {hasValidPreview ? (
         <div className="relative w-12 h-12 flex-shrink-0">
           <Image
-            src={previewUrl}
+            src={previewUrl || (file as any).url || ''}
             alt={file.name}
             fill
             className="rounded object-cover"
             sizes="48px"
+            unoptimized={isExisting}
           />
           {isCover && (
             <div className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full font-semibold">
               CAPA
+            </div>
+          )}
+          {isExisting && (
+            <div className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-xs px-1 py-0.5 rounded-full font-semibold">
+              EXISTENTE
             </div>
           )}
         </div>

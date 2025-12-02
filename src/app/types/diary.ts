@@ -1,7 +1,6 @@
 export type LeakageLevel = "NONE" | "LOW" | "MEDIUM" | "HIGH";
 export type UrinationAmount = "LOW" | "MEDIUM" | "HIGH";
 
-/** API DTOs **/
 export interface UrinationDataDTO {
   time: string;
   amount: string;
@@ -45,7 +44,6 @@ export interface ReportDTO {
   generatedAt: string;
 }
 
-/** UI types (consumidos pelos componentes React) **/
 export interface UrinationData {
   observation?: string;
   time: string;
@@ -70,7 +68,6 @@ export interface CalendarDayData {
 
 export type CalendarRangeResponse = Record<string, CalendarDayData>;
 
-/** Helpers de conversão **/
 export const normalizeTimeToHHMMSS = (time: string): string => {
   if (/^\d{2}:\d{2}:\d{2}$/.test(time)) return time;
   if (/^\d{2}:\d{2}$/.test(time)) return `${time}:00`;

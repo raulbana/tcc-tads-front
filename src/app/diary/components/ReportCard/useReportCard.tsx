@@ -83,7 +83,7 @@ export const useReportCard = (onGenerateReport?: () => void) => {
       size: 12,
     });
     addLine(
-      `Paciente: ${report.user.name} | Idade: ${report.user.age} | Gênero: ${report.user.gender}`,
+      `Paciente: ${report.user.name} | Idade: ${report.user.age} | Sexo: ${report.user.gender}`,
       { size: 12 }
     );
     addLine("");
@@ -143,7 +143,6 @@ export const useReportCard = (onGenerateReport?: () => void) => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
     } catch (error) {
-      console.error("Erro ao gerar relatório:", error);
     } finally {
       setIsGenerating(false);
     }

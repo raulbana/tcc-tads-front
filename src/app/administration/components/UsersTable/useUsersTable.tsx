@@ -1,6 +1,10 @@
 "use client";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { getUsers, setUserRole, setUserStatus } from "../../services/usersService";
+import {
+  getUsers,
+  setUserRole,
+  setUserStatus,
+} from "../../services/usersService";
 import { User, Status } from "../../schema/usersSchema";
 import { AxiosError } from "axios";
 
@@ -15,11 +19,12 @@ export const useUsersTable = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-  const [modalOperation, setModalOperation] = useState<'setStatus' | 'setRole' | null>(null);
+  const [modalOperation, setModalOperation] = useState<
+    "setStatus" | "setRole" | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Buscar usuários do service
   const fetchUsers = useCallback(async () => {
     try {
       setError(null);
@@ -39,16 +44,19 @@ export const useUsersTable = () => {
   }, [fetchUsers]);
 
   // Abrir modal com usuário selecionado
-  const handleOpenModal = useCallback((operation: 'setStatus' | 'setRole', user: User) => {
-    setSelectedUser(user);
-    setModalOperation(operation);
-    setIsModalOpen(true);
-  }, []);
+  const handleOpenModal = useCallback(
+    (operation: "setStatus" | "setRole", user: User) => {
+      setSelectedUser(user);
+      setModalOperation(operation);
+      setIsModalOpen(true);
+    },
+    []
+  );
 
-  // Fechar modal
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedUser(null);
+    setModalOperation(null);
   }, []);
 
   const clearError = useCallback(() => {
@@ -59,38 +67,34 @@ export const useUsersTable = () => {
     setSuccess(null);
   }, []);
 
-  // Salvar alterações do usuário
   const handleSaveUser = useCallback(
     async (user: User) => {
-      if (!selectedUser) return;
-      if(modalOperation === null) return;
+      if (!selectedUser || !modalOperation) return;
 
       try {
         setError(null);
-        if(modalOperation === 'setStatus') {
-          user.status = selectedUser.status === "Ativo" ? "Bloqueado" : "Ativo";
-          await setUserStatus(user.id, user.status);
-        } else if(modalOperation === 'setRole') {
-          await setUserRole(user);
+        if (modalOperation === "setRole") {
+          await setUserRole(selectedUser.id, user.role);
+          setSuccess("Perfil do usuário atualizado com sucesso!");
+        } else if (modalOperation === "setStatus") {
+          await setUserStatus(selectedUser.id, user.status);
+          setSuccess("Status do usuário atualizado com sucesso!");
         }
-
-        setSuccess("Alterações salvas com sucesso.");
         await fetchUsers();
         handleCloseModal();
       } catch (error: unknown) {
         if (error instanceof AxiosError) {
-          setError(error.response?.data?.message || "Erro ao salvar alterações do usuário.");
-          return;
+          setError(
+            error.response?.data?.message || "Erro ao atualizar usuário."
+          );
         } else {
-          setError(String(error) || "Erro ao salvar alterações do usuário.");
-          return;
+          setError(String(error) || "Erro ao atualizar usuário.");
         }
       }
     },
-    [selectedUser, fetchUsers, handleCloseModal, modalOperation]
+    [selectedUser, modalOperation, fetchUsers, handleCloseModal]
   );
 
-  // Filtrar usuários
   const filteredUsers = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
     return users.filter((user) => {
@@ -98,7 +102,9 @@ export const useUsersTable = () => {
         ? user.name.toLowerCase().includes(normalizedSearch) ||
           user.email.toLowerCase().includes(normalizedSearch)
         : true;
-      const matchRole = roleFilter ? user.role.permissionLevel === roleFilter : true;
+      const matchRole = roleFilter
+        ? user.role.permissionLevel === roleFilter
+        : true;
       const matchStatus = statusFilter ? user.status === statusFilter : true;
       return matchSearch && matchRole && matchStatus;
     });

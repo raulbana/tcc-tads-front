@@ -37,7 +37,6 @@ export const useCommentItem = ({
 
   const handleLike = useCallback(() => {
     if (!comment.id || comment.id === "undefined") {
-      console.warn("Invalid comment id for like:", comment.id);
       return;
     }
     onToggleLike(comment.id, isReply, parentId);

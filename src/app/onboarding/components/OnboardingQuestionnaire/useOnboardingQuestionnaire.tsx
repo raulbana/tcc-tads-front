@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,19 +7,26 @@ import { ICIQAnswers, iciqSchema } from "./schema/questionnaire";
 import { QuestionProps } from "../QuestionSection/QuestionSection";
 import { Question } from "@/app/types/question";
 import useOnboardingQueries from "../../services/onboardingQueryFactory";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 const useOnboardingQuestionnaire = () => {
-  const { getQuestions } = useOnboardingQueries(["onboarding", "questions"]);
+  const { getQuestions, submitAnswers } = useOnboardingQueries(["onboarding", "questions"]);
   const {
     data: questionList = [],
     isLoading: isQuestionsLoading,
     error: questionsError,
   } = getQuestions;
 
+  const limitedQuestionList = useMemo(() => {
+    return questionList.slice(0, 6);
+  }, [questionList]);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const router = useRouter();
+  const { saveOnboardingData, user } = useAuth();
 
   const {
     handleSubmit,
@@ -28,7 +35,7 @@ const useOnboardingQuestionnaire = () => {
     getValues,
     trigger,
     setValue,
-    formState: { isValid },
+    formState: { errors },
   } = useForm<ICIQAnswers>({
     resolver: zodResolver(iciqSchema),
     mode: "onChange",
@@ -43,20 +50,24 @@ const useOnboardingQuestionnaire = () => {
   });
 
   useEffect(() => {
-    questionList.forEach((q: Question) => {
+    limitedQuestionList.forEach((q: Question) => {
       const field = q.id as keyof ICIQAnswers;
       const current = (getValues() as ICIQAnswers)[field];
       if (current === undefined) {
         setValue(field, getDefaultValueForQuestion(q));
       }
     });
-  }, [questionList, getValues, setValue]);
+  }, [limitedQuestionList, getValues, setValue]);
 
   useEffect(() => {
     if (questionsError) {
       setErrorMessage("Erro ao carregar perguntas. Tente novamente.");
     }
   }, [questionsError]);
+
+  const isNumericField = (fieldId: string): boolean => {
+    return ['q3_frequency', 'q4_amount', 'q5_interference'].includes(fieldId);
+  };
 
   const getDefaultValueForQuestion = (question: Question) => {
     switch (question.type) {
@@ -67,7 +78,7 @@ const useOnboardingQuestionnaire = () => {
       case "slider":
         return question.min || 0;
       case "radio":
-        return "";
+        return isNumericField(question.id) ? 0 : "";
       case "checkbox":
         return [];
       default:
@@ -75,19 +86,63 @@ const useOnboardingQuestionnaire = () => {
     }
   };
 
-  const onSubmitAnswer = useCallback(() => {
+  const formatDateForAPI = (dateString: string): string => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatAnswersForAPI = (answers: ICIQAnswers): Record<string, string> => {
+    const apiAnswers: Record<string, string> = {
+      birthdate: formatDateForAPI(answers.birthdate),
+      gender: answers.gender,
+      q3_frequency: String(answers.q3_frequency),
+      q4_amount: String(answers.q4_amount),
+      q5_interference: String(answers.q5_interference),
+    };
+
+    if (Array.isArray(answers.q6_when) && answers.q6_when.length > 0) {
+      apiAnswers.q6_when = answers.q6_when.join(',');
+    }
+
+    return apiAnswers;
+  };
+
+  const onSubmitAnswer = useCallback(async () => {
     handleSubmit(
-      (data) => {
-        console.log("Dados validados:", data);
-        console.log("Formulário válido:", isValid);
-        router.push("/");
+      async (data) => {
+        try {
+          setIsSubmitting(true);
+          setErrorMessage("");
+
+          const submitData = {
+            userId: user?.id,
+            answers: formatAnswersForAPI(data),
+          };
+
+          const result = await submitAnswers.mutateAsync(submitData);
+
+          saveOnboardingData(result.profile, result.workoutPlan);
+
+          if (!user) {
+            router.push("/authentication/register");
+          } else {
+            router.push("/");
+          }
+        } catch (error) {
+          const errorMsg = error instanceof Error ? error.message : "Erro ao enviar respostas. Tente novamente.";
+          setErrorMessage(errorMsg);
+        } finally {
+          setIsSubmitting(false);
+        }
       },
       (errors) => {
-        console.error("Erros de validação:", errors);
         setErrorMessage("Existem erros no formulário");
       }
     )();
-  }, [handleSubmit, isValid, router, setErrorMessage]);
+  }, [handleSubmit, submitAnswers, saveOnboardingData, router, user]);
 
   const onContinue = useCallback(
     async (field: keyof ICIQAnswers) => {
@@ -95,37 +150,50 @@ const useOnboardingQuestionnaire = () => {
         const isFieldValid = await trigger(field);
 
         if (isFieldValid) {
-          setCurrentQuestionIndex((prevIndex) => {
-            const nextIndex = prevIndex + 1;
-            if (nextIndex < questionList.length) {
-              const nextQuestion = questionList[nextIndex];
-              const nextField = nextQuestion.id as keyof ICIQAnswers;
-              const defaultValue = getDefaultValueForQuestion(nextQuestion);
-              setValue(nextField, defaultValue);
-              return nextIndex;
-            } else {
-              onSubmitAnswer();
-              return prevIndex;
-            }
-          });
+          const nextIndex = currentQuestionIndex + 1;
 
-          if (errorMessage) setErrorMessage("");
+          if (nextIndex < limitedQuestionList.length) {
+            const nextQuestion = limitedQuestionList[nextIndex];
+            const nextField = nextQuestion.id as keyof ICIQAnswers;
+            const defaultValue = getDefaultValueForQuestion(nextQuestion);
+            setValue(nextField, defaultValue);
+            setCurrentQuestionIndex(nextIndex);
+
+            if (errorMessage) {
+              setErrorMessage("");
+            }
+          } else {
+            const isFormValid = await trigger();
+            if (isFormValid) {
+              await onSubmitAnswer();
+            } else {
+              const allErrors = Object.keys(errors);
+              if (allErrors.length > 0) {
+                const firstErrorField = allErrors[0] as keyof ICIQAnswers;
+                const { error } = getFieldState(firstErrorField);
+                setErrorMessage(
+                  error?.message ?? "Por favor, preencha todos os campos corretamente"
+                );
+              }
+            }
+          }
         } else {
           const { error } = getFieldState(field);
-          setErrorMessage(error?.message ?? "Campo obrigatório");
+          setErrorMessage(error?.message ?? "Campo inválido");
         }
       } catch (e) {
-        console.error("Erro na validação:", e);
         setErrorMessage("Erro na validação do campo");
       }
     },
     [
       trigger,
+      currentQuestionIndex,
+      limitedQuestionList,
       getFieldState,
       setValue,
-      questionList,
-      onSubmitAnswer,
       errorMessage,
+      errors,
+      onSubmitAnswer,
     ]
   );
 
@@ -139,9 +207,9 @@ const useOnboardingQuestionnaire = () => {
 
   const clearError = () => setErrorMessage("");
 
-  const isLoading = isQuestionsLoading;
+  const isLoading = isQuestionsLoading || isSubmitting;
 
-  const questionInputs: QuestionProps[] = questionList.map((question) => ({
+  const questionInputs: QuestionProps[] = limitedQuestionList.map((question) => ({
     question,
     control,
     onContinue: () => onContinue(question.id as keyof ICIQAnswers),
@@ -156,6 +224,7 @@ const useOnboardingQuestionnaire = () => {
     currentQuestionIndex,
     errorMessage,
     isLoading,
+    isSubmitting,
     navigateBack,
     clearError,
     router,
