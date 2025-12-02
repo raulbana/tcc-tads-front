@@ -169,14 +169,16 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
         <div className="flex items-center gap-4">
         {!isOpen && renderDesktopNavItems()}
 
-          <Button
-            className="w-8 h-8"
-            onClick={() => setAccessibilityOpen(true)}
-            size="SMALL"
-            aria-label="Abrir configurações de acessibilidade"
-            icon={<PersonArmsSpreadIcon weight="fill" className="text-white" />}
-            iconPosition="CENTER"
-          />
+          {authState.isLogged && (
+            <Button
+              className="w-8 h-8"
+              onClick={() => setAccessibilityOpen(true)}
+              size="SMALL"
+              aria-label="Abrir configurações de acessibilidade"
+              icon={<PersonArmsSpreadIcon weight="fill" className="text-white" />}
+              iconPosition="CENTER"
+            />
+          )}
         </div>
 
         {!isOpen &&

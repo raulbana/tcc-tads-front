@@ -72,7 +72,6 @@ const ReportContentButton: React.FC<ReportContentButtonProps> = ({
       });
       setIsModalOpen(false);
     } catch (error) {
-      console.error("Erro ao denunciar conteúdo:", error);
       setToast({
         isOpen: true,
         message:

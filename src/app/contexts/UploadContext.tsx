@@ -62,7 +62,6 @@ export const UploadProvider: React.FC<UploadProviderProps> = ({ children }) => {
         const parsed = JSON.parse(storedUploads);
         setUploads(parsed);
       } catch (error) {
-        console.error('Erro ao restaurar uploads:', error);
       }
     }
   }, []);

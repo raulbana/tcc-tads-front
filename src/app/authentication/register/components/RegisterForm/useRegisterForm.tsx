@@ -8,14 +8,14 @@ import { useAuth } from "@/app/contexts/AuthContext";
 const useRegisterForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { register: registerUser, hasOnboardingData } = useAuth();
+  const { register: registerUser, hasOnboardingData, isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!hasOnboardingData()) {
+    if (!isAuthenticated && !hasOnboardingData()) {
       router.push("/onboarding");
     }
-  }, [hasOnboardingData, router]);
+  }, [hasOnboardingData, isAuthenticated, router]);
 
   const {
     register,
@@ -53,6 +53,8 @@ const useRegisterForm = () => {
         email: data.email,
         password: data.password,
       });
+
+      router.push("/");
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message || "Erro ao criar conta. Tente novamente.");

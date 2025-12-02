@@ -25,7 +25,6 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
         const data = await contentServices.getCategories();
         setCategories(data);
       } catch (error) {
-        console.error("Erro ao carregar categorias:", error);
       } finally {
         setLoading(false);
       }

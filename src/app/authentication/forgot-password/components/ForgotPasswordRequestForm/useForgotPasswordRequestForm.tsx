@@ -61,7 +61,6 @@ const useForgotPasswordRequestForm = (
           );
         }
       } catch (error: unknown) {
-        console.error("Erro ao solicitar redefinição de senha:", error);
         if (error instanceof Error) {
           setErrorMessage(
             error.message ||

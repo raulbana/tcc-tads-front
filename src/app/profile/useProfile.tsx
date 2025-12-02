@@ -211,7 +211,6 @@ const useProfile = () => {
       setProfilePictureFile(null);
       showToast("Perfil atualizado com sucesso!");
     } catch (error) {
-      console.error("Error updating profile:", error);
       showToast(
         error instanceof Error
           ? error.message

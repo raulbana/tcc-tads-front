@@ -21,7 +21,6 @@ const getStoredUserId = (): string | undefined => {
     const parsed = JSON.parse(stored);
     return parsed?.id ? String(parsed.id) : undefined;
   } catch (error) {
-    console.warn("Não foi possível recuperar o usuário armazenado", error);
     return undefined;
   }
 };

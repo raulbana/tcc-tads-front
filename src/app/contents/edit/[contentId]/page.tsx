@@ -21,7 +21,6 @@ const EditContentByIdPage = () => {
   };
 
   const handleError = (errorMessage: string) => {
-    console.error("Erro ao atualizar conteúdo:", errorMessage);
   };
 
   const handleCancel = () => {
@@ -119,5 +118,7 @@ const EditContentByIdPage = () => {
 };
 
 export default EditContentByIdPage;
+
+
 
 

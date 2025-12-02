@@ -77,7 +77,6 @@ const useForgotPasswordVerifyForm = (
           );
         }
       } catch (error: unknown) {
-        console.error("Erro ao redefinir senha:", error);
         if (error instanceof Error) {
           setErrorMessage(
             error.message ||

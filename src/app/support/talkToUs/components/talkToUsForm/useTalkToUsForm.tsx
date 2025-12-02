@@ -47,7 +47,6 @@ const useTalkToUsForm = () => {
         setSuccessMessage("");
       }, 3000);
     } catch (error) {
-      console.error("Erro ao enviar mensagem:", error);
       throw error;
     }
   };

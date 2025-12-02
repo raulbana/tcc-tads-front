@@ -96,10 +96,6 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
             darkMode: preferences.isDarkMode,
           });
         } catch (apiError) {
-          console.warn(
-            "Failed to load accessibility preferences from API, using local preferences",
-            apiError
-          );
           const localPreferences = user.preferences;
           setHighContrast(localPreferences.highContrast);
           setBigFont(localPreferences.bigFont);
@@ -131,7 +127,6 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
         });
       }
     } catch (err) {
-      console.error("Error loading accessibility preferences:", err);
       setError("Erro ao carregar preferências de acessibilidade");
     } finally {
       setIsLoading(false);
@@ -168,14 +163,9 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
               preferences
             );
           } catch (apiError) {
-            console.warn(
-              "Failed to save accessibility preferences to API:",
-              apiError
-            );
           }
         }
       } catch (err) {
-        console.error("Error saving accessibility preferences:", err);
         setError("Erro ao salvar preferências de acessibilidade");
         if (user) {
           setHighContrast(user.preferences.highContrast);

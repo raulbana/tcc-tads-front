@@ -85,7 +85,6 @@ export const usePostDetails = (content: Content) => {
         isLiked: !newLikedState,
         likesCount: localContent.likesCount || 0,
       }));
-      console.error("Error toggling like:", error);
     }
   }, [localContent, toggleLikeMutation, user]);
 
@@ -110,7 +109,6 @@ export const usePostDetails = (content: Content) => {
         ...prev,
         isSaved: !newSavedState,
       }));
-      console.error("Error toggling save:", error);
     }
   }, [localContent, toggleSaveMutation, user]);
 

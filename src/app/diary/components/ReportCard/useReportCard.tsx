@@ -143,7 +143,6 @@ export const useReportCard = (onGenerateReport?: () => void) => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
     } catch (error) {
-      console.error("Erro ao gerar relatório:", error);
     } finally {
       setIsGenerating(false);
     }

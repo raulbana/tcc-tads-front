@@ -188,15 +188,10 @@ const useMultiStepEvaluation = ({
                 const workoutId = Number(workout.id);
 
                 if (Number.isNaN(exerciseId) || Number.isNaN(workoutId)) {
-                  console.error("IDs inválidos:", {
-                    exerciseId: evalData.exerciseId,
-                    workoutId: workout.id,
-                  });
                   return null;
                 }
 
                 if (!workoutEvaluationData?.difficulty) {
-                  console.error("Dificuldade do treino não definida");
                   return null;
                 }
 
@@ -227,11 +222,8 @@ const useMultiStepEvaluation = ({
 
             if (feedbackArray.length > 0) {
               await submitWorkoutFeedbackMutation.mutateAsync(feedbackArray);
-            } else {
-              console.warn("Nenhum feedback válido para enviar");
             }
           } catch (error) {
-            console.error("Erro ao enviar feedback do treino:", error);
           }
         }
 

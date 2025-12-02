@@ -41,7 +41,6 @@ const useLoginForm = () => {
 
       router.push("/");
     } catch (error) {
-      console.error("Erro no login:", error);
       if (error instanceof Error) {
         setErrorMessage(error.message || "Email ou senha inválidos. Tente novamente.");
       } else {

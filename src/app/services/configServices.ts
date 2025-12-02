@@ -83,7 +83,6 @@ export const configServices = {
           };
         }
       } catch (error) {
-        console.error('Error uploading profile picture:', error);
         throw new Error('Falha ao fazer upload da imagem de perfil');
       }
     }

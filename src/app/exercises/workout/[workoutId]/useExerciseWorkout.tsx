@@ -94,7 +94,6 @@ const useExerciseWorkout = (workoutId: string | undefined) => {
       setCurrentExercise({ ...first, status: "IN_PROGRESS" });
       setWorkout({ ...workout, status: "IN_PROGRESS" });
     } catch (error: unknown) {
-      console.error("Erro ao verificar plano de treino:", error);
       const backendMessage = extractErrorMessage(error);
       const fallbackMessage =
         "Você precisa ter um plano de treino ativo para iniciar um treino. Por favor, complete o onboarding.";
@@ -161,15 +160,12 @@ const useExerciseWorkout = (workoutId: string | undefined) => {
               },
             ]);
           } catch (error: unknown) {
-            console.error("Erro ao enviar completion do treino:", error);
             const backendMessage = extractErrorMessage(error);
             const fallbackMessage =
               "Não foi possível registrar a conclusão do treino. Verifique se você possui um plano de treino ativo.";
             setErrorMessage(backendMessage || fallbackMessage);
             setIsToastOpen(true);
           }
-        } else {
-          console.error("Workout ID inválido:", workout.id);
         }
       }
       setStep("EVALUATE");

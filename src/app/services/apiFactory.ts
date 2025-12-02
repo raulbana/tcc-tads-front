@@ -29,7 +29,6 @@ const apiFactory = (baseURL: string) => {
               config.headers["X-User-Id"] = userId;
             }
           } catch (error) {
-            console.warn("Erro ao parsear dados do usuário:", error);
           }
         }
       }
@@ -45,12 +44,7 @@ const apiFactory = (baseURL: string) => {
     (response) => response,
     (error) => {
       if (error.response) {
-        console.error("API Error:", error.response.data);
-
         if (error.response.status === 401 && typeof window !== "undefined") {
-          console.warn(
-            "Token inválido ou expirado, limpando dados de autenticação"
-          );
           localStorage.removeItem(TOKEN_KEY);
           localStorage.removeItem(USER_KEY);
           window.location.href = "/authentication/login";

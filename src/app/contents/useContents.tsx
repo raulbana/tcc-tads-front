@@ -94,7 +94,6 @@ const useContents = () => {
       setSelectedContent(fullContent);
       setIsModalOpen(true);
     } catch (error) {
-      console.error("Error fetching content details:", error);
     }
   };
 

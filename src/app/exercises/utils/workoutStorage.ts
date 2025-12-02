@@ -97,7 +97,6 @@ export const loadWorkoutFromSession = (workoutId: string): Workout | null => {
     const parsed = JSON.parse(stored) as SerializedWorkout;
     return deserializeWorkout(parsed);
   } catch (error) {
-    console.error("Failed to load workout from session storage", error);
     return null;
   }
 };
@@ -111,6 +110,5 @@ export const saveWorkoutToSession = (workout: Workout): void => {
       JSON.stringify(workout)
     );
   } catch (error) {
-    console.error("Failed to save workout to session storage", error);
   }
 };
