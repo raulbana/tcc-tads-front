@@ -93,6 +93,7 @@ const ICIQReassessmentModal: React.FC<ICIQReassessmentModalProps> = ({
           label: "Refazer avaliação",
           onPress: handleConfirmReassessment,
           type: "PRIMARY",
+          autoClose: false,
         }}
       />
 
@@ -162,7 +163,7 @@ const ICIQReassessmentModal: React.FC<ICIQReassessmentModalProps> = ({
                   type="SECONDARY"
                   text="Voltar"
                   onClick={navigateBack}
-                  className="w-full"
+                  className="m-auto"
                 />
               </div>
             )}
@@ -174,5 +175,3 @@ const ICIQReassessmentModal: React.FC<ICIQReassessmentModalProps> = ({
 };
 
 export default ICIQReassessmentModal;
-
-

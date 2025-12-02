@@ -17,14 +17,14 @@ const useICIQReassessment = () => {
   const [isToastOpen, setIsToastOpen] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const onboardingQueries = useOnboardingQueries(["onboarding", "questions"]);
+  const { getQuestions, submitAnswers } = useOnboardingQueries(["onboarding", "questions"]);
   const {
     data: questionList = [],
     isLoading,
     error,
-  } = onboardingQueries.getQuestions();
+  } = getQuestions;
 
-  const submitAnswersMutation = onboardingQueries.submitAnswers();
+  const submitAnswersMutation = submitAnswers;
 
   const iciqQuestions = useMemo(() => {
     return questionList.slice(2, 6);
