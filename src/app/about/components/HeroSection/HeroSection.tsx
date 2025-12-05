@@ -11,12 +11,12 @@ const HeroSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6">
               Cuide da sua saúde com{' '}
               <span className="text-purple-900">autonomia e privacidade</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-800 mb-8 max-w-2xl mx-auto lg:mx-0">
+            <p className="text-lg md:text-xl text-black mb-8 max-w-2xl mx-auto lg:mx-0">
               O Daily IU é um aplicativo gratuito e acessível que ajuda você a gerenciar
               a incontinência urinária através de exercícios guiados, acompanhamento
               personalizado e conteúdo educativo.
