@@ -7,9 +7,9 @@ export const useDayDetailsContent = () => {
 
   const getAmountLabel = (amount: string) => {
     const labels = {
-      LOW: "Baixo",
-      MEDIUM: "Médio",
-      HIGH: "Alto"
+      LOW: "Baixo (Até 100ml)",
+      MEDIUM: "Médio (100-300ml)",
+      HIGH: "Alto (Acima de 300ml)",
     };
     return labels[amount as keyof typeof labels] || amount;
   };

@@ -98,10 +98,9 @@ const useProfile = () => {
 
   useEffect(() => {
     if (user && isEditing) {
-      const validGenders: Array<"male" | "female" | "other"> = [
+      const validGenders: Array<"male" | "female"> = [
         "male",
         "female",
-        "other",
       ];
       const userGender = user.profile?.gender;
       // Normalizar o gênero para lowercase para garantir compatibilidade
@@ -153,10 +152,9 @@ const useProfile = () => {
     setIsEditing(false);
     setProfilePictureFile(null);
     if (user) {
-      const validGenders: Array<"male" | "female" | "other"> = [
+      const validGenders: Array<"male" | "female"> = [
         "male",
         "female",
-        "other",
       ];
       const userGender = user.profile?.gender;
       // Normalizar o gênero para lowercase para garantir compatibilidade

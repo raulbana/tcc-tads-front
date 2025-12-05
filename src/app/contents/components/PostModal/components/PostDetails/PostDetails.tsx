@@ -8,6 +8,7 @@ import PostAuthor from "../PostAuthor/PostAuthor";
 import PostActions from "../PostActions/PostActions";
 import ReportContentButton from "../ReportContentButton/ReportContentButton";
 import CommentsSection from "../CommentsSection/CommentsSection";
+import CategoryBadges from "../CategoryBadges/CategoryBadges";
 import moment from "moment";
 
 moment.locale('pt-br');
@@ -28,10 +29,10 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
   return (
     <div className="w-full h-full flex flex-col lg:block">
       <div className="flex flex-col lg:grid lg:grid-cols-5 gap-6 h-full overflow-y-scroll ">
-        
+
         <div className="flex-1 lg:col-span-3 lg:overflow-hidden">
           <div className="h-full lg:overflow-y-auto space-y-6 pb-4 lg:pb-0">
-            
+
             <div className="space-y-4">
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-4">
@@ -39,7 +40,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
                     author={localContent.author!}
                     createdAt={localContent.createdAt}
                   />
-                  
+
                   <div className="flex items-center gap-3">
                     <ReportContentButton contentId={localContent.id} />
                     <PostActions
@@ -52,14 +53,13 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
                     />
                   </div>
                 </div>
-                
+
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800 leading-tight">
                   {localContent.title}
                 </h1>
-                
               </div>
 
-              <div className="text-gray-700 leading-relaxed text-sm sm:text-base">
+              <div className="text-gray-700 leading-relaxed text-sm sm:text-base whitespace-pre-wrap break-words">
                 {localContent.description}
               </div>
             </div>
@@ -85,12 +85,15 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
               )}
 
               {localContent.subcontent && (
-                <div className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                <div className="text-gray-700 leading-relaxed text-sm sm:text-base whitespace-pre-wrap break-words">
                   {localContent.subcontent}
                 </div>
               )}
-
-
+            </div>
+            <div>
+            {localContent.categories && localContent.categories.length > 0 && (
+              <CategoryBadges tags={localContent.categories} />
+            )}
             </div>
           </div>
         </div>

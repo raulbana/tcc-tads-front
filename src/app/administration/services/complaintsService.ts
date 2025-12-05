@@ -27,7 +27,7 @@ export const complaintsService = {
       {},
       {
         headers: {
-          "X-Content-Id": contentId,
+          "x-content-id": contentId,
         },
       }
     );
