@@ -59,7 +59,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
                 
               </div>
 
-              <div className="text-gray-700 leading-relaxed text-sm sm:text-base">
+              <div className="text-gray-700 leading-relaxed text-sm sm:text-base whitespace-pre-wrap break-words">
                 {localContent.description}
               </div>
             </div>
@@ -85,7 +85,7 @@ const PostDetails: React.FC<PostDetailsProps> = ({ content }) => {
               )}
 
               {localContent.subcontent && (
-                <div className="text-gray-700 leading-relaxed text-sm sm:text-base">
+                <div className="text-gray-700 leading-relaxed text-sm sm:text-base whitespace-pre-wrap break-words">
                   {localContent.subcontent}
                 </div>
               )}
