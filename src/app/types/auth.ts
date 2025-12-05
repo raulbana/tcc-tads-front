@@ -56,7 +56,7 @@ export interface Preferences {
   workoutMediaType: WorkoutMediaType;
 }
 
-export type Gender = "male" | "female" | "other";
+export type Gender = "male" | "female";
 export type WorkoutMediaType = "video" | "image";
 
 export interface loginRequest {

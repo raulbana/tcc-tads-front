@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const volumeOptions = [
-  { label: 'Baixo', value: 'LOW' },
-  { label: 'Médio', value: 'MEDIUM' },
-  { label: 'Alto', value: 'HIGH' },
+  { label: 'Baixo (Até 100ml)', value: 'LOW' },
+  { label: 'Médio (100-300ml)', value: 'MEDIUM' },
+  { label: 'Alto (Acima de 300ml)', value: 'HIGH' },
 ] as const;
 
 export const yesNoOptions = [

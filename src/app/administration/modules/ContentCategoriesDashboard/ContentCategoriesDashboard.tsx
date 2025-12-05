@@ -116,37 +116,6 @@ const ContentCategoriesDashboard = () => {
 
   return (
     <div className="space-y-8">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-gray-800">
-          HU 26. HISTÓRIA DE USUÁRIO 026 - MANTER CATEGORIA DE PUBLICAÇÃO
-        </h1>
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 mt-4">
-          <table className="w-full text-left">
-            <tbody>
-              <tr>
-                <td className="py-2 font-semibold text-gray-700">Sendo</td>
-                <td className="py-2 text-gray-600">
-                  Um administrador do sistema
-                </td>
-              </tr>
-              <tr>
-                <td className="py-2 font-semibold text-gray-700">Quero</td>
-                <td className="py-2 text-gray-600">
-                  Realizar operações de inclusão, alteração e exclusão de
-                  categoria de publicação
-                </td>
-              </tr>
-              <tr>
-                <td className="py-2 font-semibold text-gray-700">Para</td>
-                <td className="py-2 text-gray-600">
-                  Manter atualizada a base de dados de categorias disponíveis
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       <section className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-4">
         <header>
           <h3 className="text-lg font-semibold text-gray-800">

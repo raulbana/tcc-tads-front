@@ -30,7 +30,7 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ media }) => {
 
   return (
     <>
-      <div className="relative aspect-video bg-black rounded-lg overflow-hidden group">
+      <div className="relative aspect-square bg-black rounded-lg group">
         {currentMedia.type === 'image' ? (
           <Image
             src={currentMedia.url}
@@ -42,7 +42,7 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ media }) => {
           <div {...mediaClickProps} className="w-full h-full">
             <video
               src={currentMedia.url}
-              className="w-full h-full object-cover"
+              className="cursor-pointer w-full h-full object-contain"
               controls
               aria-label={currentMedia.alt || 'Vídeo do post'}
             />

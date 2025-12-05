@@ -51,7 +51,7 @@ export const useMediaCarousel = ({ media }: UseMediaCarouselProps) => {
 
   const mediaClickProps = useMemo(() => ({
     onClick: openFullscreen,
-    className: "cursor-pointer",
+    className: "cursor-pointer object-contain",
     'aria-label': "Clique para ver em tela cheia"
   }), [openFullscreen]);
 

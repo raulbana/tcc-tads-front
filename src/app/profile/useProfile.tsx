@@ -86,10 +86,9 @@ const useProfile = () => {
 
   useEffect(() => {
     if (user && isEditing) {
-      const validGenders: Array<"male" | "female" | "other"> = [
+      const validGenders: Array<"male" | "female"> = [
         "male",
         "female",
-        "other",
       ];
       const userGender = user.profile?.gender;
       const gender =
@@ -132,10 +131,9 @@ const useProfile = () => {
     setIsEditing(false);
     setProfilePictureFile(null);
     if (user) {
-      const validGenders: Array<"male" | "female" | "other"> = [
+      const validGenders: Array<"male" | "female"> = [
         "male",
         "female",
-        "other",
       ];
       const userGender = user.profile?.gender;
       const gender =
