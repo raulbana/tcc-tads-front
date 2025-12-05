@@ -28,6 +28,7 @@ interface AuthContextData {
   login: (credentials: loginRequest) => Promise<void>;
   register: (userData: registerRequest) => Promise<void>;
   logout: () => void;
+  updateUser: (userData: User) => void;
   saveOnboardingData: (
     profile: PatientProfileDTO,
     workoutPlan?: UserWorkoutPlanDTO
@@ -207,6 +208,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     clearStoredAuth();
   };
 
+  const updateUser = (userData: User) => {
+    setUser(userData);
+    try {
+      const storedToken = localStorage.getItem(TOKEN_KEY);
+      if (storedToken) {
+        localStorage.setItem(USER_KEY, JSON.stringify(userData));
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar usuário no localStorage:", error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -216,6 +229,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         login,
         register,
         logout,
+        updateUser,
         saveOnboardingData,
         getOnboardingData,
         clearOnboardingData,

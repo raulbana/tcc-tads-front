@@ -65,7 +65,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 key={index}
                 src={image}
                 alt={`${exercise.title} - Imagem ${index + 1}`}
-                className="w-full h-32 object-cover rounded"
+                className="w-full object-cover rounded"
               />
             ))}
           </div>

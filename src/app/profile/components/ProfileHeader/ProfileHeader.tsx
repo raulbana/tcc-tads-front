@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { User } from "@/app/types/auth";
 import Button from "@/app/components/Button/Button";
@@ -23,8 +23,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   isEditing = false,
   stats,
 }) => {
+  const [imageError, setImageError] = useState(false);
   const hasProfilePicture =
-    user.profilePictureUrl && user.profilePictureUrl.trim() !== "";
+    user.profilePictureUrl &&
+    user.profilePictureUrl.trim() !== "" &&
+    !imageError;
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-6">
@@ -38,6 +41,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               className="object-cover rounded-full"
               sizes="96px"
               style={{ objectFit: "cover", objectPosition: "center" }}
+              onError={() => setImageError(true)}
+              unoptimized={user.profilePictureUrl?.startsWith("data:")}
             />
           ) : (
             <AnonymousUserIcon className="w-full h-full text-gray-400" />

@@ -29,11 +29,9 @@ export const exerciseCreatorSchema = z.object({
     .refine((val) => val > 0, { message: "Selecione uma categoria" }),
   media: z.array(mediaSchema.partial()).default([]),
   attributes: z.array(z.number()).default([]),
-  repetitions: z
-    .number()
-    .refine((val) => val > 0, {
-      message: "Repetições deve ser maior que zero",
-    }),
+  repetitions: z.number().refine((val) => val > 0, {
+    message: "Repetições deve ser maior que zero",
+  }),
   sets: z
     .number()
     .refine((val) => val > 0, { message: "Séries deve ser maior que zero" }),

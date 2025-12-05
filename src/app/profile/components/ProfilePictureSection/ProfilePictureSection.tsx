@@ -32,15 +32,21 @@ const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+      <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
         {hasProfilePicture ? (
           <Image
             src={currentPicture}
             alt="Foto de perfil"
             fill
-            className="object-cover rounded-full"
+            className="object-cover"
             sizes="128px"
-            style={{ objectFit: 'cover', objectPosition: 'center' }}
+            style={{
+              objectFit: "cover",
+              objectPosition: "center",
+              width: "100%",
+              height: "100%",
+            }}
+            unoptimized={currentPicture?.startsWith("data:")}
           />
         ) : (
           <AnonymousUserIcon className="w-full h-full text-gray-400" />
@@ -77,4 +83,3 @@ const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
 };
 
 export default ProfilePictureSection;
-

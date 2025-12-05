@@ -65,6 +65,7 @@ const apiRoutes = {
   },
   profile: {
     edit: (userId: number) => `/users/${userId}`,
+    getById: (userId: number) => `/users/${userId}`,
   },
   admin: {
     listUsers: "/admin/users",

@@ -7,6 +7,7 @@ import {
   AccessibilityPreferences,
   EditProfileRequest,
   EditProfileResponse,
+  UserSimpleDTO,
 } from "@/app/types/config";
 import contentServices from "@/app/contents/services/contentServices";
 
@@ -18,10 +19,12 @@ export const configServices = {
     return response.data;
   },
 
-  getAccessibilityPreferences: async (userId: string): Promise<AccessibilityPreferences> => {
+  getAccessibilityPreferences: async (
+    userId: string
+  ): Promise<AccessibilityPreferences> => {
     const response = await api.get(apiRoutes.accessibility.get, {
       headers: {
-        'x-user-id': userId,
+        "x-user-id": userId,
       },
     });
     return response.data;
@@ -36,7 +39,7 @@ export const configServices = {
       preferences,
       {
         headers: {
-          'x-user-id': userId,
+          "x-user-id": userId,
         },
       }
     );
@@ -48,21 +51,25 @@ export const configServices = {
     data: EditProfileRequest,
     profilePictureFile?: File | string
   ): Promise<EditProfileResponse> => {
-    let profilePicture = data.profilePicture;
+    let profilePicture: EditProfileRequest["profilePicture"] = undefined;
 
+    // Só processar foto se houver um arquivo novo selecionado
     if (profilePictureFile) {
       try {
         const formData = new FormData();
-        
+
         if (profilePictureFile instanceof File) {
-          formData.append('files', profilePictureFile);
-        } else if (typeof profilePictureFile === 'string' && !profilePictureFile.startsWith('http')) {
+          formData.append("files", profilePictureFile);
+        } else if (
+          typeof profilePictureFile === "string" &&
+          !profilePictureFile.startsWith("http")
+        ) {
           const response = await fetch(profilePictureFile);
           const blob = await response.blob();
-          const file = new File([blob], 'profile-picture.jpg', {
-            type: blob.type || 'image/jpeg',
+          const file = new File([blob], "profile-picture.jpg", {
+            type: blob.type || "image/jpeg",
           });
-          formData.append('files', file);
+          formData.append("files", file);
         }
 
         const uploadRes = await contentServices.uploadMedia(formData);
@@ -74,29 +81,30 @@ export const configServices = {
 
         if (uploadedMedia) {
           profilePicture = {
-            id: uploadedMedia.id,
             url: uploadedMedia.url,
-            contentType: uploadedMedia.contentType || 'image/jpeg',
+            contentType: uploadedMedia.contentType || "image/jpeg",
             contentSize: uploadedMedia.contentSize || 0,
-            altText: uploadedMedia.altText || 'Profile picture',
-            createdAt: uploadedMedia.createdAt || new Date().toISOString(),
+            altText: uploadedMedia.altText || "Profile picture",
           };
         }
       } catch (error) {
-        throw new Error('Falha ao fazer upload da imagem de perfil');
+        throw new Error("Falha ao fazer upload da imagem de perfil");
       }
     }
 
+    // Se não há profilePicture, não incluir no request (backend manterá a foto atual)
     const requestData: EditProfileRequest = {
       name: data.name,
       email: data.email,
       ...(profilePicture && { profilePicture }),
     };
 
-    const response = await api.put(
-      apiRoutes.profile.edit(userId),
-      requestData
-    );
+    const response = await api.put(apiRoutes.profile.edit(userId), requestData);
+    return response.data;
+  },
+
+  getUserById: async (userId: number): Promise<UserSimpleDTO> => {
+    const response = await api.get(apiRoutes.profile.getById(userId));
     return response.data;
   },
 };

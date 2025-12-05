@@ -19,6 +19,7 @@ const ProfilePage = () => {
     activeTab,
     isEditing,
     isLoading,
+    isSaving,
     errors,
     isValid,
     register,
@@ -42,6 +43,7 @@ const ProfilePage = () => {
     editContentId,
     DialogPortal,
     stats,
+    currentProfilePictureUrl,
   } = useProfile();
 
   if (!user) {
@@ -125,7 +127,7 @@ const ProfilePage = () => {
 
               <div className="flex justify-center">
                 <ProfilePictureSection
-                  currentPicture={user.profilePictureUrl}
+                  currentPicture={currentProfilePictureUrl}
                   onPictureChange={handleProfilePictureChange}
                   onRemovePicture={handleRemoveProfilePicture}
                 />
@@ -136,7 +138,7 @@ const ProfilePage = () => {
                 isValid={isValid}
                 register={register}
                 control={control}
-                isSaving={isLoading}
+                isSaving={isSaving}
                 onSave={handleSaveProfile}
                 onCancel={handleCancelEdit}
               />

@@ -141,16 +141,23 @@ const ExerciseDetailsContent: React.FC<ExerciseDetailsContentProps> = ({
               )}
 
               {activeMediaTab === "images" && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
                   {selectedExercise.media?.images &&
                   selectedExercise.media.images.length > 0 ? (
                     selectedExercise.media.images.map((image, index) => (
-                      <img
+                      <div
                         key={index}
-                        src={image}
-                        alt={`${selectedExercise.title} - Imagem ${index + 1}`}
-                        className="w-full h-auto rounded-lg"
-                      />
+                        className="w-full rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center"
+                      >
+                        <img
+                          src={image}
+                          alt={`${selectedExercise.title} - Imagem ${
+                            index + 1
+                          }`}
+                          className="w-full h-auto object-contain rounded-lg"
+                          style={{ maxHeight: "70vh" }}
+                        />
+                      </div>
                     ))
                   ) : (
                     <p className="text-gray-500">Nenhuma imagem disponível</p>

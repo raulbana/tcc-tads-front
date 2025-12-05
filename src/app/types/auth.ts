@@ -6,6 +6,9 @@ export interface User {
   role?: string;
   profile: PatientProfile;
   preferences: Preferences;
+  curtidas?: number;
+  salvos?: number;
+  postagens?: number;
 }
 
 export interface UserRole {
@@ -19,19 +22,22 @@ export interface UserRole {
   conceivedAt: string;
 }
 
-export const userRoles: Record<string, { permissionLevel: number; description: string }> = {
+export const userRoles: Record<
+  string,
+  { permissionLevel: number; description: string }
+> = {
   USER: {
     permissionLevel: 1,
-    description: 'Usuário comum',
+    description: "Usuário comum",
   },
   PROFESSIONAL: {
     permissionLevel: 2,
-    description: 'Profissional',
+    description: "Profissional",
   },
   ADMIN: {
     permissionLevel: 3,
-    description: 'Administrador',
-  }
+    description: "Administrador",
+  },
 };
 
 export interface PatientProfile {

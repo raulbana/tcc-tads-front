@@ -10,7 +10,6 @@ const AccessibilityForm = () => {
     useAccessibilityForm();
 
   const isHighContrast = watch("isHighContrast");
-  const isBigFont = watch("isBigFont");
   const isDarkMode = watch("isDarkMode");
 
   return (
@@ -30,21 +29,6 @@ const AccessibilityForm = () => {
         {errors.isHighContrast && (
           <span className="text-red-500 text-sm">
             {errors.isHighContrast.message as string}
-          </span>
-        )}
-      </div>
-
-      <div>
-        <Switch
-          type="PRIMARY"
-          size="LARGE"
-          label="Fonte aumentada"
-          checked={isBigFont}
-          onChange={(value) => setValue("isBigFont", value)}
-        />
-        {errors.isBigFont && (
-          <span className="text-red-500 text-sm">
-            {errors.isBigFont.message as string}
           </span>
         )}
       </div>
