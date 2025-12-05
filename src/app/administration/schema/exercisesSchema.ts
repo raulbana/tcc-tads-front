@@ -22,15 +22,28 @@ export const exerciseSchema = z.object({
 });
 
 export const exerciseCreatorSchema = z.object({
-  title: z.string().min(1),
-  instructions: z.string().min(1),
-  categoryId: z.number(),
+  title: z.string().min(1, "Título é obrigatório"),
+  instructions: z.string().min(1, "Instruções são obrigatórias"),
+  categoryId: z
+    .number({
+      required_error: "Selecione uma categoria",
+      invalid_type_error: "Selecione uma categoria",
+    })
+    .refine((val) => val > 0, { message: "Selecione uma categoria" }),
   media: z.array(mediaSchema.partial()).default([]),
   attributes: z.array(z.number()).default([]),
-  repetitions: z.number().min(0),
-  sets: z.number().min(0),
-  restTime: z.number().min(0),
-  duration: z.number().min(0),
+  repetitions: z.number().refine((val) => val > 0, {
+    message: "Repetições deve ser maior que zero",
+  }),
+  sets: z
+    .number()
+    .refine((val) => val > 0, { message: "Séries deve ser maior que zero" }),
+  restTime: z.number().refine((val) => val > 0, {
+    message: "Tempo de descanso deve ser maior que zero",
+  }),
+  duration: z
+    .number()
+    .refine((val) => val > 0, { message: "Duração deve ser maior que zero" }),
 });
 
 export type ExerciseAttribute = z.infer<typeof exerciseAttributeSchema>;

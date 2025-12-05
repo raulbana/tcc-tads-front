@@ -21,11 +21,22 @@ export const workoutSchema = z.object({
 });
 
 export const workoutCreatorSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().optional().default(""),
-  totalDuration: z.number().min(0),
-  difficultyLevel: z.string().min(1),
+  totalDuration: z.number().refine((val) => val > 0, {
+    message: "Duração total deve ser maior que zero",
+  }),
+  difficultyLevel: z.string().min(1, "Selecione uma dificuldade"),
   exerciseIds: z.record(z.string(), z.number()),
+});
+
+export const workoutFormSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  description: z.string().optional().default(""),
+  totalDuration: z.number().refine((val) => val > 0, {
+    message: "Duração total deve ser maior que zero",
+  }),
+  difficultyLevel: z.string().min(1, "Selecione uma dificuldade"),
 });
 
 export type WorkoutAdmin = z.infer<typeof workoutSchema>;

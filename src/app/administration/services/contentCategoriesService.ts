@@ -13,6 +13,7 @@ const api = apiFactory(API_BASE_URL ?? "");
 const categoryPayloadSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1).max(255),
+  auditable: z.boolean(),
 });
 
 export const contentCategoriesService = {
@@ -47,4 +48,3 @@ export const contentCategoriesService = {
 };
 
 export default contentCategoriesService;
-

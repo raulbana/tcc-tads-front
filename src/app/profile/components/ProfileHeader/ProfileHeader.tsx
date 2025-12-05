@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { User } from "@/app/types/auth";
 import Button from "@/app/components/Button/Button";
@@ -10,15 +10,24 @@ export interface ProfileHeaderProps {
   user: User;
   onEditProfile: () => void;
   isEditing?: boolean;
+  stats?: {
+    likes: number;
+    posts: number;
+    saved: number;
+  };
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   user,
   onEditProfile,
   isEditing = false,
+  stats,
 }) => {
+  const [imageError, setImageError] = useState(false);
   const hasProfilePicture =
-    user.profilePictureUrl && user.profilePictureUrl.trim() !== "";
+    user.profilePictureUrl &&
+    user.profilePictureUrl.trim() !== "" &&
+    !imageError;
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-6">
@@ -31,7 +40,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               fill
               className="object-cover rounded-full"
               sizes="96px"
-              style={{ objectFit: 'cover', objectPosition: 'center' }}
+              style={{ objectFit: "cover", objectPosition: "center" }}
+              onError={() => setImageError(true)}
+              unoptimized={user.profilePictureUrl?.startsWith("data:")}
             />
           ) : (
             <AnonymousUserIcon className="w-full h-full text-gray-400" />
@@ -44,15 +55,21 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
           <div className="flex flex-wrap gap-4 justify-center sm:justify-start">
             <div className="text-center">
-              <p className="text-lg font-semibold text-gray-800">0</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {stats?.likes ?? 0}
+              </p>
               <p className="text-sm text-gray-600">Curtidas</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-semibold text-gray-800">0</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {stats?.saved ?? 0}
+              </p>
               <p className="text-sm text-gray-600">Vídeos Salvos</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-semibold text-gray-800">0</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {stats?.posts ?? 0}
+              </p>
               <p className="text-sm text-gray-600">Postagens</p>
             </div>
           </div>
@@ -75,4 +92,3 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 };
 
 export default ProfileHeader;
-

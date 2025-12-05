@@ -1,8 +1,8 @@
 "use client";
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { AppleLogoIcon, GooglePlayLogoIcon } from '@phosphor-icons/react';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { AppleLogoIcon, GooglePlayLogoIcon } from "@phosphor-icons/react";
 import image from "@/app/assets/about/app_homescreen_image.png";
 
 const HeroSection = () => {
@@ -11,15 +11,15 @@ const HeroSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6">
-              Cuide da sua saúde com{' '}
-              <span className="text-purple-900">autonomia e privacidade</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6">
+              Cuide da sua saúde com{" "}
+              <span className="text-black">autonomia e privacidade</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-800 mb-8 max-w-2xl mx-auto lg:mx-0">
-              O Daily IU é um aplicativo gratuito e acessível que ajuda você a gerenciar
-              a incontinência urinária através de exercícios guiados, acompanhamento
-              personalizado e conteúdo educativo.
+            <p className="text-lg md:text-xl text-black mb-8 max-w-2xl mx-auto lg:mx-0">
+              O Daily IU é um aplicativo gratuito e acessível que ajuda você a
+              gerenciar a incontinência urinária através de exercícios guiados,
+              acompanhamento personalizado e conteúdo educativo.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
@@ -55,7 +55,7 @@ const HeroSection = () => {
           </div>
 
           <div className="relative">
-            <div className="relative w-1/2 max-w-md mx-auto">  
+            <div className="relative w-1/2 max-w-md mx-auto">
               <div className="relative bg-gray-900 rounded-[3rem] p-3 shadow-2xl">
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-20 h-7 bg-gray-900 rounded-b-2xl z-10"></div>
                 <div className="relative bg-white rounded-[2.5rem] overflow-hidden">

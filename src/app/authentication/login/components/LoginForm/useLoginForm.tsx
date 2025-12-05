@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AxiosError } from "axios";
 import { LoginFormData, loginSchema } from "../../schema/loginSchema";
 import { useAuth } from "@/app/contexts/AuthContext";
 
@@ -41,11 +42,31 @@ const useLoginForm = () => {
 
       router.push("/");
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message || "Email ou senha inválidos. Tente novamente.");
-      } else {
-        setErrorMessage("Email ou senha inválidos. Tente novamente.");
+      let errorMsg = "Ocorreu um erro inesperado. Tente novamente.";
+
+      if (error instanceof AxiosError) {
+        const status = error.response?.status;
+
+        if (status === 401) {
+          errorMsg = "Email ou senha inválidos. Tente novamente.";
+        } else if (status === 429) {
+          errorMsg =
+            "Muitas tentativas. Aguarde alguns instantes e tente novamente.";
+        } else if (status === 403) {
+          errorMsg = "Acesso negado. Verifique suas credenciais.";
+        } else if (status === 500) {
+          errorMsg = "Erro no servidor. Tente novamente mais tarde.";
+        } else if (error.response?.data?.message) {
+          errorMsg = error.response.data.message;
+        } else if (error.message) {
+          errorMsg = error.message;
+        }
+      } else if (error instanceof Error) {
+        errorMsg =
+          error.message || "Email ou senha inválidos. Tente novamente.";
       }
+
+      setErrorMessage(errorMsg);
     } finally {
       setIsSubmitting(false);
     }

@@ -11,12 +11,10 @@ export const contentCategorySchema = z.object({
 export const contentCategoryCreatorSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1).max(255),
+  auditable: z.boolean(),
 });
 
 export type ContentCategory = z.infer<typeof contentCategorySchema>;
-export type ContentCategoryCreator = z.infer<typeof contentCategoryCreatorSchema>;
-
-
-
-
-
+export type ContentCategoryCreator = z.infer<
+  typeof contentCategoryCreatorSchema
+>;

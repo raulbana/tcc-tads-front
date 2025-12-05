@@ -19,12 +19,10 @@ export interface EditProfileRequest {
   name: string;
   email: string;
   profilePicture?: {
-    id?: number;
     url: string;
     contentType: string;
     contentSize: number;
     altText: string;
-    createdAt: string;
   };
 }
 
@@ -55,4 +53,15 @@ export interface EditProfileResponse {
     encouragingMessages: boolean;
     workoutMediaType: string;
   };
+}
+
+export interface UserSimpleDTO {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  profilePictureUrl?: string;
+  curtidas: number;
+  salvos: number;
+  postagens: number;
 }

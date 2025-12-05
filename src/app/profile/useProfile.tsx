@@ -33,7 +33,8 @@ const useProfile = () => {
     null
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedContentForEdit, setSelectedContentForEdit] = useState<Content | null>(null);
+  const [selectedContentForEdit, setSelectedContentForEdit] =
+    useState<Content | null>(null);
   const [editContentId, setEditContentId] = useState<string | null>(null);
 
   const { showDialog, DialogPortal: ProfileDialogPortal } = useDialogModal();
@@ -43,10 +44,22 @@ const useProfile = () => {
   const contentQueries = useContentQueries(["content"]);
 
   const {
-    data: posts = [],
+    data: userData,
+    isLoading: isLoadingUserData,
+    refetch: refetchUserData,
+  } = profileQueries.useGetUserById(user?.id || 0);
+
+  const {
+    data: allPosts = [],
     isLoading: isLoadingPosts,
     refetch: refetchPosts,
   } = profileQueries.useGetUserContent(user?.id.toString() || "");
+
+  // Filtrar apenas conteúdos do usuário logado para garantir que não venham conteúdos de outros usuários
+  const posts = allPosts.filter((post) => {
+    if (!user?.id || !post.author) return false;
+    return post.author.id === user.id || Number(post.author.id) === user.id;
+  });
 
   const {
     data: savedContent = [],
@@ -54,13 +67,8 @@ const useProfile = () => {
     refetch: refetchSaved,
   } = profileQueries.useGetSavedContent(user?.id.toString());
 
-  const {
-    data: fullContentData,
-    isLoading: isLoadingContent,
-  } = contentQueries.useGetById(
-    editContentId || "",
-    user?.id.toString() || ""
-  );
+  const { data: fullContentData, isLoading: isLoadingContent } =
+    contentQueries.useGetById(editContentId || "", user?.id.toString() || "");
 
   const deleteContentMutation = profileQueries.useDeleteContent();
   const unsaveContentMutation = profileQueries.useUnsaveContent();
@@ -73,6 +81,7 @@ const useProfile = () => {
     setValue,
     reset,
     control,
+    watch,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -82,7 +91,10 @@ const useProfile = () => {
       profilePictureUrl: "",
     },
     mode: "onBlur",
+    criteriaMode: "all",
   });
+
+  const watchedProfilePictureUrl = watch("profilePictureUrl");
 
   useEffect(() => {
     if (user && isEditing) {
@@ -91,17 +103,26 @@ const useProfile = () => {
         "female",
       ];
       const userGender = user.profile?.gender;
+      // Normalizar o gênero para lowercase para garantir compatibilidade
+      const normalizedGender = userGender?.toLowerCase() as
+        | "male"
+        | "female"
+        | "other"
+        | undefined;
       const gender =
-        userGender && validGenders.includes(userGender)
-          ? userGender
+        normalizedGender && validGenders.includes(normalizedGender)
+          ? normalizedGender
           : undefined;
 
-      reset({
-        name: user.name,
-        email: user.email,
-        gender: gender,
-        profilePictureUrl: user.profilePictureUrl || "",
-      });
+      reset(
+        {
+          name: user.name,
+          email: user.email,
+          gender: gender,
+          profilePictureUrl: user.profilePictureUrl || "",
+        },
+        { keepDefaultValues: false, shouldValidate: true }
+      );
     }
   }, [user, isEditing, reset]);
 
@@ -136,30 +157,42 @@ const useProfile = () => {
         "female",
       ];
       const userGender = user.profile?.gender;
+      // Normalizar o gênero para lowercase para garantir compatibilidade
+      const normalizedGender = userGender?.toLowerCase() as
+        | "male"
+        | "female"
+        | "other"
+        | undefined;
       const gender =
-        userGender && validGenders.includes(userGender)
-          ? userGender
+        normalizedGender && validGenders.includes(normalizedGender)
+          ? normalizedGender
           : undefined;
 
-      reset({
-        name: user.name,
-        email: user.email,
-        gender: gender,
-        profilePictureUrl: user.profilePictureUrl || "",
-      });
+      reset(
+        {
+          name: user.name,
+          email: user.email,
+          gender: gender,
+          profilePictureUrl: user.profilePictureUrl || "",
+        },
+        { keepDefaultValues: false, shouldValidate: true }
+      );
     }
   }, [user, reset]);
 
-  const handleProfilePictureChange = useCallback((file: File) => {
-    setProfilePictureFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setValue("profilePictureUrl", reader.result as string, {
-        shouldValidate: true,
-      });
-    };
-    reader.readAsDataURL(file);
-  }, [setValue]);
+  const handleProfilePictureChange = useCallback(
+    (file: File) => {
+      setProfilePictureFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setValue("profilePictureUrl", reader.result as string, {
+          shouldValidate: true,
+        });
+      };
+      reader.readAsDataURL(file);
+    },
+    [setValue]
+  );
 
   const handleRemoveProfilePicture = useCallback(() => {
     setProfilePictureFile(null);
@@ -174,17 +207,25 @@ const useProfile = () => {
     try {
       const originalPictureUrl = user.profilePictureUrl || "";
       const newPictureUrl = data.profilePictureUrl || "";
-      const isPictureChanged = newPictureUrl !== originalPictureUrl;
+
+      // Foto foi alterada apenas se:
+      // 1. Há um arquivo selecionado (profilePictureFile existe), OU
+      // 2. A URL mudou E a nova URL é uma data URL (preview de nova foto)
+      const hasNewFile = !!profilePictureFile;
+      const isDataUrl = newPictureUrl.startsWith("data:");
+      const urlChanged = newPictureUrl !== originalPictureUrl;
+      const isPictureChanged = hasNewFile || (urlChanged && isDataUrl);
 
       const response = await editProfileMutation.mutateAsync({
         userId: user.id,
         data: {
           name: data.name.trim(),
-          email: data.email.trim(),
+          email: user.email, // Email deve ser enviado mesmo que não seja alterado
         },
-        profilePictureFile: isPictureChanged && profilePictureFile
-          ? profilePictureFile
-          : undefined,
+        profilePictureFile:
+          isPictureChanged && profilePictureFile
+            ? profilePictureFile
+            : undefined,
       });
 
       const updatedUser: User = {
@@ -221,7 +262,7 @@ const useProfile = () => {
   const handleDeletePost = useCallback(
     async (content: Content) => {
       if (!content.id) return;
-      
+
       showDialog({
         title: "Excluir Postagem",
         description: `Tem certeza que deseja excluir a postagem "${content.title}"? Esta ação não pode ser desfeita.`,
@@ -252,7 +293,7 @@ const useProfile = () => {
   const handleUnsaveContent = useCallback(
     async (content: Content) => {
       if (!content.id) return;
-      
+
       showDialog({
         title: "Remover dos Salvos",
         description: "Tem certeza que deseja remover este conteúdo dos salvos?",
@@ -293,27 +334,16 @@ const useProfile = () => {
     setActiveTab(tab);
   }, []);
 
-  const handleRefresh = useCallback(() => {
-    if (activeTab === "saved") {
-      refetchSaved();
-    } else {
-      refetchPosts();
-    }
-  }, [activeTab, refetchSaved, refetchPosts]);
-
-  const handleEditContent = useCallback(
-    (content: Content) => {
-      if (content.id) {
-        const contentId = content.id.toString();
-        setEditContentId(contentId);
-        setIsEditModalOpen(true);
-        if (content.title && content.description) {
-          setSelectedContentForEdit(content);
-        }
+  const handleEditContent = useCallback((content: Content) => {
+    if (content.id) {
+      const contentId = content.id.toString();
+      setEditContentId(contentId);
+      setIsEditModalOpen(true);
+      if (content.title && content.description) {
+        setSelectedContentForEdit(content);
       }
-    },
-    []
-  );
+    }
+  }, []);
 
   const handleCloseEditModal = useCallback(() => {
     setIsEditModalOpen(false);
@@ -331,20 +361,79 @@ const useProfile = () => {
   );
 
   const isLoading =
+    isLoadingUserData ||
     isLoadingPosts ||
     isLoadingSaved ||
     isLoadingContent ||
     deleteContentMutation.isPending ||
-    unsaveContentMutation.isPending ||
-    editProfileMutation.isPending;
+    unsaveContentMutation.isPending;
+
+  const isSaving = editProfileMutation.isPending;
+
+  // Usar dados do endpoint se disponíveis, caso contrário usar dados do AuthContext ou calcular
+  const displayUser = userData
+    ? {
+        ...user,
+        profilePictureUrl:
+          userData.profilePictureUrl || user?.profilePictureUrl,
+        curtidas: userData.curtidas,
+        salvos: userData.salvos,
+        postagens: userData.postagens,
+      }
+    : user;
+
+  // Estatísticas: usar dados do endpoint se disponíveis, caso contrário calcular
+  const stats = userData
+    ? {
+        likes: userData.curtidas || 0,
+        posts: userData.postagens || 0,
+        saved: userData.salvos || 0,
+      }
+    : {
+        likes: posts.reduce((sum, post) => sum + (post.likesCount || 0), 0),
+        posts: posts.length,
+        saved: savedContent.length,
+      };
+
+  // Atualizar user quando os dados do endpoint forem carregados
+  useEffect(() => {
+    if (userData && user) {
+      const updatedUser: User = {
+        ...user,
+        profilePictureUrl: userData.profilePictureUrl || user.profilePictureUrl,
+        curtidas: userData.curtidas,
+        salvos: userData.salvos,
+        postagens: userData.postagens,
+      };
+      // Só atualiza se houver diferença para evitar loops
+      if (
+        updatedUser.profilePictureUrl !== user.profilePictureUrl ||
+        updatedUser.curtidas !== user.curtidas ||
+        updatedUser.salvos !== user.salvos ||
+        updatedUser.postagens !== user.postagens
+      ) {
+        updateUser(updatedUser);
+      }
+    }
+  }, [userData, user, updateUser]);
+
+  const handleRefresh = useCallback(() => {
+    if (activeTab === "saved") {
+      refetchSaved();
+    } else {
+      refetchPosts();
+    }
+    refetchUserData();
+  }, [activeTab, refetchSaved, refetchPosts, refetchUserData]);
 
   return {
-    user,
+    user: displayUser,
     posts,
     savedContent,
     activeTab,
     isEditing,
     isLoading,
+    isSaving,
     errors,
     isValid,
     register,
@@ -368,8 +457,10 @@ const useProfile = () => {
     selectedContentForEdit,
     editContentId,
     DialogPortal: ProfileDialogPortal,
+    stats,
+    currentProfilePictureUrl:
+      watchedProfilePictureUrl || user?.profilePictureUrl || "",
   };
 };
 
 export default useProfile;
-

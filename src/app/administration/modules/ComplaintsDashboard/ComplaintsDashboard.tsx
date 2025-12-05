@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import useAdministrationQueries from "../../services/adminQueryFactory";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
 
@@ -11,11 +12,8 @@ interface ToastState {
 }
 
 const ComplaintsDashboard = () => {
-  const {
-    useComplaints,
-    useValidateComplaint,
-    useApplyStrike,
-  } = useAdministrationQueries(["administration"]);
+  const { useComplaints, useValidateComplaint, useApplyStrike } =
+    useAdministrationQueries(["administration"]);
 
   const { data, isLoading, isError, refetch } = useComplaints();
   const validateMutation = useValidateComplaint();
@@ -128,6 +126,11 @@ const ComplaintsDashboard = () => {
                     {complaint.title}
                   </h2>
                   <p className="text-gray-600">{complaint.description}</p>
+                  {complaint.subtitle && (
+                    <p className="text-lg font-medium text-gray-700 mt-2">
+                      {complaint.subtitle}
+                    </p>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -141,9 +144,9 @@ const ComplaintsDashboard = () => {
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2 text-sm text-purple-700">
-                {complaint.categories.map((category) => (
+                {complaint.categories.map((category, index) => (
                   <span
-                    key={category}
+                    key={`${category}-${index}`}
                     className="px-3 py-1 bg-purple-100 rounded-full"
                   >
                     {category}
@@ -169,6 +172,78 @@ const ComplaintsDashboard = () => {
                 </div>
               </div>
             </div>
+
+            {complaint.subcontent && (
+              <div className="p-6 border-b border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+                  Conteúdo Completo
+                </h3>
+                <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  {complaint.subcontent}
+                </div>
+              </div>
+            )}
+
+            {complaint.media && complaint.media.length > 0 && (
+              <div className="p-6 border-b border-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+                  Mídias da Publicação
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {complaint.media
+                    .filter((mediaItem) =>
+                      mediaItem.contentType?.startsWith("image/")
+                    )
+                    .map((mediaItem, index) => (
+                      <div
+                        key={
+                          mediaItem.id ||
+                          mediaItem.url ||
+                          `image-${complaint.id}-${index}`
+                        }
+                        className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200"
+                      >
+                        <Image
+                          src={mediaItem.url}
+                          alt={mediaItem.altText || complaint.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </div>
+                    ))}
+                </div>
+                {complaint.media.filter((m) =>
+                  m.contentType?.startsWith("video/")
+                ).length > 0 && (
+                  <div className="mt-4 space-y-3">
+                    {complaint.media
+                      .filter((mediaItem) =>
+                        mediaItem.contentType?.startsWith("video/")
+                      )
+                      .map((mediaItem, index) => (
+                        <div
+                          key={
+                            mediaItem.id ||
+                            mediaItem.url ||
+                            `video-${complaint.id}-${index}`
+                          }
+                          className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200"
+                        >
+                          <video
+                            src={mediaItem.url}
+                            controls
+                            className="w-full h-full object-contain"
+                            aria-label={
+                              mediaItem.altText || "Vídeo da publicação"
+                            }
+                          />
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="p-6 space-y-3">
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
@@ -229,4 +304,3 @@ const ComplaintsDashboard = () => {
 };
 
 export default ComplaintsDashboard;
-

@@ -8,7 +8,11 @@ import { useAuth } from "@/app/contexts/AuthContext";
 const useRegisterForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { register: registerUser, hasOnboardingData, isAuthenticated } = useAuth();
+  const {
+    register: registerUser,
+    hasOnboardingData,
+    isAuthenticated,
+  } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -20,9 +24,11 @@ const useRegisterForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { isValid, errors },
+    control,
+    formState: { isValid, errors, isSubmitted },
     setValue,
     watch,
+    trigger,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -33,6 +39,7 @@ const useRegisterForm = () => {
       acceptTerms: false,
     },
     mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   const acceptTerms = watch("acceptTerms");
@@ -43,7 +50,9 @@ const useRegisterForm = () => {
       setErrorMessage("");
 
       if (!hasOnboardingData()) {
-        setErrorMessage("Por favor, complete o onboarding antes de se registrar.");
+        setErrorMessage(
+          "Por favor, complete o onboarding antes de se registrar."
+        );
         router.push("/onboarding");
         return;
       }
@@ -57,7 +66,9 @@ const useRegisterForm = () => {
       router.push("/");
     } catch (error) {
       if (error instanceof Error) {
-        setErrorMessage(error.message || "Erro ao criar conta. Tente novamente.");
+        setErrorMessage(
+          error.message || "Erro ao criar conta. Tente novamente."
+        );
       } else {
         setErrorMessage("Erro ao criar conta. Tente novamente.");
       }
@@ -72,6 +83,7 @@ const useRegisterForm = () => {
     isValid,
     register,
     handleSubmit,
+    control,
     errors,
     setValue,
     onSubmit,
@@ -80,6 +92,8 @@ const useRegisterForm = () => {
     isSubmitting,
     errorMessage,
     clearError,
+    isSubmitted,
+    trigger,
   };
 };
 

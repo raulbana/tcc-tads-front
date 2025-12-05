@@ -9,13 +9,8 @@ import { useAccessibility } from "@/app/contexts/AccessibilityContext";
 import { AccessibilityPreferences } from "@/app/types/config";
 
 const useAccessibilityForm = () => {
-  const {
-    highContrast,
-    bigFont,
-    darkMode,
-    saveAccessibilityPreferences,
-    isLoading,
-  } = useAccessibility();
+  const { highContrast, darkMode, saveAccessibilityPreferences, isLoading } =
+    useAccessibility();
 
   const {
     register,
@@ -27,7 +22,6 @@ const useAccessibilityForm = () => {
   } = useForm<AccessibilityFormData>({
     resolver: zodResolver(accessibilitySchema),
     defaultValues: {
-      isBigFont: bigFont,
       isHighContrast: highContrast,
       isDarkMode: darkMode,
     },
@@ -36,15 +30,14 @@ const useAccessibilityForm = () => {
 
   useEffect(() => {
     reset({
-      isBigFont: bigFont,
       isHighContrast: highContrast,
       isDarkMode: darkMode,
     });
-  }, [bigFont, highContrast, darkMode, reset]);
+  }, [highContrast, darkMode, reset]);
 
   const onSubmit = async (data: AccessibilityFormData) => {
     const preferences: AccessibilityPreferences = {
-      isBigFont: data.isBigFont,
+      isBigFont: false, // Sempre false, opção removida do formulário
       isHighContrast: data.isHighContrast,
       isDarkMode: data.isDarkMode,
     };

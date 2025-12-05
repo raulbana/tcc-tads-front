@@ -1,13 +1,35 @@
-'use client';
+"use client";
 
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { DotsSixVertical } from "@phosphor-icons/react";
 import useAdministrationQueries from "../../services/adminQueryFactory";
 import type {
   WorkoutPlanAdmin,
   WorkoutPlanEntry,
 } from "../../schema/workoutPlansSchema";
+import { workoutPlanFormSchema } from "../../schema/workoutPlansSchema";
+import type { WorkoutAdmin } from "../../schema/workoutsSchema";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
+import useDialogModal from "@/app/components/DialogModal/useDialogModal";
 
 type PlanFormValues = {
   name: string;
@@ -40,6 +62,8 @@ const WorkoutPlansDashboard = () => {
   const updatePlan = queries.useUpdateWorkoutPlan();
   const deletePlan = queries.useDeleteWorkoutPlan();
 
+  const { showDialog, DialogPortal } = useDialogModal();
+
   const [toast, setToast] = useState<ToastState>({
     isOpen: false,
     message: "",
@@ -53,6 +77,8 @@ const WorkoutPlansDashboard = () => {
   );
 
   const form = useForm<PlanFormValues>({
+    resolver: zodResolver(workoutPlanFormSchema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       description: "",
@@ -132,22 +158,45 @@ const WorkoutPlansDashboard = () => {
 
   const selectedIds = selectedWorkouts.map((entry) => entry.workoutId);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const activeId = String(active.id);
+      const overId = String(over.id);
+
+      const activeIndex = selectedWorkouts.findIndex(
+        (entry) => String(entry.workoutId) === activeId
+      );
+      const overIndex = selectedWorkouts.findIndex(
+        (entry) => String(entry.workoutId) === overId
+      );
+
+      if (activeIndex !== -1 && overIndex !== -1) {
+        const newWorkouts = arrayMove(selectedWorkouts, activeIndex, overIndex);
+        // Atualizar a ordem sequencialmente (1, 2, 3, ...)
+        const reorderedWorkouts = newWorkouts.map((entry, index) => ({
+          ...entry,
+          order: index + 1,
+        }));
+        setSelectedWorkouts(reorderedWorkouts);
+      }
+    }
+  };
+
   const addWorkout = (workoutId: number) => {
     if (selectedIds.includes(workoutId)) return;
     setSelectedWorkouts((prev) => [
       ...prev,
       { order: prev.length + 1, workoutId },
     ]);
-  };
-
-  const updateOrder = (workoutId: number, order: number) => {
-    setSelectedWorkouts((prev) =>
-      prev
-        .map((entry) =>
-          entry.workoutId === workoutId ? { ...entry, order } : entry
-        )
-        .sort((a, b) => a.order - b.order)
-    );
   };
 
   const removeWorkout = (workoutId: number) => {
@@ -203,7 +252,7 @@ const WorkoutPlansDashboard = () => {
 
   const handleDelete = async (plan: WorkoutPlanAdmin) => {
     if (!plan.id) return;
-    
+
     showDialog({
       title: "Remover Plano de Treino",
       description: `Deseja remover o plano "${plan.name}"? Esta ação não pode ser desfeita.`,
@@ -214,12 +263,12 @@ const WorkoutPlansDashboard = () => {
       primaryButton: {
         label: "Remover",
         onPress: async () => {
-    try {
-      await deletePlan.mutateAsync(Number(plan.id));
-      showToast("Plano de treino removido com sucesso.");
-    } catch (error) {
-      showToast("Não foi possível excluir o plano de treino.", "ERROR");
-    }
+          try {
+            await deletePlan.mutateAsync(Number(plan.id));
+            showToast("Plano de treino removido com sucesso.");
+          } catch (error) {
+            showToast("Não foi possível excluir o plano de treino.", "ERROR");
+          }
         },
         type: "PRIMARY",
         autoClose: true,
@@ -229,6 +278,11 @@ const WorkoutPlansDashboard = () => {
   };
 
   const resolvedPlans = plansQuery.data ?? [];
+
+  const workoutIds = useMemo(
+    () => selectedWorkouts.map((entry) => String(entry.workoutId)),
+    [selectedWorkouts]
+  );
 
   return (
     <div className="space-y-8">
@@ -314,7 +368,8 @@ const WorkoutPlansDashboard = () => {
                             Semanas totais: {plan.totalWeeks}
                           </span>
                           <span className="px-3 py-1 bg-purple-100 rounded-full">
-                            Faixa ICIQ: {plan.iciqScoreMin} - {plan.iciqScoreMax}
+                            Faixa ICIQ: {plan.iciqScoreMin} -{" "}
+                            {plan.iciqScoreMax}
                           </span>
                           <span className="px-3 py-1 bg-purple-100 rounded-full">
                             Idade: {plan.ageMin} - {plan.ageMax} anos
@@ -373,7 +428,9 @@ const WorkoutPlansDashboard = () => {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
             <div className="border-b border-gray-100 px-6 py-4 flex items-center justify-between flex-shrink-0">
               <h2 className="text-xl font-semibold text-gray-800">
-                {editingPlan ? "Editar plano de treino" : "Novo plano de treino"}
+                {editingPlan
+                  ? "Editar plano de treino"
+                  : "Novo plano de treino"}
               </h2>
               <button
                 onClick={closeModal}
@@ -406,9 +463,18 @@ const WorkoutPlansDashboard = () => {
                   </label>
                   <input
                     type="text"
-                    {...form.register("name", { required: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    {...form.register("name")}
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.name
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.name && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.name.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">
@@ -431,8 +497,17 @@ const WorkoutPlansDashboard = () => {
                     min={1}
                     max={7}
                     {...form.register("daysPerWeek", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.daysPerWeek
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.daysPerWeek && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.daysPerWeek.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -443,8 +518,17 @@ const WorkoutPlansDashboard = () => {
                     type="number"
                     min={1}
                     {...form.register("totalWeeks", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.totalWeeks
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.totalWeeks && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.totalWeeks.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -455,8 +539,17 @@ const WorkoutPlansDashboard = () => {
                     type="number"
                     min={1}
                     {...form.register("iciqScoreMin", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.iciqScoreMin
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.iciqScoreMin && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.iciqScoreMin.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -467,8 +560,17 @@ const WorkoutPlansDashboard = () => {
                     type="number"
                     min={1}
                     {...form.register("iciqScoreMax", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.iciqScoreMax
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.iciqScoreMax && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.iciqScoreMax.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -479,8 +581,17 @@ const WorkoutPlansDashboard = () => {
                     type="number"
                     min={1}
                     {...form.register("ageMin", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.ageMin
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.ageMin && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.ageMin.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -491,8 +602,17 @@ const WorkoutPlansDashboard = () => {
                     type="number"
                     min={1}
                     {...form.register("ageMax", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.ageMax
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.ageMax && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.ageMax.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -503,8 +623,7 @@ const WorkoutPlansDashboard = () => {
                       Treinos do plano
                     </h3>
                     <p className="text-sm text-gray-500">
-                      Selecione os treinos e defina a ordem que serão
-                      aplicados.
+                      Selecione os treinos e defina a ordem que serão aplicados.
                     </p>
                   </div>
                   <select
@@ -543,54 +662,33 @@ const WorkoutPlansDashboard = () => {
                 )}
 
                 {selectedWorkouts.length > 0 && (
-                  <div className="space-y-3">
-                    {selectedWorkouts.map((entry) => {
-                      const workout = availableWorkouts.find(
-                        (item) => Number(item.id) === entry.workoutId
-                      );
-                      if (!workout) return null;
-                      return (
-                        <div
-                          key={entry.workoutId}
-                          className="border border-purple-200 bg-purple-50 rounded-xl px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
-                        >
-                          <div>
-                            <p className="text-sm font-semibold text-gray-800">
-                              {workout.name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Duração: {workout.totalDuration}s • Dificuldade: {" "}
-                              {workout.difficultyLevel}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <label className="text-xs font-medium text-gray-600">
-                              Ordem
-                            </label>
-                            <input
-                              type="number"
-                              className="w-20 border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                              value={entry.order}
-                              min={1}
-                              onChange={(event) =>
-                                updateOrder(
-                                  entry.workoutId,
-                                  Number(event.target.value)
-                                )
-                              }
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={workoutIds}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-3">
+                        {selectedWorkouts.map((entry) => {
+                          const workout = availableWorkouts.find(
+                            (item) => Number(item.id) === entry.workoutId
+                          );
+                          if (!workout) return null;
+                          return (
+                            <SortableWorkoutItem
+                              key={entry.workoutId}
+                              workout={workout}
+                              entry={entry}
+                              onRemove={() => removeWorkout(entry.workoutId)}
                             />
-                            <button
-                              type="button"
-                              onClick={() => removeWorkout(entry.workoutId)}
-                              className="px-3 py-1 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition cursor-pointer"
-                            >
-                              Remover
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                          );
+                        })}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 )}
               </div>
 
@@ -604,10 +702,43 @@ const WorkoutPlansDashboard = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={createPlan.isPending || updatePlan.isPending}
-                  className="px-4 py-2 text-sm text-white bg-purple-600 hover:bg-purple-700 rounded-xl transition cursor-pointer"
+                  disabled={
+                    !form.formState.isValid ||
+                    createPlan.isPending ||
+                    updatePlan.isPending ||
+                    selectedWorkouts.length === 0
+                  }
+                  className="px-4 py-2 text-sm text-white bg-purple-600 hover:bg-purple-700 rounded-xl transition cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  {editingPlan ? "Salvar alterações" : "Criar plano"}
+                  {createPlan.isPending || updatePlan.isPending ? (
+                    <>
+                      <svg
+                        className="animate-spin h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Salvando...
+                    </>
+                  ) : editingPlan ? (
+                    "Salvar alterações"
+                  ) : (
+                    "Criar plano"
+                  )}
                 </button>
               </div>
             </form>
@@ -626,5 +757,69 @@ const WorkoutPlansDashboard = () => {
   );
 };
 
-export default WorkoutPlansDashboard; 
+interface SortableWorkoutItemProps {
+  workout: WorkoutAdmin;
+  entry: SelectedWorkout;
+  onRemove: () => void;
+}
 
+const SortableWorkoutItem: React.FC<SortableWorkoutItemProps> = ({
+  workout,
+  entry,
+  onRemove,
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: String(entry.workoutId) });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`border border-purple-200 bg-purple-50 rounded-xl px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between ${
+        isDragging ? "shadow-lg z-50" : ""
+      }`}
+    >
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing flex-shrink-0 p-1 hover:bg-purple-100 rounded transition-colors"
+        aria-label="Arrastar para reordenar"
+      >
+        <DotsSixVertical className="w-5 h-5 text-purple-600" weight="bold" />
+      </div>
+      <div className="flex-1">
+        <p className="text-sm font-semibold text-gray-800">{workout.name}</p>
+        <p className="text-xs text-gray-500">
+          Duração: {workout.totalDuration}s • Dificuldade:{" "}
+          {workout.difficultyLevel}
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-medium text-gray-600">
+          Ordem: {entry.order}
+        </span>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="px-3 py-1 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition cursor-pointer"
+        >
+          Remover
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default WorkoutPlansDashboard;

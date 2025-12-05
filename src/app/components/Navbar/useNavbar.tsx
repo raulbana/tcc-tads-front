@@ -72,6 +72,7 @@ export const useNavbar = () => {
     authState: {
       isLogged: isAuthenticated,
       username: user?.name,
+      user,
     },
     user,
     currentNavItems,

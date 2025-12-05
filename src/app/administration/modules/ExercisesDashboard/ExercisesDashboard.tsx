@@ -2,12 +2,16 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import useAdministrationQueries from "../../services/adminQueryFactory";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
 import useDialogModal from "@/app/components/DialogModal/useDialogModal";
 import contentServices from "@/app/contents/services/contentServices";
 import MediaManager from "./components/MediaManager/MediaManager";
-import { ExerciseAdmin } from "../../schema/exercisesSchema";
+import {
+  ExerciseAdmin,
+  exerciseCreatorSchema,
+} from "../../schema/exercisesSchema";
 
 type ExerciseFormValues = {
   title: string;
@@ -98,14 +102,16 @@ const ExercisesDashboard = () => {
   const [uploadError, setUploadError] = useState<string>("");
 
   const form = useForm<ExerciseFormValues>({
+    resolver: zodResolver(exerciseCreatorSchema),
+    mode: "onChange",
     defaultValues: {
       title: "",
       instructions: "",
-      categoryId: 0,
-      repetitions: 0,
-      sets: 0,
-      restTime: 0,
-      duration: 0,
+      categoryId: undefined as any,
+      repetitions: 1,
+      sets: 1,
+      restTime: 1,
+      duration: 1,
       attributeIds: [],
     },
   });
@@ -149,7 +155,7 @@ const ExercisesDashboard = () => {
         : true;
       const matchAttribute = attributeFilter
         ? exercise.benefits.some(
-            (benefit: { id: number; }) =>
+            (benefit: { id: number }) =>
               typeof benefit.id === "number" && benefit.id === attributeFilter
           )
         : true;
@@ -208,16 +214,21 @@ const ExercisesDashboard = () => {
     setExistingMedia([]);
     setRemovedMediaIds([]);
     setUploadError("");
+    const defaultCategoryId = categories[0]?.id ?? 0;
     form.reset({
       title: "",
       instructions: "",
-      categoryId: categories[0]?.id ?? 0,
-      repetitions: 0,
-      sets: 0,
-      restTime: 0,
-      duration: 0,
+      categoryId: defaultCategoryId,
+      repetitions: 1,
+      sets: 1,
+      restTime: 1,
+      duration: 1,
       attributeIds: [],
     });
+    // Trigger validation after reset to ensure categoryId is validated
+    if (defaultCategoryId > 0) {
+      form.trigger("categoryId");
+    }
     setExerciseModalOpen(true);
   };
 
@@ -268,6 +279,12 @@ const ExercisesDashboard = () => {
 
   const onExerciseSubmit = async (values: ExerciseFormValues) => {
     setUploadError("");
+
+    if (!hasMedia) {
+      setUploadError("Adicione pelo menos uma imagem ou vídeo");
+      showToast("Adicione pelo menos uma imagem ou vídeo", "ERROR");
+      return;
+    }
 
     let uploadedMedia: Array<{
       url: string;
@@ -354,7 +371,7 @@ const ExercisesDashboard = () => {
 
   const handleDeleteExercise = async (exercise: ExerciseAdmin) => {
     if (!exercise.id) return;
-    
+
     showDialog({
       title: "Excluir Exercício",
       description: `Deseja realmente excluir o exercício "${exercise.title}"? Esta ação não pode ser desfeita.`,
@@ -365,12 +382,12 @@ const ExercisesDashboard = () => {
       primaryButton: {
         label: "Excluir",
         onPress: async () => {
-    try {
-      await deleteExercise.mutateAsync(Number(exercise.id));
-      showToast("Exercício removido com sucesso.");
-    } catch (error) {
-      showToast("Não foi possível excluir o exercício.", "ERROR");
-    }
+          try {
+            await deleteExercise.mutateAsync(Number(exercise.id));
+            showToast("Exercício removido com sucesso.");
+          } catch (error) {
+            showToast("Não foi possível excluir o exercício.", "ERROR");
+          }
         },
         type: "PRIMARY",
         autoClose: true,
@@ -415,7 +432,8 @@ const ExercisesDashboard = () => {
   const handleDeleteCategory = async (id: number) => {
     showDialog({
       title: "Remover Categoria",
-      description: "Deseja remover esta categoria? Esta ação não pode ser desfeita.",
+      description:
+        "Deseja remover esta categoria? Esta ação não pode ser desfeita.",
       secondaryButton: {
         label: "Cancelar",
         onPress: () => {},
@@ -423,12 +441,12 @@ const ExercisesDashboard = () => {
       primaryButton: {
         label: "Remover",
         onPress: async () => {
-    try {
-      await deleteCategory.mutateAsync(id);
-      showToast("Categoria removida com sucesso.");
-    } catch (error) {
-      showToast("Não foi possível excluir a categoria.", "ERROR");
-    }
+          try {
+            await deleteCategory.mutateAsync(id);
+            showToast("Categoria removida com sucesso.");
+          } catch (error) {
+            showToast("Não foi possível excluir a categoria.", "ERROR");
+          }
         },
         type: "PRIMARY",
         autoClose: true,
@@ -476,7 +494,8 @@ const ExercisesDashboard = () => {
   const handleDeleteAttribute = async (id: number) => {
     showDialog({
       title: "Remover Atributo",
-      description: "Deseja remover este atributo? Esta ação não pode ser desfeita.",
+      description:
+        "Deseja remover este atributo? Esta ação não pode ser desfeita.",
       secondaryButton: {
         label: "Cancelar",
         onPress: () => {},
@@ -484,12 +503,12 @@ const ExercisesDashboard = () => {
       primaryButton: {
         label: "Remover",
         onPress: async () => {
-    try {
-      await deleteAttribute.mutateAsync(id);
-      showToast("Atributo removido com sucesso.");
-    } catch (error) {
-      showToast("Não foi possível excluir o atributo.", "ERROR");
-    }
+          try {
+            await deleteAttribute.mutateAsync(id);
+            showToast("Atributo removido com sucesso.");
+          } catch (error) {
+            showToast("Não foi possível excluir o atributo.", "ERROR");
+          }
         },
         type: "PRIMARY",
         autoClose: true,
@@ -501,6 +520,14 @@ const ExercisesDashboard = () => {
   const isExerciseListEmpty = useMemo(
     () => !isLoading && !isError && (exercises?.length ?? 0) === 0,
     [isLoading, isError, exercises]
+  );
+
+  const hasMedia = useMemo(
+    () =>
+      existingMedia.length > 0 ||
+      exerciseImages.length > 0 ||
+      exerciseVideo !== undefined,
+    [existingMedia, exerciseImages, exerciseVideo]
   );
 
   return (
@@ -979,9 +1006,18 @@ const ExercisesDashboard = () => {
                   </label>
                   <input
                     type="text"
-                    {...form.register("title", { required: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    {...form.register("title")}
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.title
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.title && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.title.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">
@@ -989,29 +1025,59 @@ const ExercisesDashboard = () => {
                     Instruções
                   </label>
                   <textarea
-                    {...form.register("instructions", { required: true })}
+                    {...form.register("instructions")}
                     rows={4}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.instructions
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.instructions && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.instructions.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Categoria
                   </label>
-                  <select
-                    {...form.register("categoryId", {
-                      valueAsNumber: true,
-                      required: true,
-                    })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                  >
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
+                  <Controller
+                    name="categoryId"
+                    control={form.control}
+                    render={({ field }) => (
+                      <select
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value =
+                            e.target.value === ""
+                              ? undefined
+                              : Number(e.target.value);
+                          field.onChange(value);
+                        }}
+                        className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                          form.formState.errors.categoryId
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      >
+                        <option value="">Selecione uma categoria</option>
+                        {categories.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  />
+                  {form.formState.errors.categoryId && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.categoryId.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -1020,9 +1086,19 @@ const ExercisesDashboard = () => {
                   </label>
                   <input
                     type="number"
+                    min={1}
                     {...form.register("repetitions", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.repetitions
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.repetitions && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.repetitions.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -1031,9 +1107,19 @@ const ExercisesDashboard = () => {
                   </label>
                   <input
                     type="number"
+                    min={1}
                     {...form.register("sets", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.sets
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.sets && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.sets.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -1042,9 +1128,19 @@ const ExercisesDashboard = () => {
                   </label>
                   <input
                     type="number"
+                    min={1}
                     {...form.register("restTime", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.restTime
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.restTime && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.restTime.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -1053,9 +1149,19 @@ const ExercisesDashboard = () => {
                   </label>
                   <input
                     type="number"
+                    min={1}
                     {...form.register("duration", { valueAsNumber: true })}
-                    className="mt-1 w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                      form.formState.errors.duration
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                   />
+                  {form.formState.errors.duration && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.duration.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">
@@ -1077,6 +1183,9 @@ const ExercisesDashboard = () => {
                     }}
                     error={uploadError}
                   />
+                  {uploadError && (
+                    <p className="text-sm text-red-600 mt-1">{uploadError}</p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">
@@ -1151,17 +1260,51 @@ const ExercisesDashboard = () => {
                   type="button"
                   onClick={closeExerciseModal}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-100 transition cursor-pointer"
+                  disabled={
+                    createExercise.isPending || updateExercise.isPending
+                  }
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm text-white bg-purple-600 hover:bg-purple-700 rounded-xl transition cursor-pointer"
+                  className="px-4 py-2 text-sm text-white bg-purple-600 hover:bg-purple-700 rounded-xl transition cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                   disabled={
-                    createExercise.isPending || updateExercise.isPending
+                    !form.formState.isValid ||
+                    !hasMedia ||
+                    createExercise.isPending ||
+                    updateExercise.isPending
                   }
                 >
-                  {editingExercise ? "Salvar alterações" : "Criar exercício"}
+                  {createExercise.isPending || updateExercise.isPending ? (
+                    <>
+                      <svg
+                        className="animate-spin h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Salvando...
+                    </>
+                  ) : editingExercise ? (
+                    "Salvar alterações"
+                  ) : (
+                    "Criar exercício"
+                  )}
                 </button>
               </div>
             </form>

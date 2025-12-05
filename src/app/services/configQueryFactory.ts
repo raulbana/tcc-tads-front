@@ -3,15 +3,15 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 import {
   ContactRequest,
   ContactResponse,
   AccessibilityPreferences,
   EditProfileRequest,
   EditProfileResponse,
-} from '@/app/types/config';
-import configServices from './configServices';
+} from "@/app/types/config";
+import configServices from "./configServices";
 
 export const configQueryFactory = (baseKey: QueryKey) => {
   const queryClient = useQueryClient();
@@ -19,7 +19,7 @@ export const configQueryFactory = (baseKey: QueryKey) => {
   return {
     useGetAccessibilityPreferences: (userId: string) =>
       useQuery<AccessibilityPreferences>({
-        queryKey: [...baseKey, 'accessibility-preferences', userId],
+        queryKey: [...baseKey, "accessibility-preferences", userId],
         queryFn: () => configServices.getAccessibilityPreferences(userId),
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 5,
@@ -48,13 +48,20 @@ export const configQueryFactory = (baseKey: QueryKey) => {
       useMutation<
         EditProfileResponse,
         Error,
-        { userId: number; data: EditProfileRequest; profilePictureFile?: File | string }
+        {
+          userId: number;
+          data: EditProfileRequest;
+          profilePictureFile?: File | string;
+        }
       >({
         mutationFn: ({ userId, data, profilePictureFile }) =>
           configServices.editProfile(userId, data, profilePictureFile),
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: ['auth', 'user'],
+            queryKey: ["auth", "user"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["profile", "user"],
           });
         },
       }),

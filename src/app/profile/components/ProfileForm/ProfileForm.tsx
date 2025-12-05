@@ -27,6 +27,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   const genderOptions = [
     { label: "Masculino", value: "male" },
     { label: "Feminino", value: "female" },
+    { label: "Outro", value: "other" },
   ];
 
   return (
@@ -46,7 +47,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                   label="Nome completo"
                   placeholder="Digite seu nome completo"
                   value={value}
-                  onChange={(e) => onChange(e.target.value)}
+                  onChange={onChange}
                   error={errors.name?.message}
                   required
                 />
@@ -64,9 +65,10 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
                   placeholder="Digite seu email"
                   type="email"
                   value={value}
-                  onChange={(e) => onChange(e.target.value)}
+                  onChange={onChange}
                   error={errors.email?.message}
                   required
+                  disabled={true}
                 />
               )}
             />
@@ -131,7 +133,3 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 };
 
 export default ProfileForm;
-
-
-
-

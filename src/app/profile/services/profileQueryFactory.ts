@@ -6,11 +6,24 @@ import {
 } from "@tanstack/react-query";
 import contentServices from "@/app/contents/services/contentServices";
 import { Content } from "@/app/types/content";
+import configServices from "@/app/services/configServices";
+import { UserSimpleDTO } from "@/app/types/config";
 
 export const profileQueryFactory = (baseKey: QueryKey) => {
   const queryClient = useQueryClient();
 
   return {
+    useGetUserById: (userId: number) =>
+      useQuery<UserSimpleDTO>({
+        queryKey: [...baseKey, "user", userId],
+        queryFn: () => configServices.getUserById(userId),
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 5,
+        retry: 1,
+        refetchOnWindowFocus: false,
+        enabled: !!userId,
+      }),
+
     useGetUserContent: (userId: string) =>
       useQuery<Content[]>({
         queryKey: [...baseKey, "user-content", userId],
@@ -41,6 +54,9 @@ export const profileQueryFactory = (baseKey: QueryKey) => {
           queryClient.invalidateQueries({
             queryKey: [...baseKey, "user-content"],
           });
+          queryClient.invalidateQueries({
+            queryKey: [...baseKey, "user"],
+          });
         },
       }),
 
@@ -51,6 +67,9 @@ export const profileQueryFactory = (baseKey: QueryKey) => {
         onSuccess: () => {
           queryClient.invalidateQueries({
             queryKey: [...baseKey, "saved-content"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [...baseKey, "user"],
           });
         },
       }),
@@ -65,4 +84,3 @@ const useProfileQueries = (queryKey: QueryKey) => {
 };
 
 export default useProfileQueries;
-
