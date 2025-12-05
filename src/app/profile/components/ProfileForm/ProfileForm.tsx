@@ -27,7 +27,6 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
   const genderOptions = [
     { label: "Masculino", value: "male" },
     { label: "Feminino", value: "female" },
-    { label: "Outro", value: "other" },
   ];
 
   return (
@@ -75,7 +74,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Gênero
+              Sexo
             </label>
             <Controller
               name="gender"

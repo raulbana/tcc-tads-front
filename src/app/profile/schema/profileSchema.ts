@@ -13,7 +13,7 @@ export const profileFormSchema = z.object({
     .min(1, "E-mail é obrigatório")
     .max(255, "E-mail deve ter no máximo 255 caracteres"),
 
-  gender: z.enum(["male", "female", "other"], {
+  gender: z.enum(["male", "female"], {
     required_error: "Gênero é obrigatório",
     invalid_type_error: "Selecione um gênero válido",
   }),
