@@ -16,9 +16,9 @@ const LEAKAGE_LEVEL_LABELS: Record<LeakageLevel, string> = {
 };
 
 const URINATION_AMOUNT_LABELS: Record<UrinationAmount, string> = {
-  LOW: "Baixo",
-  MEDIUM: "Médio",
-  HIGH: "Alto",
+  LOW: "Baixo (Até 100ml)",
+  MEDIUM: "Médio (100-300ml)",
+  HIGH: "Alto (Acima de 300ml)",
 };
 
 const translateLeakageLevel = (level?: string | null): string => {
@@ -143,6 +143,7 @@ export const useReportCard = (onGenerateReport?: () => void) => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
     } catch (error) {
+      console.error("Erro ao gerar o relatório:", error);
     } finally {
       setIsGenerating(false);
     }
