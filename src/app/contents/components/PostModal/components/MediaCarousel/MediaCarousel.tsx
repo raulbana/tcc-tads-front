@@ -30,7 +30,7 @@ const MediaCarousel: React.FC<MediaCarouselProps> = ({ media }) => {
 
   return (
     <>
-      <div className="relative aspect-video bg-black rounded-lg group">
+      <div className="relative aspect-square bg-black rounded-lg group">
         {currentMedia.type === 'image' ? (
           <Image
             src={currentMedia.url}
