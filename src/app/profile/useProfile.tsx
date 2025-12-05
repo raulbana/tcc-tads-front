@@ -33,7 +33,8 @@ const useProfile = () => {
     null
   );
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedContentForEdit, setSelectedContentForEdit] = useState<Content | null>(null);
+  const [selectedContentForEdit, setSelectedContentForEdit] =
+    useState<Content | null>(null);
   const [editContentId, setEditContentId] = useState<string | null>(null);
 
   const { showDialog, DialogPortal: ProfileDialogPortal } = useDialogModal();
@@ -43,10 +44,16 @@ const useProfile = () => {
   const contentQueries = useContentQueries(["content"]);
 
   const {
-    data: posts = [],
+    data: allPosts = [],
     isLoading: isLoadingPosts,
     refetch: refetchPosts,
   } = profileQueries.useGetUserContent(user?.id.toString() || "");
+
+  // Filtrar apenas conteúdos do usuário logado para garantir que não venham conteúdos de outros usuários
+  const posts = allPosts.filter((post) => {
+    if (!user?.id || !post.author) return false;
+    return post.author.id === user.id || Number(post.author.id) === user.id;
+  });
 
   const {
     data: savedContent = [],
@@ -54,13 +61,8 @@ const useProfile = () => {
     refetch: refetchSaved,
   } = profileQueries.useGetSavedContent(user?.id.toString());
 
-  const {
-    data: fullContentData,
-    isLoading: isLoadingContent,
-  } = contentQueries.useGetById(
-    editContentId || "",
-    user?.id.toString() || ""
-  );
+  const { data: fullContentData, isLoading: isLoadingContent } =
+    contentQueries.useGetById(editContentId || "", user?.id.toString() || "");
 
   const deleteContentMutation = profileQueries.useDeleteContent();
   const unsaveContentMutation = profileQueries.useUnsaveContent();
@@ -152,16 +154,19 @@ const useProfile = () => {
     }
   }, [user, reset]);
 
-  const handleProfilePictureChange = useCallback((file: File) => {
-    setProfilePictureFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setValue("profilePictureUrl", reader.result as string, {
-        shouldValidate: true,
-      });
-    };
-    reader.readAsDataURL(file);
-  }, [setValue]);
+  const handleProfilePictureChange = useCallback(
+    (file: File) => {
+      setProfilePictureFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setValue("profilePictureUrl", reader.result as string, {
+          shouldValidate: true,
+        });
+      };
+      reader.readAsDataURL(file);
+    },
+    [setValue]
+  );
 
   const handleRemoveProfilePicture = useCallback(() => {
     setProfilePictureFile(null);
@@ -184,9 +189,10 @@ const useProfile = () => {
           name: data.name.trim(),
           email: data.email.trim(),
         },
-        profilePictureFile: isPictureChanged && profilePictureFile
-          ? profilePictureFile
-          : undefined,
+        profilePictureFile:
+          isPictureChanged && profilePictureFile
+            ? profilePictureFile
+            : undefined,
       });
 
       const updatedUser: User = {
@@ -223,7 +229,7 @@ const useProfile = () => {
   const handleDeletePost = useCallback(
     async (content: Content) => {
       if (!content.id) return;
-      
+
       showDialog({
         title: "Excluir Postagem",
         description: `Tem certeza que deseja excluir a postagem "${content.title}"? Esta ação não pode ser desfeita.`,
@@ -254,7 +260,7 @@ const useProfile = () => {
   const handleUnsaveContent = useCallback(
     async (content: Content) => {
       if (!content.id) return;
-      
+
       showDialog({
         title: "Remover dos Salvos",
         description: "Tem certeza que deseja remover este conteúdo dos salvos?",
@@ -303,19 +309,16 @@ const useProfile = () => {
     }
   }, [activeTab, refetchSaved, refetchPosts]);
 
-  const handleEditContent = useCallback(
-    (content: Content) => {
-      if (content.id) {
-        const contentId = content.id.toString();
-        setEditContentId(contentId);
-        setIsEditModalOpen(true);
-        if (content.title && content.description) {
-          setSelectedContentForEdit(content);
-        }
+  const handleEditContent = useCallback((content: Content) => {
+    if (content.id) {
+      const contentId = content.id.toString();
+      setEditContentId(contentId);
+      setIsEditModalOpen(true);
+      if (content.title && content.description) {
+        setSelectedContentForEdit(content);
       }
-    },
-    []
-  );
+    }
+  }, []);
 
   const handleCloseEditModal = useCallback(() => {
     setIsEditModalOpen(false);
@@ -339,6 +342,14 @@ const useProfile = () => {
     deleteContentMutation.isPending ||
     unsaveContentMutation.isPending ||
     editProfileMutation.isPending;
+
+  // Calcular estatísticas
+  const totalLikes = posts.reduce(
+    (sum, post) => sum + (post.likesCount || 0),
+    0
+  );
+  const totalPosts = posts.length;
+  const totalSaved = savedContent.length;
 
   return {
     user,
@@ -370,8 +381,12 @@ const useProfile = () => {
     selectedContentForEdit,
     editContentId,
     DialogPortal: ProfileDialogPortal,
+    stats: {
+      likes: totalLikes,
+      posts: totalPosts,
+      saved: totalSaved,
+    },
   };
 };
 
 export default useProfile;
-

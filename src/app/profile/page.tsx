@@ -41,6 +41,7 @@ const ProfilePage = () => {
     selectedContentForEdit,
     editContentId,
     DialogPortal,
+    stats,
   } = useProfile();
 
   if (!user) {
@@ -63,6 +64,7 @@ const ProfilePage = () => {
                 user={user}
                 onEditProfile={handleEditProfile}
                 isEditing={false}
+                stats={stats}
               />
 
               <div className="mt-8 bg-white border border-gray-200 rounded-2xl shadow-sm p-6">

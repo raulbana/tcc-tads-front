@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { Controller } from "react-hook-form";
 import useRegisterForm from "./useRegisterForm";
 import Button from "@/app/components/Button/Button";
 import Input from "@/app/components/Input/Input";
@@ -9,6 +10,7 @@ const RegisterForm = () => {
     register,
     handleSubmit,
     errors,
+    control,
     setValue,
     onSubmit,
     acceptTerms,
@@ -16,12 +18,34 @@ const RegisterForm = () => {
     isSubmitting,
     errorMessage,
     clearError,
+    isSubmitted,
+    trigger,
   } = useRegisterForm();
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSubmit(onSubmit, (errors) => {
+      // Forçar validação de acceptTerms se não foi aceito
+      if (!acceptTerms) {
+        trigger("acceptTerms");
+      }
+      // Forçar scroll para o primeiro erro se houver
+      if (Object.keys(errors).length > 0) {
+        const firstErrorField = Object.keys(errors)[0];
+        const errorElement = document.querySelector(
+          `[name="${firstErrorField}"]`
+        );
+        if (errorElement) {
+          errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+    })(e);
+  };
 
   return (
     <form
       className="flex flex-col gap-4"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleFormSubmit}
       noValidate
     >
       {errorMessage && (
@@ -109,27 +133,53 @@ const RegisterForm = () => {
           error={errors.confirmPassword?.message}
         />
       </div>
-      <div className="flex items-center gap-2">
-        <input
-          id="acceptTerms"
-          type="checkbox"
-          checked={!!acceptTerms}
-          {...register("acceptTerms")}
-          onChange={(e) => setValue("acceptTerms", e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+      <div>
+        <Controller
+          control={control}
+          name="acceptTerms"
+          render={({ field, fieldState }) => (
+            <div className="flex items-start gap-2">
+              <input
+                id="acceptTerms"
+                type="checkbox"
+                checked={field.value}
+                onChange={(e) => {
+                  field.onChange(e.target.checked);
+                  if (isSubmitted || errors.acceptTerms) {
+                    trigger("acceptTerms");
+                  }
+                }}
+                onBlur={field.onBlur}
+                ref={field.ref}
+                className={`mt-0.5 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 ${
+                  fieldState.error ? "border-red-500 ring-red-500" : ""
+                }`}
+              />
+              <div className="flex-1">
+                <label
+                  htmlFor="acceptTerms"
+                  className="text-sm text-gray-700 cursor-pointer"
+                >
+                  Aceito os termos de uso
+                </label>
+                {(fieldState.error || errors.acceptTerms) && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {fieldState.error?.message ||
+                      errors.acceptTerms?.message ||
+                      "Você deve aceitar os termos de uso"}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         />
-        <label htmlFor="acceptTerms" className="text-sm text-gray-700">
-          Aceito os termos de uso
-        </label>
       </div>
       <Button
         type="PRIMARY"
+        buttonType="submit"
         text={isSubmitting ? "Criando conta..." : "Criar Conta"}
         className="w-full mt-2"
         disabled={isSubmitting}
-        onClick={() => {
-          handleSubmit(onSubmit)();
-        }}
       />
     </form>
   );

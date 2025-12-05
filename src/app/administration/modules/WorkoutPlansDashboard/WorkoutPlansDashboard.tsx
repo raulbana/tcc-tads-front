@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -8,6 +8,7 @@ import type {
   WorkoutPlanEntry,
 } from "../../schema/workoutPlansSchema";
 import Toast, { type ToastType } from "@/app/components/Toast/Toast";
+import useDialogModal from "@/app/components/DialogModal/useDialogModal";
 
 type PlanFormValues = {
   name: string;
@@ -39,6 +40,8 @@ const WorkoutPlansDashboard = () => {
   const createPlan = queries.useCreateWorkoutPlan();
   const updatePlan = queries.useUpdateWorkoutPlan();
   const deletePlan = queries.useDeleteWorkoutPlan();
+
+  const { showDialog, DialogPortal } = useDialogModal();
 
   const [toast, setToast] = useState<ToastState>({
     isOpen: false,
@@ -203,7 +206,7 @@ const WorkoutPlansDashboard = () => {
 
   const handleDelete = async (plan: WorkoutPlanAdmin) => {
     if (!plan.id) return;
-    
+
     showDialog({
       title: "Remover Plano de Treino",
       description: `Deseja remover o plano "${plan.name}"? Esta ação não pode ser desfeita.`,
@@ -214,12 +217,12 @@ const WorkoutPlansDashboard = () => {
       primaryButton: {
         label: "Remover",
         onPress: async () => {
-    try {
-      await deletePlan.mutateAsync(Number(plan.id));
-      showToast("Plano de treino removido com sucesso.");
-    } catch (error) {
-      showToast("Não foi possível excluir o plano de treino.", "ERROR");
-    }
+          try {
+            await deletePlan.mutateAsync(Number(plan.id));
+            showToast("Plano de treino removido com sucesso.");
+          } catch (error) {
+            showToast("Não foi possível excluir o plano de treino.", "ERROR");
+          }
         },
         type: "PRIMARY",
         autoClose: true,
@@ -314,7 +317,8 @@ const WorkoutPlansDashboard = () => {
                             Semanas totais: {plan.totalWeeks}
                           </span>
                           <span className="px-3 py-1 bg-purple-100 rounded-full">
-                            Faixa ICIQ: {plan.iciqScoreMin} - {plan.iciqScoreMax}
+                            Faixa ICIQ: {plan.iciqScoreMin} -{" "}
+                            {plan.iciqScoreMax}
                           </span>
                           <span className="px-3 py-1 bg-purple-100 rounded-full">
                             Idade: {plan.ageMin} - {plan.ageMax} anos
@@ -373,7 +377,9 @@ const WorkoutPlansDashboard = () => {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
             <div className="border-b border-gray-100 px-6 py-4 flex items-center justify-between flex-shrink-0">
               <h2 className="text-xl font-semibold text-gray-800">
-                {editingPlan ? "Editar plano de treino" : "Novo plano de treino"}
+                {editingPlan
+                  ? "Editar plano de treino"
+                  : "Novo plano de treino"}
               </h2>
               <button
                 onClick={closeModal}
@@ -503,8 +509,7 @@ const WorkoutPlansDashboard = () => {
                       Treinos do plano
                     </h3>
                     <p className="text-sm text-gray-500">
-                      Selecione os treinos e defina a ordem que serão
-                      aplicados.
+                      Selecione os treinos e defina a ordem que serão aplicados.
                     </p>
                   </div>
                   <select
@@ -559,7 +564,7 @@ const WorkoutPlansDashboard = () => {
                               {workout.name}
                             </p>
                             <p className="text-xs text-gray-500">
-                              Duração: {workout.totalDuration}s • Dificuldade: {" "}
+                              Duração: {workout.totalDuration}s • Dificuldade:{" "}
                               {workout.difficultyLevel}
                             </p>
                           </div>
@@ -626,5 +631,4 @@ const WorkoutPlansDashboard = () => {
   );
 };
 
-export default WorkoutPlansDashboard; 
-
+export default WorkoutPlansDashboard;

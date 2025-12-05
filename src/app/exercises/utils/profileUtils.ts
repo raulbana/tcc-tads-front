@@ -5,3 +5,5 @@ export const shouldBlockExercises = (profile: PatientProfileDTO): boolean => {
 };
 
 
+
+

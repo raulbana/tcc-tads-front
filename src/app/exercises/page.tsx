@@ -15,6 +15,9 @@ const ExercisesPage = () => {
     isReassessmentModalOpen,
     handleCloseReassessmentModal,
     handleReassessmentSuccess,
+    nextWorkout,
+    nextWorkoutExerciseIds,
+    userWorkoutPlan,
   } = useExerciseHome();
 
   if (isLoading) {
@@ -66,9 +69,9 @@ const ExercisesPage = () => {
 
                 <p className="text-gray-600 max-w-2xl">
                   Por conta da sua condição, recomendamos fortemente que você
-                  consulte um médico antes de realizar exercícios de fisioterapia
-                  pélvica. O acompanhamento profissional é essencial para garantir
-                  sua segurança e o melhor tratamento.
+                  consulte um médico antes de realizar exercícios de
+                  fisioterapia pélvica. O acompanhamento profissional é
+                  essencial para garantir sua segurança e o melhor tratamento.
                 </p>
 
                 <p className="text-red-600 font-semibold max-w-2xl">
@@ -94,6 +97,30 @@ const ExercisesPage = () => {
             </p>
           </div>
 
+          {userWorkoutPlan && (
+            <div className="mb-6 space-y-2">
+              <p className="text-gray-700">
+                Semana {userWorkoutPlan.currentWeek}
+                {userWorkoutPlan.plan && " do plano de treino"}
+              </p>
+              {userWorkoutPlan.totalProgress !== undefined && (
+                <p className="text-gray-700">
+                  Progresso:{" "}
+                  {((userWorkoutPlan.weekProgress / userWorkoutPlan.totalProgress) * 100).toFixed(2)}%
+                </p>
+              )}
+            </div>
+          )}
+
+          {nextWorkout && (
+            <div className="mb-6 p-4 bg-purple-50 border-2 border-purple-600 rounded-lg">
+              <h2 className="text-lg font-semibold text-purple-800 mb-2">
+                Próximo Treino Recomendado
+              </h2>
+              <p className="text-gray-800">{nextWorkout.name}</p>
+            </div>
+          )}
+
           {workouts.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
               <p className="text-gray-500">
@@ -111,6 +138,7 @@ const ExercisesPage = () => {
                   difficulty=""
                   description={exercise.description}
                   onClick={() => handleWorkoutClick(exercise.id)}
+                  isNextWorkout={nextWorkoutExerciseIds.has(exercise.id)}
                 />
               ))}
             </div>
@@ -127,4 +155,3 @@ const ExercisesPage = () => {
 };
 
 export default ExercisesPage;
-

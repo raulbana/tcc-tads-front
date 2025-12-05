@@ -7,6 +7,7 @@ interface WorkoutCardProps {
   difficulty?: string;
   description?: string;
   onClick: () => void;
+  isNextWorkout?: boolean;
 }
 
 const WorkoutCard: React.FC<WorkoutCardProps> = ({
@@ -16,15 +17,25 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({
   difficulty,
   description,
   onClick,
+  isNextWorkout = false,
 }) => {
   return (
     <div
-      className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 cursor-pointer hover:shadow-md transition-shadow"
+      className={`rounded-lg shadow-sm border-2 p-6 cursor-pointer hover:shadow-md transition-shadow ${
+        isNextWorkout
+          ? "bg-purple-50 border-purple-600"
+          : "bg-white border-gray-200"
+      }`}
       onClick={onClick}
     >
       <div className="flex justify-between items-start mb-3">
         <h3 className="text-lg font-semibold text-gray-800 flex-1">{title}</h3>
-        {difficulty && (
+        {isNextWorkout && (
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-purple-600 text-white ml-2">
+            Próximo treino
+          </span>
+        )}
+        {difficulty && !isNextWorkout && (
           <span className="px-3 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700 ml-2">
             {difficulty}
           </span>
