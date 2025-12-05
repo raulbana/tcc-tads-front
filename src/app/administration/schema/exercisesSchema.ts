@@ -25,7 +25,10 @@ export const exerciseCreatorSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
   instructions: z.string().min(1, "Instruções são obrigatórias"),
   categoryId: z
-    .number()
+    .number({
+      required_error: "Selecione uma categoria",
+      invalid_type_error: "Selecione uma categoria",
+    })
     .refine((val) => val > 0, { message: "Selecione uma categoria" }),
   media: z.array(mediaSchema.partial()).default([]),
   attributes: z.array(z.number()).default([]),

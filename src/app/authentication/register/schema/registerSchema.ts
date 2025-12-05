@@ -16,8 +16,9 @@ export const registerSchema = z
       .refine((val) => /[0-9]/.test(val), {
         message: "A senha deve ter pelo menos 1 número",
       })
-      .refine((val) => /[@$!%*?&]/.test(val), {
-        message: "A senha deve ter pelo menos 1 caractere especial (@$!%*?&)",
+      .refine((val) => /[!@#$%^&*()_\-+=\[\]{};':"\\|,,<>\/?]/.test(val), {
+        message:
+          "A senha deve ter pelo menos 1 caractere especial (ex: !@#$%^&*()_+=[]{};':\"|,.<>/?)",
       }),
     confirmPassword: z.string(),
     acceptTerms: z.boolean(),

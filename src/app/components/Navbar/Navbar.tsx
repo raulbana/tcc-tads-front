@@ -9,7 +9,6 @@ import AccessibilityModal from "@/app/support/accessibility/components/accessibi
 import NavItem from "./components/NavItem";
 import SidebarToggler from "./components/SidebarToggler";
 import { PersonArmsSpreadIcon } from "@phosphor-icons/react";
-import AnonymousUserIcon from "@/app/assets/illustrations/anonymous_user.svg";
 
 import DailyIULogo from "@/app/assets/illustrations/daily-iu-logo.svg";
 

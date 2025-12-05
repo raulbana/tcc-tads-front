@@ -311,7 +311,7 @@ const WorkoutsDashboard = () => {
 
   const resolvedWorkouts = workoutsQuery.data ?? [];
 
-  const exerciseIds = useMemo(
+  const exerciseIdStrings = useMemo(
     () => selectedExercises.map((entry) => String(entry.exerciseId)),
     [selectedExercises]
   );
@@ -644,7 +644,7 @@ const WorkoutsDashboard = () => {
                     onDragEnd={handleDragEnd}
                   >
                     <SortableContext
-                      items={exerciseIds}
+                      items={exerciseIdStrings}
                       strategy={verticalListSortingStrategy}
                     >
                       <div className="space-y-3">

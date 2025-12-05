@@ -4,6 +4,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
 } from "react";
 import {
@@ -208,7 +209,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     clearStoredAuth();
   };
 
-  const updateUser = (userData: User) => {
+  const updateUser = useCallback((userData: User) => {
     setUser(userData);
     try {
       const storedToken = localStorage.getItem(TOKEN_KEY);
@@ -218,7 +219,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error("Erro ao atualizar usuário no localStorage:", error);
     }
-  };
+  }, []);
 
   return (
     <AuthContext.Provider

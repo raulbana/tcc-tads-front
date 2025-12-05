@@ -107,7 +107,7 @@ const ExercisesDashboard = () => {
     defaultValues: {
       title: "",
       instructions: "",
-      categoryId: 0,
+      categoryId: undefined as any,
       repetitions: 1,
       sets: 1,
       restTime: 1,
@@ -1044,23 +1044,35 @@ const ExercisesDashboard = () => {
                   <label className="block text-sm font-medium text-gray-700">
                     Categoria
                   </label>
-                  <select
-                    {...form.register("categoryId", {
-                      valueAsNumber: true,
-                    })}
-                    className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
-                      form.formState.errors.categoryId
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    <option value={0}>Selecione uma categoria</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
+                  <Controller
+                    name="categoryId"
+                    control={form.control}
+                    render={({ field }) => (
+                      <select
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const value =
+                            e.target.value === ""
+                              ? undefined
+                              : Number(e.target.value);
+                          field.onChange(value);
+                        }}
+                        className={`mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 ${
+                          form.formState.errors.categoryId
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      >
+                        <option value="">Selecione uma categoria</option>
+                        {categories.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  />
                   {form.formState.errors.categoryId && (
                     <p className="text-sm text-red-600 mt-1">
                       {form.formState.errors.categoryId.message}

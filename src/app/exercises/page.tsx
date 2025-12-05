@@ -105,8 +105,8 @@ const ExercisesPage = () => {
               </p>
               {userWorkoutPlan.totalProgress !== undefined && (
                 <p className="text-gray-700">
-                  Progresso:{" "}
-                  {((userWorkoutPlan.weekProgress / userWorkoutPlan.totalProgress) * 100).toFixed(2)}%
+                  Progresso da semana: {userWorkoutPlan.weekProgress} treinos |
+                  Progresso total: {userWorkoutPlan.totalProgress} treinos
                 </p>
               )}
             </div>
